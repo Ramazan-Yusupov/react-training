@@ -1,4 +1,4 @@
-import { cn } from '@/shared/lib';
+import { cn, getInitials } from '@/shared/lib';
 import { useState } from 'react';
 
 interface AvatarProps {
@@ -6,6 +6,7 @@ interface AvatarProps {
   alt?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   initials?: string;
+  name?: string;
   className?: string;
 }
 
@@ -20,12 +21,15 @@ export const Avatar = ({
   src,
   alt = 'Avatar',
   size = 'md',
-  initials = '?',
+  initials,
+  name,
   className,
 }: AvatarProps) => {
-  const [hasError, setHasError] = useState(false);
+  // запоминаем именно битый src: новый src получит новую попытку загрузки
+  const [failedSrc, setFailedSrc] = useState<string>();
 
-  const showImage = src && !hasError;
+  const showImage = Boolean(src) && failedSrc !== src;
+  const text = initials ?? (getInitials(name) || '?');
 
   return (
     <div
@@ -43,10 +47,10 @@ export const Avatar = ({
           alt={alt}
           loading="eager"
           className="w-full h-full object-cover"
-          onError={() => setHasError(true)}
+          onError={() => setFailedSrc(src)}
         />
       ) : (
-        <span aria-hidden="true">{initials}</span>
+        <span aria-hidden="true">{text}</span>
       )}
     </div>
   );

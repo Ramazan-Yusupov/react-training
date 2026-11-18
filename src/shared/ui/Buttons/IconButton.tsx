@@ -4,7 +4,7 @@ import { type ButtonHTMLAttributes, forwardRef } from 'react';
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'ghost' | 'destructive';
+  variant?: 'default' | 'primary' | 'ghost' | 'destructive';
   ariaLabel: string;
 }
 
@@ -18,6 +18,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 
     const variants = {
       default: 'bg-gray-800 text-white hover:bg-gray-700',
+      primary: 'bg-blue-500 text-white hover:bg-blue-600',
       ghost: 'bg-transparent hover:bg-gray-800 text-gray-300',
       destructive: 'bg-red-100 text-red-600 hover:bg-red-200',
     };
@@ -27,9 +28,10 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type="button"
         aria-label={ariaLabel}
+        title={ariaLabel}
         disabled={disabled}
         className={cn(
-          'rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+          'rounded-xl flex items-center justify-center transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed',
           sizes[size],
           variants[variant],
           className,

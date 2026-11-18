@@ -8,15 +8,27 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  fullWidth?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, variant = 'outline', size = 'md', className, title, icon, isLoading, ...props },
+    {
+      children,
+      variant = 'outline',
+      size = 'md',
+      className,
+      title,
+      icon,
+      isLoading,
+      fullWidth,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     const baseStyles =
-      'font-semibold rounded-lg transition-all flex items-center justify-center gap-2 outline-none whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed!';
+      'font-semibold rounded-lg transition-all flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed!';
 
     const variants = {
       primary: 'bg-blue-500 hover:bg-blue-600 text-white shadow-md disabled:hover:bg-blue-500',
@@ -37,12 +49,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type="button"
-        disabled={isLoading}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
+        disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
+        className={cn(baseStyles, variants[variant], sizes[size], fullWidth && 'w-full', className)}
         {...props}
       >
-        {isLoading && <LoadingUI />}
-        {title || children || icon}
+        {isLoading ? <LoadingUI isLoading size="sm" text="" /> : icon}
+        {title ?? children}
       </button>
     );
   },

@@ -84,7 +84,7 @@ export function Box<T extends ElementType = 'div'>({
 
   return (
     <Component ref={ref} className={cn('flex-center', className)} style={boxStyle} {...props}>
-      {text || children}
+      {text ?? children}
     </Component>
   );
 }

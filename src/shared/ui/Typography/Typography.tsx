@@ -1,13 +1,17 @@
 import { cn } from '@/shared/lib';
+import type { ReactNode } from 'react';
 
-type TypographyTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+type TypographyTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextAlign = 'start' | 'center' | 'end';
+type TextTone = 'default' | 'muted' | 'success' | 'warning' | 'danger' | 'accent';
 
 interface TypographyProps {
   as?: TypographyTag;
-  text: string | number;
+  text?: string | number;
+  children?: ReactNode;
   className?: string;
   align?: TextAlign;
+  tone?: TextTone;
 }
 
 const typographyStyles: Record<TypographyTag, string> = {
@@ -18,6 +22,7 @@ const typographyStyles: Record<TypographyTag, string> = {
   h5: 'text-lg font-medium leading-normal',
   h6: 'text-base font-medium leading-normal',
   p: 'text-base leading-relaxed',
+  span: 'text-sm',
 };
 
 const alignStyles: Record<TextAlign, string> = {
@@ -26,15 +31,28 @@ const alignStyles: Record<TextAlign, string> = {
   end: 'text-right',
 };
 
+const toneStyles: Record<TextTone, string> = {
+  default: '',
+  muted: 'text-gray-400',
+  success: 'text-green-400',
+  warning: 'text-yellow-400',
+  danger: 'text-red-400',
+  accent: 'text-blue-400',
+};
+
 export function Typography({
   as: Component = 'p',
   text,
+  children,
   className,
   align = 'center',
+  tone = 'default',
 }: TypographyProps) {
   return (
-    <Component className={cn(typographyStyles[Component], alignStyles[align], className)}>
-      {text}
+    <Component
+      className={cn(typographyStyles[Component], alignStyles[align], toneStyles[tone], className)}
+    >
+      {text ?? children}
     </Component>
   );
 }

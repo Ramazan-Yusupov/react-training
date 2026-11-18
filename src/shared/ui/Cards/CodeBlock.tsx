@@ -69,6 +69,8 @@ export function CodeBlock({
       onKeyDown={
         isClickable
           ? (event) => {
+              // не перехватываем клавиши вложенных кнопок (удалить, изменить)
+              if (event.target !== event.currentTarget) return;
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 onClick?.();
@@ -79,7 +81,7 @@ export function CodeBlock({
     >
       <div className="flex items-center gap-2">
         {title && <div className={colorClasses[colorTitle]}>{title}</div>}
-        {badge && <Badge size="sm" text={badge} />}
+        {badge !== undefined && badge !== '' && <Badge size="sm" text={badge} />}
       </div>
 
       <div className="flex items-center gap-3">
@@ -98,6 +100,7 @@ export function CodeBlock({
             }}
             size="md"
             variant="danger"
+            aria-label="Delete"
             icon={<FaTrash />}
           />
         )}

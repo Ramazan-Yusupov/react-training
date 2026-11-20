@@ -1,4 +1,4 @@
-import { DEFAULT_START_DATE, STORAGE_KEYS } from '@/shared/config';
+import { STORAGE_KEYS } from '@/shared/config';
 import { todayISO } from '@/shared/lib';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -33,7 +33,7 @@ interface ProgressActions {
 export type ProgressState = ProgressData & ProgressActions;
 
 export const createInitialProgress = (): ProgressData => ({
-  startDate: DEFAULT_START_DATE,
+  startDate: todayISO(),
   postureStartDate: null,
   completed: {},
   microBreaks: {},
@@ -81,7 +81,8 @@ export const useProgressStore = create<ProgressState>()(
     }),
     {
       name: STORAGE_KEYS.PROGRESS,
-      version: 1,
+      version: 2,
+      migrate: () => createInitialProgress(),
       storage: createJSONStorage(() => localStorage),
       partialize: (state): ProgressData => ({
         startDate: state.startDate,

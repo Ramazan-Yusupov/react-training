@@ -1,4 +1,4 @@
-import { workoutPlan } from '@/entities/plan';
+import { useUserWorkoutPlanStore } from '@/entities/plan';
 import {
   getCurrentDay,
   isDayComplete,
@@ -15,8 +15,11 @@ interface MonthStripProps {
   onSelect: (day: number) => void;
 }
 
-/** 30 дней плана одной сеткой: выполнено, частично, пропущено. */
+/** Календарь активности на основе пользовательского плана. */
 export function MonthStrip({ selected, onSelect }: MonthStripProps) {
+  const template = useUserWorkoutPlanStore((state) => state.template);
+  const dayOverrides = useUserWorkoutPlanStore((state) => state.dayOverrides);
+
   const startDate = useProgressStore((state) => state.startDate);
   const completed = useProgressStore((state) => state.completed);
   const microBreaks = useProgressStore((state) => state.microBreaks);
@@ -25,15 +28,29 @@ export function MonthStrip({ selected, onSelect }: MonthStripProps) {
 
   const cells = useMemo<CalendarCell[]>(() => {
     const snapshot = { completed, microBreaks };
-    return workoutPlan.days.map((day) => {
+
+    const days = template.days.map((item) => dayOverrides[String(item.day)] ?? item);
+
+    return days.map((day) => {
       const { done } = requiredProgress(day, snapshot);
-      let status: CalendarCell['status'] = day.kind === 'rest' ? 'rest' : 'future';
-      if (isDayComplete(day, snapshot)) status = 'done';
-      else if (done > 0) status = 'partial';
-      else if (!current.isBeforeStart && day.day < current.day) status = 'missed';
-      return { value: day.day, status, hint: `День ${day.day}: ${day.label}` };
+
+      let status: CalendarCell['status'] = 'future';
+
+      if (isDayComplete(day, snapshot)) {
+        status = 'done';
+      } else if (done > 0) {
+        status = 'partial';
+      } else if (!current.isBeforeStart && day.day < current.day) {
+        status = 'missed';
+      }
+
+      return {
+        value: day.day,
+        status,
+        hint: `День ${day.day}`,
+      };
     });
-  }, [completed, microBreaks, current.day, current.isBeforeStart]);
+  }, [template.days, dayOverrides, completed, microBreaks, current.day, current.isBeforeStart]);
 
   return (
     <Card title="Месяц">

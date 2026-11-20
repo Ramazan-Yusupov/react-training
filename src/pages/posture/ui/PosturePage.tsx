@@ -1,11 +1,12 @@
 import { posturePlan } from '@/entities/plan';
 import { getCurrentDay, useProgressStore } from '@/entities/progress';
 import { useSettingsStore } from '@/entities/settings';
+import { DaySwitcher } from '@/features/select-day';
 import { OptionalPostureSwitch } from '@/features/toggle-optional-posture';
 import { WorkStartSelect } from '@/features/set-work-start';
 import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { addDays, todayISO } from '@/shared/lib';
-import { Badge, Button, Card, Typography, toast } from '@/shared/ui';
+import { Button, Card, Typography, toast } from '@/shared/ui';
 import { useState } from 'react';
 import { PostureCalendar } from './PostureCalendar';
 import { PostureDayDetails } from './PostureDayDetails';
@@ -71,39 +72,7 @@ export function PosturePage() {
         </Card>
       )}
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            title="Предыдущий день"
-            disabled={selectedDay <= 1}
-            onClick={() => setSelectedDay((day) => Math.max(1, day - 1))}
-          >
-            ←
-          </Button>
-          <Badge color="blue" text={`День ${selectedDay} / ${PLAN_LENGTH_DAYS}`} />
-          <Button
-            variant="secondary"
-            size="sm"
-            title="Следующий день"
-            disabled={selectedDay >= PLAN_LENGTH_DAYS}
-            onClick={() => setSelectedDay((day) => Math.min(PLAN_LENGTH_DAYS, day + 1))}
-          >
-            →
-          </Button>
-        </div>
-        {postureStartDate && current && (
-          <Button
-            variant="ghost"
-            size="sm"
-            title="Перейти к сегодняшнему дню"
-            onClick={() => setSelectedDay(current.day)}
-          >
-            Сегодня · день {current.day}
-          </Button>
-        )}
-      </div>
+      <DaySwitcher day={selectedDay} onChange={setSelectedDay} />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)]">
         <section className="flex min-w-0 flex-col gap-5">

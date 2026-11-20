@@ -27,6 +27,6 @@ export function useXpSummary() {
     const reachedLevels = gamification.levels.filter(
       (item) => item.xp !== null && xp >= item.xp,
     ).length;
-    return { xp, level, streak, reachedLevels };
+    return { xp, level, streak, reachedLevels, levels: gamification.levels };
   }, [completed, microBreaks, startDate]);
 }

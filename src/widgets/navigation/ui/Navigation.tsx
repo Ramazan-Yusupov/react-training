@@ -1,8 +1,8 @@
-import { HeaderXpStatus } from '@/widgets/xp-summary';
 import { PAGES } from '@/shared/config';
 import { cn } from '@/shared/lib';
+import { HeaderXpStatus } from '@/widgets/xp-summary';
 import type { ReactNode } from 'react';
-import { FaCalendarDays, FaChartLine, FaGear, FaListCheck, FaPersonWalking } from 'react-icons/fa6';
+import { FaChartLine, FaGear, FaListCheck } from 'react-icons/fa6';
 import { NavLink } from 'react-router-dom';
 
 interface NavItem {
@@ -13,9 +13,7 @@ interface NavItem {
 
 const ITEMS: NavItem[] = [
   { to: PAGES.TODAY, label: 'Сегодня', icon: <FaListCheck /> },
-  { to: PAGES.PLAN, label: 'План', icon: <FaCalendarDays /> },
   { to: PAGES.PROGRESS, label: 'Прогресс', icon: <FaChartLine /> },
-  { to: PAGES.POSTURE, label: 'Осанка', icon: <FaPersonWalking /> },
   { to: PAGES.SETTINGS, label: 'Настройки', icon: <FaGear /> },
 ];
 
@@ -27,6 +25,7 @@ export function Navigation() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5">
           <nav aria-label="Основная навигация" className="flex min-w-0 items-center gap-2">
             <span className="mr-2 shrink-0 font-semibold text-white">Планер</span>
+
             <div className="hidden items-center gap-1 md:flex">
               {ITEMS.map((item) => (
                 <NavLink
@@ -46,6 +45,7 @@ export function Navigation() {
               ))}
             </div>
           </nav>
+
           <HeaderXpStatus />
         </div>
       </header>
@@ -54,7 +54,7 @@ export function Navigation() {
         aria-label="Основная навигация"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-neutral-950/95 backdrop-blur md:hidden"
       >
-        <ul className="grid grid-cols-5">
+        <ul className="grid grid-cols-3">
           {ITEMS.map((item) => (
             <li key={item.to}>
               <NavLink

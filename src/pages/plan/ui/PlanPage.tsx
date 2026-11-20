@@ -1,7 +1,6 @@
 import { useUserWorkoutPlanStore, workoutPlan } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { DaySwitcher, useSelectedDay } from '@/features/select-day';
-import { StartPlanBanner } from '@/features/start-plan';
 import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { Card, Typography } from '@/shared/ui';
 import { DayBoard } from '@/widgets/day-board';
@@ -41,8 +40,6 @@ export function PlanPage() {
           {completedDays} / {PLAN_LENGTH_DAYS} дней завершено
         </Typography>
       </header>
-
-      <StartPlanBanner />
 
       <div className="flex w-full justify-center">
         <DaySwitcher day={day} onChange={setDay} className="w-full sm:w-auto" />

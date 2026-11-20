@@ -4,6 +4,7 @@ import { useSettingsStore } from '@/entities/settings';
 import { Card, ErrorUI, Typography } from '@/shared/ui';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
+import { GroupEditor } from './GroupEditor';
 import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
@@ -29,8 +30,6 @@ export function DayBoard({ day }: DayBoardProps) {
 
   const customGroups = workoutDay.groups ?? [];
 
-  // Системные задачи без пользовательской карточки остаются
-  // сгруппированными по прежним временным слотам.
   const slotGroups = groupTasksBySlot(workoutDay.tasks.filter((task) => !task.groupId));
 
   return (
@@ -38,25 +37,31 @@ export function DayBoard({ day }: DayBoardProps) {
       <DayHeader day={workoutDay} startDate={startDate} />
       <DayProgress day={workoutDay} />
 
-      {/* Пользовательские карточки */}
-      {customGroups.map((group) => {
-        const tasks = workoutDay.tasks.filter((task) => task.groupId === group.id);
+      <div className="flex flex-col gap-3">
+        {customGroups.map((group) => {
+          const tasks = workoutDay.tasks.filter((task) => task.groupId === group.id);
 
-        return (
-          <section
-            key={group.id}
-            className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
-          >
-            <Typography as="h6" align="start" tone="accent" text={group.title} />
+          return (
+            <section
+              key={group.id}
+              className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
+            >
+              <div className="flex min-w-0 items-center justify-between gap-2">
+                <Typography as="h6" align="start" tone="accent" text={group.title} />
 
-            {tasks.map((task) => (
-              <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />
-            ))}
-          </section>
-        );
-      })}
+                <GroupEditor day={day} group={group} />
+              </div>
 
-      {/* Существующие системные задачи */}
+              {tasks.map((task) => (
+                <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />
+              ))}
+            </section>
+          );
+        })}
+
+        <GroupEditor day={day} />
+      </div>
+
       {slotGroups.map((group) => (
         <section
           key={group.slot}

@@ -41,7 +41,7 @@ export function Calendar({
   className,
 }: CalendarProps) {
   return (
-    <div className={cn('grid grid-cols-7 gap-1.5', className)}>
+    <div className={cn('grid grid-cols-7 gap-1.5 p-1', className)}>
       {weekdays?.map((weekday) => (
         <span key={weekday} className="pb-1 text-center text-[10px] text-gray-500">
           {weekday}

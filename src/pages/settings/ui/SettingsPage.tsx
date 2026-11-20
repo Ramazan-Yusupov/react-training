@@ -1,6 +1,6 @@
 import { gamification } from '@/entities/plan';
-import { createInitialProgress, useProgressStore, type ProgressData } from '@/entities/progress';
-import { DEFAULT_SETTINGS, useSettingsStore, type SettingsData } from '@/entities/settings';
+import { useProgressStore, type ProgressData } from '@/entities/progress';
+import { useSettingsStore, type SettingsData } from '@/entities/settings';
 import { OptionalPostureSwitch } from '@/features/toggle-optional-posture';
 import { WorkStartSelect } from '@/features/set-work-start';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';

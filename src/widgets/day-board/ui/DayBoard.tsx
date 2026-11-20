@@ -23,7 +23,10 @@ export function DayBoard({ day }: DayBoardProps) {
       <DayHeader day={workoutDay} startDate={startDate} />
       <DayProgress day={workoutDay} />
       {groupTasksBySlot(workoutDay.tasks).map((group) => (
-        <section key={group.slot} className="flex flex-col gap-3">
+        <section
+          key={group.slot}
+          className="flex flex-col gap-3 border-2 border-slate-800 p-3 rounded-2xl"
+        >
           <Typography as="h6" align="start" tone="accent" text={SLOT_LABELS[group.slot]} />
           {group.tasks.map((task) => (
             <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />

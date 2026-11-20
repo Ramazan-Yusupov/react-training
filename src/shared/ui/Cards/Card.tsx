@@ -57,7 +57,7 @@ export function Card({
   return (
     <div className={cn(maxWidth && maxWidthClass[maxWidth])}>
       <div
-        className={cn('flex flex-col gap-4 p-5', onClick && 'cursor-pointer', className)}
+        className={cn('flex flex-col gap-4 p-2', onClick && 'cursor-pointer', className)}
         style={{
           border: `${border} solid ${borderColor}`,
           borderRadius: rounded,
@@ -74,12 +74,7 @@ export function Card({
             {headerRight}
           </div>
         )}
-        <div
-          className={cn(
-            'flex flex-col gap-4 overflow-hidden overflow-y-auto scrollbar-none',
-            classNameChild,
-          )}
-        >
+        <div className={cn('flex flex-col gap-4 overflow-hidden scrollbar-none', classNameChild)}>
           {children}
         </div>
         {footer && <div className="flex items-center justify-end gap-2">{footer}</div>}

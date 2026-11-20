@@ -1,4 +1,4 @@
-import { workoutPlan } from '@/entities/plan';
+import { useUserWorkoutPlanStore, workoutPlan } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { DaySwitcher, useSelectedDay } from '@/features/select-day';
 import { StartPlanBanner } from '@/features/start-plan';
@@ -13,7 +13,12 @@ export function PlanPage() {
 
   const completed = useProgressStore((state) => state.completed);
 
-  const completedDays = workoutPlan.days.filter((item) => {
+  const template = useUserWorkoutPlanStore((state) => state.template);
+  const dayOverrides = useUserWorkoutPlanStore((state) => state.dayOverrides);
+
+  const days = template.days.map((item) => dayOverrides[String(item.day)] ?? item);
+
+  const completedDays = days.filter((item) => {
     const required = item.tasks.filter((task) => task.required);
 
     return required.length > 0 && required.every((task) => Boolean(completed[task.id]));
@@ -54,15 +59,15 @@ export function PlanPage() {
           <PlanWeekSummary day={day} />
 
           <Card title="О программе">
-            <Typography align="start">{workoutPlan.title}</Typography>
+            <Typography align="start">{template.title}</Typography>
 
             <Typography align="start" tone="muted">
-              {workoutPlan.description}
+              {template.description}
             </Typography>
 
             <div className="flex flex-wrap gap-2">
               <Typography as="span" tone="muted">
-                Всего запланировано отжиманий:
+                Всего запланировано отжиманий в исходной программе:
               </Typography>
 
               <Typography as="span">

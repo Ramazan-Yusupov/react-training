@@ -1,9 +1,4 @@
-import {
-  SLOT_LABELS,
-  resolveWorkoutDay,
-  useUserWorkoutPlanStore,
-  groupTasksBySlot,
-} from '@/entities/plan';
+import { SLOT_LABELS, useUserWorkoutPlanStore, groupTasksBySlot } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { useSettingsStore } from '@/entities/settings';
 import { Card, ErrorUI, Typography } from '@/shared/ui';

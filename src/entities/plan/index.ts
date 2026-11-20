@@ -9,9 +9,11 @@ export {
 
 export { useUserWorkoutPlanStore, createInitialUserWorkoutPlan } from './model/userPlanStore';
 
+export type { EditScope } from './model/userPlanStore';
+
 export type { UserWorkoutPlanData } from './model/userPlanSchema';
 
-export type { Task, TaskType, Slot, WorkoutDay, PostureDay } from './model/types';
+export type { Task, TaskType, Slot, WorkoutDay, WorkoutGroup, PostureDay } from './model/types';
 
 export { resolveWorkoutDay } from './lib/resolveWorkoutDay';
 

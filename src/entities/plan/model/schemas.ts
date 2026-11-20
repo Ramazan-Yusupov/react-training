@@ -18,7 +18,13 @@ export const taskTypeSchema = z.enum([
   'corset-block',
   'posture-training',
   'light-training',
+  'custom',
 ]);
+
+export const workoutGroupSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1),
+});
 
 export const taskSchema = z.object({
   id: z.string(),
@@ -28,12 +34,13 @@ export const taskSchema = z.object({
   xp: z.number(),
   required: z.boolean(),
   slot: slotSchema.optional(),
+  groupId: z.string().optional(),
+  originId: z.string().optional(),
   suggestedTime: z.string().optional(),
   exerciseRef: z.string().optional(),
   xpPerUnit: z.number().optional(),
   target: z.record(z.string(), z.unknown()).optional(),
   fields: z.array(z.string()).optional(),
-  // поля плана осанки
   start: z.string().optional(),
   end: z.string().optional(),
   optional: z.boolean().optional(),
@@ -57,6 +64,7 @@ export const workoutDaySchema = z.object({
   kind: z.enum(['progress', 'light', 'rest', 'test']),
   label: z.string(),
   totalPushups: z.number().nullable(),
+  groups: z.array(workoutGroupSchema).optional(),
   tasks: z.array(taskSchema),
 });
 

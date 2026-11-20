@@ -2,6 +2,7 @@
 export const STORAGE_KEYS = {
   PROGRESS: 'planer-progress-v1',
   SETTINGS: 'planer-settings-v1',
+  USER_PLAN: 'planer-user-plan-v1',
 } as const;
 
 export const PLAN_LENGTH_DAYS = 30;

@@ -5,13 +5,13 @@ import { Card, ErrorUI, Typography } from '@/shared/ui';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
 import { GroupEditor } from './GroupEditor';
+import { TaskEditor } from './TaskEditor';
 import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
   day: number;
 }
 
-/** Главная карточка дня: заголовок, прогресс и задачи по карточкам. */
 export function DayBoard({ day }: DayBoardProps) {
   const startDate = useProgressStore((state) => state.startDate);
   const workStartHour = useSettingsStore((state) => state.workStartHour);
@@ -55,6 +55,8 @@ export function DayBoard({ day }: DayBoardProps) {
               {tasks.map((task) => (
                 <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />
               ))}
+
+              <TaskEditor day={day} groupId={group.id} />
             </section>
           );
         })}

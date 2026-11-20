@@ -8,6 +8,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type EditScope = 'all' | 'day';
 
+const MAX_CUSTOM_TASKS_PER_GROUP = 10;
+
 type CustomTaskInput = {
   title: string;
   durationMin?: number;
@@ -21,7 +23,7 @@ interface UserWorkoutPlanActions {
   setDayOverride: (day: number, value: WorkoutDay) => void;
   clearDayOverride: (day: number) => void;
 
-  addGroup: (title: string) => string;
+  addGroup: (day: number, title: string, scope: EditScope) => string;
   updateGroup: (day: number, groupId: string, title: string, scope: EditScope) => void;
   deleteGroup: (day: number, groupId: string, scope: EditScope) => void;
 
@@ -44,11 +46,6 @@ const createId = () =>
   globalThis.crypto?.randomUUID?.() ??
   `id-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-/**
- * Добавляет originId старым задачам.
- * Например, d01-push-1 и d02-push-1 получат общий originId: push-1.
- * При этом их индивидуальные id останутся неизменными.
- */
 function addTaskOrigins(plan: UserWorkoutPlanData): UserWorkoutPlanData {
   const normalizeDay = (day: WorkoutDay): WorkoutDay => ({
     ...day,
@@ -70,7 +67,6 @@ function addTaskOrigins(plan: UserWorkoutPlanData): UserWorkoutPlanData {
   };
 }
 
-/** Новый пользователь получает копию исходного JSON-плана. */
 export const createInitialUserWorkoutPlan = (): UserWorkoutPlanData => {
   const parsed = userWorkoutPlanSchema.parse({
     schemaVersion: 1,
@@ -115,6 +111,10 @@ function updateSingleDay(
   };
 }
 
+function countGroupTasks(day: WorkoutDay, groupId: string): number {
+  return day.tasks.filter((task) => task.groupId === groupId && task.type === 'custom').length;
+}
+
 export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
   persist(
     (set, get) => ({
@@ -136,8 +136,8 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
           return { dayOverrides };
         }),
 
-      /** Создаёт новую карточку во всех днях шаблона. */
-      addGroup: (title) => {
+      /** Создаёт новую карточку в выбранной области плана. */
+      addGroup: (day, title, scope) => {
         const normalizedTitle = title.trim();
         if (!normalizedTitle) return '';
 
@@ -146,11 +146,15 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
           title: normalizedTitle,
         };
 
+        const updater = (currentDay: WorkoutDay): WorkoutDay => ({
+          ...currentDay,
+          groups: [...(currentDay.groups ?? []), group],
+        });
+
         set((state) =>
-          updateAllDays(state, (day) => ({
-            ...day,
-            groups: [...(day.groups ?? []), group],
-          })),
+          scope === 'all'
+            ? updateAllDays(state, updater)
+            : (updateSingleDay(state, day, updater) ?? {}),
         );
 
         return group.id;
@@ -190,14 +194,34 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
 
       addCustomTask: (day, groupId, input, scope) => {
         const title = input.title.trim();
+
         if (!title) return null;
 
         const state = get();
+
         const selectedDay =
           state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day);
 
         if (!selectedDay?.groups?.some((group) => group.id === groupId)) {
           return null;
+        }
+
+        if (scope === 'day') {
+          if (countGroupTasks(selectedDay, groupId) >= MAX_CUSTOM_TASKS_PER_GROUP) {
+            return null;
+          }
+        } else {
+          const targetDays = state.template.days
+            .map((templateDay) => state.dayOverrides[String(templateDay.day)] ?? templateDay)
+            .filter((currentDay) => currentDay.groups?.some((group) => group.id === groupId));
+
+          if (
+            targetDays.some(
+              (currentDay) => countGroupTasks(currentDay, groupId) >= MAX_CUSTOM_TASKS_PER_GROUP,
+            )
+          ) {
+            return null;
+          }
         }
 
         const originId = createId();
@@ -215,10 +239,16 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
 
         if (scope === 'all') {
           set((currentState) =>
-            updateAllDays(currentState, (currentDay) => ({
-              ...currentDay,
-              tasks: [...currentDay.tasks, createTask(currentDay.day)],
-            })),
+            updateAllDays(currentState, (currentDay) => {
+              if (!currentDay.groups?.some((group) => group.id === groupId)) {
+                return currentDay;
+              }
+
+              return {
+                ...currentDay,
+                tasks: [...currentDay.tasks, createTask(currentDay.day)],
+              };
+            }),
           );
 
           return originId;
@@ -238,6 +268,7 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
 
       updateTask: (day, taskId, updates, scope) => {
         const state = get();
+
         const selectedDay =
           state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day);
 
@@ -265,6 +296,7 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
 
       deleteTask: (day, taskId, scope) => {
         const state = get();
+
         const selectedDay =
           state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day);
 

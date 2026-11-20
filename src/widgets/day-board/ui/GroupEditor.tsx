@@ -24,10 +24,10 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
     setTitle(group?.title ?? '');
   };
 
-  const handleAdd = () => {
+  const handleAdd = (scope: 'day' | 'all') => {
     if (!title.trim()) return;
 
-    addGroup(title);
+    addGroup(day, title, scope);
     setTitle('');
     setMode(null);
   };
@@ -53,34 +53,41 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
           Добавить карточку
         </Button>
 
-        <Modal
-          open={mode === 'add'}
-          onClose={close}
-          title="Новая карточка"
-          footer={
-            <>
-              <Button variant="ghost" onClick={close}>
-                Отмена
-              </Button>
-              <Button variant="primary" onClick={handleAdd} disabled={!title.trim()}>
-                Создать во всех днях
-              </Button>
-            </>
-          }
-        >
+        <Modal open={mode === 'add'} onClose={close} title="Новая карточка" size="md">
           <Input
             label="Название карточки"
-            placeholder="Например, Утро"
+            placeholder="Например, Учёба"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             autoFocus
             maxLength={40}
           />
 
-          <p className="text-xs text-gray-400">
-            Карточка появится во всех 30 днях плана. Содержимое задач можно будет настроить
-            отдельно.
-          </p>
+          <p className="text-sm text-gray-400">Выбери, в каких днях появится новая карточка.</p>
+
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="primary"
+              fullWidth
+              disabled={!title.trim()}
+              onClick={() => handleAdd('day')}
+            >
+              Только день {day}
+            </Button>
+
+            <Button
+              variant="outline"
+              fullWidth
+              disabled={!title.trim()}
+              onClick={() => handleAdd('all')}
+            >
+              Во всех 30 днях
+            </Button>
+
+            <Button variant="ghost" fullWidth onClick={close}>
+              Отмена
+            </Button>
+          </div>
         </Modal>
       </>
     );

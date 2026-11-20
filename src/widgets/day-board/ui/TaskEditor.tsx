@@ -8,7 +8,7 @@ type EditorMode = 'add' | 'edit' | 'delete' | null;
 
 interface TaskEditorProps {
   day: number;
-  groupId: string;
+  groupId?: string;
   task?: Task;
 }
 
@@ -73,6 +73,8 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   };
 
   const handleAdd = (scope: 'day' | 'all') => {
+    if (!groupId) return;
+
     const values = validate();
     if (!values) return;
 
@@ -163,6 +165,8 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   );
 
   if (!task) {
+    if (!groupId) return null;
+
     return (
       <>
         <Button

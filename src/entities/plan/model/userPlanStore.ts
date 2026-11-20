@@ -67,6 +67,43 @@ function addTaskOrigins(plan: UserWorkoutPlanData): UserWorkoutPlanData {
   };
 }
 
+const DEFAULT_GROUP_ID = 'default-workout-group';
+const DEFAULT_GROUP_TITLE = 'Мой план';
+
+function ensureDefaultGroup(plan: UserWorkoutPlanData): UserWorkoutPlanData {
+  const normalizeDay = (day: WorkoutDay): WorkoutDay => {
+    const groups = day.groups ?? [];
+
+    const hasDefaultGroup = groups.some((group) => group.id === DEFAULT_GROUP_ID);
+
+    return {
+      ...day,
+      groups: hasDefaultGroup
+        ? groups
+        : [...groups, { id: DEFAULT_GROUP_ID, title: DEFAULT_GROUP_TITLE }],
+      tasks: day.tasks.map((task) =>
+        task.groupId
+          ? task
+          : {
+              ...task,
+              groupId: DEFAULT_GROUP_ID,
+            },
+      ),
+    };
+  };
+
+  return {
+    ...plan,
+    template: {
+      ...plan.template,
+      days: plan.template.days.map(normalizeDay),
+    },
+    dayOverrides: Object.fromEntries(
+      Object.entries(plan.dayOverrides).map(([day, value]) => [day, normalizeDay(value)]),
+    ),
+  };
+}
+
 export const createInitialUserWorkoutPlan = (): UserWorkoutPlanData => {
   const parsed = userWorkoutPlanSchema.parse({
     schemaVersion: 1,
@@ -74,7 +111,7 @@ export const createInitialUserWorkoutPlan = (): UserWorkoutPlanData => {
     dayOverrides: {},
   });
 
-  return addTaskOrigins(parsed);
+  return ensureDefaultGroup(addTaskOrigins(parsed));
 };
 
 function updateAllDays(
@@ -364,12 +401,13 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
     }),
     {
       name: STORAGE_KEYS.USER_PLAN,
-      version: 2,
+
+      version: 3,
       storage: createJSONStorage(() => localStorage),
 
       migrate: (persistedState) => {
         const parsed = userWorkoutPlanSchema.parse(persistedState);
-        return addTaskOrigins(parsed);
+        return ensureDefaultGroup(addTaskOrigins(parsed));
       },
 
       partialize: (state): UserWorkoutPlanData => ({

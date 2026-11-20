@@ -1,4 +1,4 @@
-import { SLOT_LABELS, useUserWorkoutPlanStore, groupTasksBySlot } from '@/entities/plan';
+import { useUserWorkoutPlanStore } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { useSettingsStore } from '@/entities/settings';
 import { Card, ErrorUI, Typography } from '@/shared/ui';
@@ -28,9 +28,7 @@ export function DayBoard({ day }: DayBoardProps) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  const customGroups = workoutDay.groups ?? [];
-
-  const slotGroups = groupTasksBySlot(workoutDay.tasks.filter((task) => !task.groupId));
+  const groups = workoutDay.groups ?? [];
 
   return (
     <Card>
@@ -38,7 +36,7 @@ export function DayBoard({ day }: DayBoardProps) {
       <DayProgress day={workoutDay} />
 
       <div className="flex flex-col gap-3">
-        {customGroups.map((group) => {
+        {groups.map((group) => {
           const tasks = workoutDay.tasks.filter((task) => task.groupId === group.id);
 
           return (
@@ -63,19 +61,6 @@ export function DayBoard({ day }: DayBoardProps) {
 
         <GroupEditor day={day} />
       </div>
-
-      {slotGroups.map((group) => (
-        <section
-          key={group.slot}
-          className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
-        >
-          <Typography as="h6" align="start" tone="accent" text={SLOT_LABELS[group.slot]} />
-
-          {group.tasks.map((task) => (
-            <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />
-          ))}
-        </section>
-      ))}
     </Card>
   );
 }

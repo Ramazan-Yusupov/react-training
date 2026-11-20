@@ -19,7 +19,7 @@ const sizeClasses = {
 
 export const Avatar = ({
   src,
-  alt = 'Avatar',
+  alt = 'Аватар',
   size = 'md',
   initials,
   name,

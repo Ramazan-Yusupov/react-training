@@ -57,7 +57,7 @@ export function Modal({
           <IconButton
             size="sm"
             variant="ghost"
-            ariaLabel="Close"
+            ariaLabel="Закрыть"
             icon={<FaXmark />}
             onClick={onClose}
           />

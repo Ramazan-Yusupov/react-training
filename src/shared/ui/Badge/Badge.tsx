@@ -36,7 +36,7 @@ export function Badge({
   icon,
   className,
   onDelete,
-  deleteLabel = 'Remove',
+  deleteLabel = 'Удалить',
   color = 'gray',
   size = 'md',
 }: BadgeProps) {

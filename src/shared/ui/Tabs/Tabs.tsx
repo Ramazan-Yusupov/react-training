@@ -40,6 +40,7 @@ export function Tabs({ items, value, onChange, ariaLabel, fullWidth, className }
     event.preventDefault();
 
     const target = enabled[next];
+    if (!target) return;
     onChange(target.item.value);
     refs.current[target.index]?.focus();
   };

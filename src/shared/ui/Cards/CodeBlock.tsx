@@ -100,7 +100,7 @@ export function CodeBlock({
             }}
             size="md"
             variant="danger"
-            aria-label="Delete"
+            aria-label="Удалить"
             icon={<FaTrash />}
           />
         )}
@@ -113,7 +113,7 @@ export function CodeBlock({
             }}
             size="sm"
             variant="secondary"
-            title="Edit"
+            title="Изменить"
           />
         )}
       </div>

@@ -73,7 +73,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               type="button"
               onClick={onClear}
               className="absolute right-3 text-gray-400 hover:text-white transition-colors z-10"
-              aria-label="Clear input"
+              aria-label="Очистить"
             >
               <RiCloseCircleFill size={18} />
             </button>

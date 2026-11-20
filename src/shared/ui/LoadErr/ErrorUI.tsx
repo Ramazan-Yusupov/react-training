@@ -7,7 +7,12 @@ interface ErrorProps {
   retryText?: string;
 }
 
-export function ErrorUI({ isError, text = 'Error', onRetry, retryText = 'Retry' }: ErrorProps) {
+export function ErrorUI({
+  isError,
+  text = 'Ошибка',
+  onRetry,
+  retryText = 'Повторить',
+}: ErrorProps) {
   return isError ? (
     <div role="alert" className="flex flex-col items-center gap-2">
       <div className="border-2 border-red-800 text-red-700 p-1 rounded-full text-center max-w-full px-4 whitespace-nowrap">

@@ -1,6 +1,7 @@
 export const PAGES = {
-  HOME: '/',
-  JSPAGE: '/js-page',
-  REACT_QUERY: '/react-query',
-  TYPESCRIPT_PAGE: '/typescript-page',
+  TODAY: '/',
+  PLAN: '/plan',
+  PROGRESS: '/progress',
+  POSTURE: '/posture',
+  SETTINGS: '/settings',
 } as const;

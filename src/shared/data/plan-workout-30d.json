@@ -1,0 +1,3195 @@
+{
+  "schemaVersion": 1,
+  "id": "workout-30d",
+  "type": "workout",
+  "title": "Месячный план: отжимания + турник + анти-сидячка",
+  "description": "30 дней, 3 подхода отжиманий в день, турник Пн/Ср/Пт, блок «Тело» Вт/Чт/Сб, сессии до 10 минут.",
+  "durationDays": 30,
+  "startWeekday": 1,
+  "startDateSuggested": "2026-11-23",
+  "slots": [
+    "morning",
+    "workday",
+    "midday",
+    "afternoon",
+    "evening",
+    "night"
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Неделя 1 — вход в ритм (пик 14)",
+      "goal": "Привыкнуть к ритму трёх подходов и коротким сессиям.",
+      "peakReps": 14
+    },
+    {
+      "week": 2,
+      "title": "Неделя 2 — набираем (пик 16)",
+      "goal": "Добавляем повторения, техника остаётся чистой.",
+      "peakReps": 16
+    },
+    {
+      "week": 3,
+      "title": "Неделя 3 — выходим на плато силы (пик 18)",
+      "goal": "Подходы заметно тяжелее: следи за отдыхом и сном.",
+      "peakReps": 18
+    },
+    {
+      "week": 4,
+      "title": "Неделя 4 — финишная прямая (пик 20)",
+      "goal": "Пиковая неделя, затем тест на 29-й день.",
+      "peakReps": 20
+    },
+    {
+      "week": 5,
+      "title": "Финал: тест и итоги",
+      "goal": "День 29 — тест на максимум, день 30 — итоги",
+      "peakReps": null
+    }
+  ],
+  "totals": {
+    "pushupRepsPlanned": 1023
+  },
+  "days": [
+    {
+      "day": 1,
+      "week": 1,
+      "weekday": 1,
+      "kind": "progress",
+      "label": "10-10-10",
+      "totalPushups": 30,
+      "tasks": [
+        {
+          "id": "d01-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d01-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d01-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d01-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d01-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 3,
+            "mainReps": "2-3",
+            "negSets": 2,
+            "negReps": 3,
+            "negSeconds": 4,
+            "hangSets": 1,
+            "hangSeconds": 20,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d01-measure",
+          "type": "measure",
+          "title": "Стартовые замеры: фото, вес, талия, максимумы",
+          "slot": "evening",
+          "durationMin": 5,
+          "xp": 10,
+          "required": false,
+          "fields": [
+            "pushups_max",
+            "pullups_max",
+            "hang_sec",
+            "weight_kg",
+            "waist_cm",
+            "photo"
+          ]
+        },
+        {
+          "id": "d01-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d01-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d01-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d01-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "week": 1,
+      "weekday": 2,
+      "kind": "progress",
+      "label": "11-11-11",
+      "totalPushups": 33,
+      "tasks": [
+        {
+          "id": "d02-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d02-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d02-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d02-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d02-body",
+          "type": "body-block",
+          "title": "Тело A: спина",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-back"
+        },
+        {
+          "id": "d02-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d02-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d02-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d02-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "week": 1,
+      "weekday": 3,
+      "kind": "progress",
+      "label": "12-12-12",
+      "totalPushups": 36,
+      "tasks": [
+        {
+          "id": "d03-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d03-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d03-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d03-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d03-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 3,
+            "mainReps": "2-3",
+            "negSets": 2,
+            "negReps": 3,
+            "negSeconds": 4,
+            "hangSets": 1,
+            "hangSeconds": 20,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d03-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d03-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d03-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d03-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "week": 1,
+      "weekday": 4,
+      "kind": "progress",
+      "label": "13-13-13",
+      "totalPushups": 39,
+      "tasks": [
+        {
+          "id": "d04-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d04-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d04-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d04-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d04-body",
+          "type": "body-block",
+          "title": "Тело B: ноги и кор",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-legs-core"
+        },
+        {
+          "id": "d04-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d04-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d04-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d04-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "week": 1,
+      "weekday": 5,
+      "kind": "progress",
+      "label": "14-14-14",
+      "totalPushups": 42,
+      "tasks": [
+        {
+          "id": "d05-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d05-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d05-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d05-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d05-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 3,
+            "mainReps": "2-3",
+            "negSets": 2,
+            "negReps": 3,
+            "negSeconds": 4,
+            "hangSets": 1,
+            "hangSeconds": 20,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d05-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d05-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d05-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d05-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "week": 1,
+      "weekday": 6,
+      "kind": "light",
+      "label": "8-8-8 (лёгкий)",
+      "totalPushups": 24,
+      "tasks": [
+        {
+          "id": "d06-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d06-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 8
+          }
+        },
+        {
+          "id": "d06-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 8
+          }
+        },
+        {
+          "id": "d06-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 8
+          }
+        },
+        {
+          "id": "d06-body",
+          "type": "body-block",
+          "title": "Тело C: плечи и осанка",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-shoulders"
+        },
+        {
+          "id": "d06-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d06-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d06-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d06-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "week": 1,
+      "weekday": 7,
+      "kind": "rest",
+      "label": "отдых",
+      "totalPushups": 0,
+      "tasks": [
+        {
+          "id": "d07-mobility",
+          "type": "mobility",
+          "title": "Мобильность 10 минут",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 5,
+          "required": true
+        },
+        {
+          "id": "d07-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d07-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d07-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d07-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "week": 2,
+      "weekday": 1,
+      "kind": "progress",
+      "label": "12-12-12",
+      "totalPushups": 36,
+      "tasks": [
+        {
+          "id": "d08-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d08-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d08-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d08-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d08-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3",
+            "negSets": 2,
+            "negReps": 4,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 25,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d08-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d08-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d08-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d08-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "week": 2,
+      "weekday": 2,
+      "kind": "progress",
+      "label": "13-13-13",
+      "totalPushups": 39,
+      "tasks": [
+        {
+          "id": "d09-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d09-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d09-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d09-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 13
+          }
+        },
+        {
+          "id": "d09-body",
+          "type": "body-block",
+          "title": "Тело A: спина",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-back"
+        },
+        {
+          "id": "d09-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d09-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d09-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d09-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "week": 2,
+      "weekday": 3,
+      "kind": "progress",
+      "label": "14-14-14",
+      "totalPushups": 42,
+      "tasks": [
+        {
+          "id": "d10-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d10-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d10-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d10-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d10-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3",
+            "negSets": 2,
+            "negReps": 4,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 25,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d10-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d10-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d10-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d10-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "week": 2,
+      "weekday": 4,
+      "kind": "progress",
+      "label": "15-15-15",
+      "totalPushups": 45,
+      "tasks": [
+        {
+          "id": "d11-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d11-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d11-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d11-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d11-body",
+          "type": "body-block",
+          "title": "Тело B: ноги и кор",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-legs-core"
+        },
+        {
+          "id": "d11-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d11-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d11-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d11-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "week": 2,
+      "weekday": 5,
+      "kind": "progress",
+      "label": "16-16-16",
+      "totalPushups": 48,
+      "tasks": [
+        {
+          "id": "d12-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d12-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d12-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d12-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d12-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3",
+            "negSets": 2,
+            "negReps": 4,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 25,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d12-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d12-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d12-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d12-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 13,
+      "week": 2,
+      "weekday": 6,
+      "kind": "light",
+      "label": "10-10-10 (лёгкий)",
+      "totalPushups": 30,
+      "tasks": [
+        {
+          "id": "d13-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d13-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d13-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d13-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 10
+          }
+        },
+        {
+          "id": "d13-body",
+          "type": "body-block",
+          "title": "Тело C: плечи и осанка",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-shoulders"
+        },
+        {
+          "id": "d13-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d13-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d13-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d13-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 14,
+      "week": 2,
+      "weekday": 7,
+      "kind": "rest",
+      "label": "отдых",
+      "totalPushups": 0,
+      "tasks": [
+        {
+          "id": "d14-mobility",
+          "type": "mobility",
+          "title": "Мобильность 10 минут",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 5,
+          "required": true
+        },
+        {
+          "id": "d14-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d14-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d14-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d14-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 15,
+      "week": 3,
+      "weekday": 1,
+      "kind": "progress",
+      "label": "14-14-14",
+      "totalPushups": 42,
+      "tasks": [
+        {
+          "id": "d15-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d15-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d15-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d15-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 14
+          }
+        },
+        {
+          "id": "d15-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3-4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 30,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d15-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d15-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d15-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d15-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 16,
+      "week": 3,
+      "weekday": 2,
+      "kind": "progress",
+      "label": "15-15-15",
+      "totalPushups": 45,
+      "tasks": [
+        {
+          "id": "d16-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d16-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d16-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d16-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 15
+          }
+        },
+        {
+          "id": "d16-body",
+          "type": "body-block",
+          "title": "Тело A: спина",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-back"
+        },
+        {
+          "id": "d16-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d16-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d16-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d16-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 17,
+      "week": 3,
+      "weekday": 3,
+      "kind": "progress",
+      "label": "16-16-16",
+      "totalPushups": 48,
+      "tasks": [
+        {
+          "id": "d17-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d17-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d17-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d17-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d17-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3-4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 30,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d17-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d17-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d17-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d17-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "week": 3,
+      "weekday": 4,
+      "kind": "progress",
+      "label": "17-17-17",
+      "totalPushups": 51,
+      "tasks": [
+        {
+          "id": "d18-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d18-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d18-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d18-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d18-body",
+          "type": "body-block",
+          "title": "Тело B: ноги и кор",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-legs-core"
+        },
+        {
+          "id": "d18-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d18-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d18-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d18-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 19,
+      "week": 3,
+      "weekday": 5,
+      "kind": "progress",
+      "label": "18-18-18",
+      "totalPushups": 54,
+      "tasks": [
+        {
+          "id": "d19-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d19-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d19-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d19-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d19-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "3-4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 5,
+            "hangSets": 1,
+            "hangSeconds": 30,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d19-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d19-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d19-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d19-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 20,
+      "week": 3,
+      "weekday": 6,
+      "kind": "light",
+      "label": "11-11-11 (лёгкий)",
+      "totalPushups": 33,
+      "tasks": [
+        {
+          "id": "d20-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d20-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d20-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d20-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 11
+          }
+        },
+        {
+          "id": "d20-body",
+          "type": "body-block",
+          "title": "Тело C: плечи и осанка",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-shoulders"
+        },
+        {
+          "id": "d20-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d20-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d20-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d20-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 21,
+      "week": 3,
+      "weekday": 7,
+      "kind": "rest",
+      "label": "отдых",
+      "totalPushups": 0,
+      "tasks": [
+        {
+          "id": "d21-mobility",
+          "type": "mobility",
+          "title": "Мобильность 10 минут",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 5,
+          "required": true
+        },
+        {
+          "id": "d21-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d21-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d21-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d21-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 22,
+      "week": 4,
+      "weekday": 1,
+      "kind": "progress",
+      "label": "16-16-16",
+      "totalPushups": 48,
+      "tasks": [
+        {
+          "id": "d22-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d22-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d22-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d22-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 16
+          }
+        },
+        {
+          "id": "d22-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 6,
+            "hangSets": 1,
+            "hangSeconds": 40,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d22-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d22-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d22-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d22-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 23,
+      "week": 4,
+      "weekday": 2,
+      "kind": "progress",
+      "label": "17-17-17",
+      "totalPushups": 51,
+      "tasks": [
+        {
+          "id": "d23-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d23-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d23-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d23-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 17
+          }
+        },
+        {
+          "id": "d23-body",
+          "type": "body-block",
+          "title": "Тело A: спина",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-back"
+        },
+        {
+          "id": "d23-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d23-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d23-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d23-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 24,
+      "week": 4,
+      "weekday": 3,
+      "kind": "progress",
+      "label": "18-18-18",
+      "totalPushups": 54,
+      "tasks": [
+        {
+          "id": "d24-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d24-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d24-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d24-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 18
+          }
+        },
+        {
+          "id": "d24-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 6,
+            "hangSets": 1,
+            "hangSeconds": 40,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d24-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d24-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d24-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d24-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 25,
+      "week": 4,
+      "weekday": 4,
+      "kind": "progress",
+      "label": "19-19-19",
+      "totalPushups": 57,
+      "tasks": [
+        {
+          "id": "d25-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d25-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 19
+          }
+        },
+        {
+          "id": "d25-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 19
+          }
+        },
+        {
+          "id": "d25-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 19
+          }
+        },
+        {
+          "id": "d25-body",
+          "type": "body-block",
+          "title": "Тело B: ноги и кор",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-legs-core"
+        },
+        {
+          "id": "d25-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d25-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d25-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d25-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 26,
+      "week": 4,
+      "weekday": 5,
+      "kind": "progress",
+      "label": "20-20-20",
+      "totalPushups": 60,
+      "tasks": [
+        {
+          "id": "d26-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d26-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 20
+          }
+        },
+        {
+          "id": "d26-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 20
+          }
+        },
+        {
+          "id": "d26-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 20
+          }
+        },
+        {
+          "id": "d26-pull",
+          "type": "pullup-session",
+          "title": "Турник",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 20,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "warmup-pull",
+          "target": {
+            "mainSets": 4,
+            "mainReps": "4",
+            "negSets": 2,
+            "negReps": 5,
+            "negSeconds": 6,
+            "hangSets": 1,
+            "hangSeconds": 40,
+            "restSec": 90
+          }
+        },
+        {
+          "id": "d26-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d26-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d26-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d26-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 27,
+      "week": 4,
+      "weekday": 6,
+      "kind": "light",
+      "label": "12-12-12 (лёгкий)",
+      "totalPushups": 36,
+      "tasks": [
+        {
+          "id": "d27-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d27-push-1",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 1",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d27-push-2",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 2",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d27-push-3",
+          "type": "pushup-set",
+          "title": "Отжимания, подход 3",
+          "slot": "evening",
+          "durationMin": 4,
+          "xp": 10,
+          "required": true,
+          "target": {
+            "reps": 12
+          }
+        },
+        {
+          "id": "d27-body",
+          "type": "body-block",
+          "title": "Тело C: плечи и осанка",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 15,
+          "required": true,
+          "suggestedTime": "16:00",
+          "exerciseRef": "body-shoulders"
+        },
+        {
+          "id": "d27-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d27-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d27-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d27-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 28,
+      "week": 4,
+      "weekday": 7,
+      "kind": "rest",
+      "label": "отдых",
+      "totalPushups": 0,
+      "tasks": [
+        {
+          "id": "d28-mobility",
+          "type": "mobility",
+          "title": "Мобильность 10 минут",
+          "slot": "afternoon",
+          "durationMin": 10,
+          "xp": 5,
+          "required": true
+        },
+        {
+          "id": "d28-micro",
+          "type": "micro-break",
+          "title": "Микро-паузы «Кубик»",
+          "slot": "workday",
+          "durationMin": 2,
+          "xp": 0,
+          "required": false,
+          "target": {
+            "count": 8
+          },
+          "xpPerUnit": 2
+        },
+        {
+          "id": "d28-walk",
+          "type": "walk",
+          "title": "Прогулка 10+ минут",
+          "slot": "midday",
+          "durationMin": 10,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d28-stretch",
+          "type": "stretch",
+          "title": "Вечерняя растяжка",
+          "slot": "night",
+          "durationMin": 8,
+          "xp": 5,
+          "required": false
+        },
+        {
+          "id": "d28-shadow",
+          "type": "shadow-boxing",
+          "title": "Бой с тенью (раунд)",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 5,
+          "required": false,
+          "target": {
+            "rounds": 1,
+            "roundMin": 3
+          }
+        }
+      ]
+    },
+    {
+      "day": 29,
+      "week": 5,
+      "weekday": 1,
+      "kind": "test",
+      "label": "ТЕСТ: 1 подход на максимум",
+      "totalPushups": null,
+      "tasks": [
+        {
+          "id": "d29-warmup-push",
+          "type": "warmup",
+          "title": "Разминка для отжиманий",
+          "slot": "morning",
+          "durationMin": 3,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-push"
+        },
+        {
+          "id": "d29-test-push",
+          "type": "max-test",
+          "title": "Тест: максимум отжиманий за один подход",
+          "slot": "midday",
+          "durationMin": 3,
+          "xp": 30,
+          "required": true,
+          "target": {
+            "metric": "pushups_max"
+          }
+        },
+        {
+          "id": "d29-warmup-pull",
+          "type": "warmup",
+          "title": "Разминка для турника",
+          "slot": "afternoon",
+          "durationMin": 2,
+          "xp": 5,
+          "required": true,
+          "exerciseRef": "warmup-pull"
+        },
+        {
+          "id": "d29-test-pull",
+          "type": "max-test",
+          "title": "Тест: максимум подтягиваний",
+          "slot": "afternoon",
+          "durationMin": 3,
+          "xp": 30,
+          "required": true,
+          "target": {
+            "metric": "pullups_max"
+          }
+        },
+        {
+          "id": "d29-measure",
+          "type": "measure",
+          "title": "Финальные замеры: фото, вес, талия",
+          "slot": "evening",
+          "durationMin": 5,
+          "xp": 10,
+          "required": false,
+          "fields": [
+            "weight_kg",
+            "waist_cm",
+            "photo"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 30,
+      "week": 5,
+      "weekday": 2,
+      "kind": "rest",
+      "label": "отдых",
+      "totalPushups": 0,
+      "tasks": [
+        {
+          "id": "d30-review",
+          "type": "review",
+          "title": "Итоги месяца и план на следующий",
+          "slot": "evening",
+          "durationMin": 10,
+          "xp": 10,
+          "required": true
+        }
+      ]
+    }
+  ]
+}

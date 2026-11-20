@@ -16,7 +16,7 @@ const spinnerSizes = {
 
 export function LoadingUI({
   isLoading,
-  text = 'Loading...',
+  text = 'Загрузка...',
   fullScreen = false,
   size = 'md',
   className,

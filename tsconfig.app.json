@@ -23,6 +23,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": [

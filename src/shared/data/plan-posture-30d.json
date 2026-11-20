@@ -1,0 +1,2125 @@
+{
+  "schemaVersion": 1,
+  "id": "posture-30d",
+  "type": "posture",
+  "title": "Месячный план осанки: корсет и тренировки",
+  "description": "Из PDF пользователя (MonthPlan.pdf). Блок 1 — утренний, включён по умолчанию; блоки 2–4 и часовая тренировка выключены.",
+  "durationDays": 30,
+  "startWeekday": null,
+  "goal": "Избавиться от сутулости с помощью корсета-напоминалки и укрепления мышц спины.",
+  "rules": {
+    "maxContinuousMinutes": 120,
+    "restDays": [
+      14,
+      21,
+      28
+    ],
+    "defaultEnabledBlocks": [
+      1
+    ],
+    "userOverride": {
+      "note": "План стартует с дня 1, но дни 1–7 утренний блок по 60 минут (как на 7-м дне пользователя). Начало блока = старт работы + startOffsetMin.",
+      "days": "1-7",
+      "block1Minutes": 60
+    }
+  },
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Неделя 1: Адаптация (дни 1–7)",
+      "goal": "Приучить кожу и мышцы к корсету. Короткие блоки, без спешки."
+    },
+    {
+      "week": 2,
+      "title": "Неделя 2: Закрепление (дни 8–14)",
+      "goal": "Стабильный режим, блоки растут."
+    },
+    {
+      "week": 3,
+      "title": "Неделя 3: Прогресс (дни 15–21)",
+      "goal": "Оптимальный режим: блоки по 90 минут."
+    },
+    {
+      "week": 4,
+      "title": "Неделя 4: Стабилизация (дни 22–30)",
+      "goal": "Закрепить результат, корсет становится привычным помощником."
+    }
+  ],
+  "days": [
+    {
+      "day": 1,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 120,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p01-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p01-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:20",
+          "durationMin": 20,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p01-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "18:50",
+          "durationMin": 20,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p01-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "20:50",
+          "durationMin": 20,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p01-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 135,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p02-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p02-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:25",
+          "durationMin": 25,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p02-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "18:55",
+          "durationMin": 25,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p02-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "20:55",
+          "durationMin": 25,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p02-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 150,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p03-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p03-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:30",
+          "durationMin": 30,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p03-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:00",
+          "durationMin": 30,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p03-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "21:00",
+          "durationMin": 30,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p03-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 180,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p04-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p04-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:40",
+          "durationMin": 40,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p04-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:10",
+          "durationMin": 40,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p04-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "21:10",
+          "durationMin": 40,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p04-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 195,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p05-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p05-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:45",
+          "durationMin": 45,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p05-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:15",
+          "durationMin": 45,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p05-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "21:15",
+          "durationMin": 45,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p05-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 210,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p06-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p06-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:00",
+          "end": "11:50",
+          "durationMin": 50,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p06-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:20",
+          "durationMin": 50,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p06-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "21:20",
+          "durationMin": 50,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p06-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "week": 1,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 240,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p07-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p07-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:30",
+          "end": "12:30",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p07-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:30",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p07-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "20:30",
+          "end": "21:30",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p07-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 240,
+      "totalMinutesMorningOnly": 60,
+      "tasks": [
+        {
+          "id": "p08-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p08-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:30",
+          "end": "12:30",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p08-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:30",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p08-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p08-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 285,
+      "totalMinutesMorningOnly": 75,
+      "tasks": [
+        {
+          "id": "p09-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:15",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p09-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:45",
+          "end": "13:00",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p09-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:45",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p09-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:00",
+          "durationMin": 60,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p09-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 300,
+      "totalMinutesMorningOnly": 75,
+      "tasks": [
+        {
+          "id": "p10-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:15",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p10-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "11:45",
+          "end": "13:00",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p10-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:45",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p10-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:15",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p10-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 330,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p11-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p11-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p11-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "19:45",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p11-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:15",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p11-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 345,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p12-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p12-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p12-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p12-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:15",
+          "durationMin": 75,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p12-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 13,
+      "week": 2,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p13-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p13-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p13-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p13-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p13-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 14,
+      "week": 2,
+      "corsetOff": true,
+      "totalMinutesAllBlocks": 0,
+      "totalMinutesMorningOnly": 0,
+      "tasks": [
+        {
+          "id": "p14-light",
+          "type": "light-training",
+          "title": "Лёгкая тренировка: растяжка, йога, мобильность",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 10,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "day": 15,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p15-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p15-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p15-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p15-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p15-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 16,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p16-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p16-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p16-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p16-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p16-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 17,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p17-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p17-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p17-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p17-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p17-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p18-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p18-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p18-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p18-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p18-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 19,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p19-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p19-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p19-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p19-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p19-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 20,
+      "week": 3,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p20-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p20-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p20-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p20-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p20-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 21,
+      "week": 3,
+      "corsetOff": true,
+      "totalMinutesAllBlocks": 0,
+      "totalMinutesMorningOnly": 0,
+      "tasks": [
+        {
+          "id": "p21-light",
+          "type": "light-training",
+          "title": "Лёгкая тренировка: растяжка, йога, мобильность",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 10,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "day": 22,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p22-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p22-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p22-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p22-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p22-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 23,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p23-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p23-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p23-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p23-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p23-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 24,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p24-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p24-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p24-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p24-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p24-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 25,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p25-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p25-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p25-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p25-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p25-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 26,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p26-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p26-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p26-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p26-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p26-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 27,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p27-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p27-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p27-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p27-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p27-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 28,
+      "week": 4,
+      "corsetOff": true,
+      "totalMinutesAllBlocks": 0,
+      "totalMinutesMorningOnly": 0,
+      "tasks": [
+        {
+          "id": "p28-light",
+          "type": "light-training",
+          "title": "Лёгкая тренировка: растяжка, йога, мобильность",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 10,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "day": 29,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p29-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p29-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p29-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p29-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p29-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    },
+    {
+      "day": 30,
+      "week": 4,
+      "corsetOff": false,
+      "totalMinutesAllBlocks": 360,
+      "totalMinutesMorningOnly": 90,
+      "tasks": [
+        {
+          "id": "p30-corset-1",
+          "type": "corset-block",
+          "title": "Корсет, блок 1",
+          "start": "09:00",
+          "end": "10:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": false,
+          "enabledByDefault": true,
+          "required": true,
+          "flexibleStart": true,
+          "startOffsetMin": 60
+        },
+        {
+          "id": "p30-corset-2",
+          "type": "corset-block",
+          "title": "Корсет, блок 2",
+          "start": "12:00",
+          "end": "13:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p30-corset-3",
+          "type": "corset-block",
+          "title": "Корсет, блок 3",
+          "start": "18:30",
+          "end": "20:00",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p30-corset-4",
+          "type": "corset-block",
+          "title": "Корсет, блок 4",
+          "start": "21:00",
+          "end": "22:30",
+          "durationMin": 90,
+          "xp": 5,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false
+        },
+        {
+          "id": "p30-training",
+          "type": "posture-training",
+          "title": "Тренировка без корсета (штанга, отжимания, растяжка)",
+          "start": "16:00",
+          "end": "17:00",
+          "durationMin": 60,
+          "xp": 20,
+          "optional": true,
+          "enabledByDefault": false,
+          "required": false,
+          "exerciseRef": "postureTrainingStructure",
+          "note": "По умолчанию вместо часа используй сессии из плана тренировок (до 10 минут)"
+        }
+      ]
+    }
+  ],
+  "postTest": {
+    "day": 31,
+    "steps": [
+      "Тест без корсета: встать спиной к стене (пятки, икры, ягодицы, лопатки, затылок) и удержать 5 минут.",
+      "Наблюдение: стали ли плечи оставаться расправленными за ПК дольше?",
+      "Селфи в профиль без корсета, сравнить с фото первого дня."
+    ]
+  },
+  "afterMonth": [
+    {
+      "id": "improved",
+      "title": "Осанка улучшилась",
+      "text": "Постепенно снижай время до 3–4 часов в день; корсет оставь для самых длинных блоков сидячей работы."
+    },
+    {
+      "id": "still",
+      "title": "Ещё сутулишься",
+      "text": "Продолжи режим ещё 2 недели и добавь больше тяговых упражнений."
+    }
+  ],
+  "redFlags": [
+    "Онемение в пальцах или кистях",
+    "Покалывание в руках",
+    "Головная боль или головокружение во время ношения",
+    "Сильная мышечная боль, не проходящая в течение суток",
+    "Потёртости кожи, не заживающие за день"
+  ],
+  "breakLifehack": {
+    "windows": [
+      "10:30–12:00",
+      "13:30–16:00",
+      "17:00–18:30"
+    ],
+    "everyMinutes": "30–40",
+    "actions": [
+      "10 круговых вращений плечами назад",
+      "5 приседаний",
+      "Растяжка груди в дверном проёме 30 сек",
+      "Ходьба по комнате 2–3 минуты"
+    ]
+  }
+}

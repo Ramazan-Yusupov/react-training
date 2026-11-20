@@ -1,5 +1,6 @@
 import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { Button, Badge } from '@/shared/ui';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 
 interface DaySwitcherProps {
   day: number;
@@ -19,26 +20,14 @@ export function DaySwitcher({ day, onChange, className }: DaySwitcherProps) {
 
   return (
     <div className={`flex items-center justify-center gap-2 ${className ?? ''}`}>
-      <Button
-        variant="secondary"
-        size="sm"
-        title="Предыдущий день"
-        disabled={day <= 1}
-        onClick={previousDay}
-      >
-        ←
+      <Button variant="secondary" size="sm" disabled={day <= 1} onClick={previousDay}>
+        <FaArrowLeft size={20} />
       </Button>
 
       <Badge color="blue" text={`День ${day} / ${PLAN_LENGTH_DAYS}`} />
 
-      <Button
-        variant="secondary"
-        size="sm"
-        title="Следующий день"
-        disabled={day >= PLAN_LENGTH_DAYS}
-        onClick={nextDay}
-      >
-        →
+      <Button variant="secondary" size="sm" disabled={day >= PLAN_LENGTH_DAYS} onClick={nextDay}>
+        <FaArrowRight size={20} />
       </Button>
     </div>
   );

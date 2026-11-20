@@ -7,14 +7,7 @@
   "durationDays": 30,
   "startWeekday": 1,
   "startDateSuggested": "2026-11-23",
-  "slots": [
-    "morning",
-    "workday",
-    "midday",
-    "afternoon",
-    "evening",
-    "night"
-  ],
+  "slots": ["morning", "workday", "midday", "afternoon", "evening", "night"],
   "weeks": [
     {
       "week": 1,
@@ -129,19 +122,12 @@
         {
           "id": "d01-measure",
           "type": "measure",
-          "title": "Стартовые замеры: фото, вес, талия, максимумы",
+          "title": "Стартовые замеры",
           "slot": "evening",
           "durationMin": 5,
           "xp": 10,
           "required": false,
-          "fields": [
-            "pushups_max",
-            "pullups_max",
-            "hang_sec",
-            "weight_kg",
-            "waist_cm",
-            "photo"
-          ]
+          "fields": ["pushups_max", "pullups_max", "hang_sec", "weight_kg", "waist_cm", "photo"]
         },
         {
           "id": "d01-micro",
@@ -3164,11 +3150,7 @@
           "durationMin": 5,
           "xp": 10,
           "required": false,
-          "fields": [
-            "weight_kg",
-            "waist_cm",
-            "photo"
-          ]
+          "fields": ["weight_kg", "waist_cm", "photo"]
         }
       ]
     },

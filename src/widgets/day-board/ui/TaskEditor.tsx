@@ -26,7 +26,7 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   const [title, setTitle] = useState(task?.title ?? '');
   const [durationMin, setDurationMin] = useState(String(task?.durationMin ?? 5));
   const [xp, setXp] = useState(String(task?.xp ?? 5));
-  const [required, setRequired] = useState(task?.required ?? false);
+  const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
   const taskCount =
@@ -40,7 +40,7 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
     setTitle(task?.title ?? '');
     setDurationMin(String(task?.durationMin ?? 5));
     setXp(String(task?.xp ?? 5));
-    setRequired(task?.required ?? false);
+    setRequired(task?.required ?? true);
     setError('');
   };
 

@@ -164,12 +164,19 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
         const normalizedTitle = title.trim();
         if (!normalizedTitle) return;
 
-        const updater = (currentDay: WorkoutDay): WorkoutDay => ({
-          ...currentDay,
-          groups: (currentDay.groups ?? []).map((group) =>
-            group.id === groupId ? { ...group, title: normalizedTitle } : group,
-          ),
-        });
+        const updater = (currentDay: WorkoutDay): WorkoutDay => {
+          const groups = currentDay.groups ?? [];
+          const groupExists = groups.some((group) => group.id === groupId);
+
+          return {
+            ...currentDay,
+            groups: groupExists
+              ? groups.map((group) =>
+                  group.id === groupId ? { ...group, title: normalizedTitle } : group,
+                )
+              : [...groups, { id: groupId, title: normalizedTitle }],
+          };
+        };
 
         set((state) =>
           scope === 'all'
@@ -277,15 +284,45 @@ export const useUserWorkoutPlanStore = create<UserWorkoutPlanState>()(
         if (!selectedTask) return;
 
         const originId = selectedTask.originId ?? selectedTask.id;
+        const selectedGroup = selectedTask.groupId
+          ? selectedDay?.groups?.find((group) => group.id === selectedTask.groupId)
+          : undefined;
 
-        const updater = (currentDay: WorkoutDay): WorkoutDay => ({
-          ...currentDay,
-          tasks: currentDay.tasks.map((task) => {
-            const taskOriginId = task.originId ?? task.id;
+        const updater = (currentDay: WorkoutDay): WorkoutDay => {
+          const existingTask = currentDay.tasks.find(
+            (task) => (task.originId ?? task.id) === originId,
+          );
 
-            return taskOriginId === originId ? { ...task, ...updates, id: task.id } : task;
-          }),
-        });
+          const groups = currentDay.groups ?? [];
+          const groupExists =
+            !selectedGroup || groups.some((group) => group.id === selectedGroup.id);
+
+          const nextGroups = selectedGroup && !groupExists ? [...groups, selectedGroup] : groups;
+
+          if (existingTask) {
+            return {
+              ...currentDay,
+              groups: nextGroups,
+              tasks: currentDay.tasks.map((task) =>
+                task.id === existingTask.id ? { ...task, ...updates, id: task.id } : task,
+              ),
+            };
+          }
+
+          return {
+            ...currentDay,
+            groups: nextGroups,
+            tasks: [
+              ...currentDay.tasks,
+              {
+                ...selectedTask,
+                ...updates,
+                id: `${originId}-day-${currentDay.day}`,
+                originId,
+              },
+            ],
+          };
+        };
 
         set((currentState) =>
           scope === 'all'

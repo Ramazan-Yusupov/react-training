@@ -25,8 +25,6 @@ export function TodayPage() {
           <MonthStrip selected={day} onSelect={setDay} />
 
           <XpWeekChart day={day} />
-
-          <QuickSettings />
         </aside>
       </div>
     </div>

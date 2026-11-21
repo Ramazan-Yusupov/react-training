@@ -9,9 +9,10 @@ import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
   day: number;
+  onDayChange: (day: number) => void;
 }
 
-export function DayBoard({ day }: DayBoardProps) {
+export function DayBoard({ day, onDayChange }: DayBoardProps) {
   const startDate = useProgressStore((state) => state.startDate);
 
   const template = usePlanStore((state) => state.template);
@@ -25,7 +26,12 @@ export function DayBoard({ day }: DayBoardProps) {
 
   return (
     <Card>
-      <DayHeader day={planDay} startDate={startDate} totalDays={template.days.length} />
+      <DayHeader
+        day={planDay}
+        startDate={startDate}
+        totalDays={template.days.length}
+        onChange={onDayChange}
+      />
 
       <DayProgress day={planDay} />
 

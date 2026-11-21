@@ -15,7 +15,7 @@ export function TodayPage() {
 
       <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,1fr)]">
         <section className="flex min-w-0 flex-col gap-4 sm:gap-6">
-          <DayBoard day={day} />
+          <DayBoard day={day} onDayChange={setDay} />
         </section>
 
         <aside className="flex min-w-0 flex-col gap-4 sm:gap-6">

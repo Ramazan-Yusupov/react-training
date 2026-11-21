@@ -2,7 +2,6 @@ import { DaySwitcher, useSelectedDay } from '@/features/select-day';
 import { DayBoard } from '@/widgets/day-board';
 import { FocusTools } from '@/widgets/focus-tools';
 import { MonthStrip } from '@/widgets/month-strip';
-import { QuickSettings } from '@/widgets/quick-settings';
 import { XpWeekChart } from '@/widgets/xp-week-chart';
 
 export function TodayPage() {

@@ -1,4 +1,4 @@
-import { gamification, xpConfig, useUserWorkoutPlanStore } from '@/entities/plan';
+import { levels, usePlanStore, xpConfig } from '@/entities/plan';
 import {
   dayXp,
   getCurrentDay,
@@ -10,7 +10,6 @@ import {
   useProgressStore,
 } from '@/entities/progress';
 import { DaySwitcher, useSelectedDay } from '@/features/select-day';
-import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { addDays, formatDayMonth, getIsoWeekday, todayISO, WEEKDAYS_SHORT } from '@/shared/lib';
 import {
   Badge,
@@ -26,8 +25,9 @@ import { useMemo } from 'react';
 export function ProgressPage() {
   const { day, setDay, currentDay } = useSelectedDay();
 
-  const template = useUserWorkoutPlanStore((state) => state.template);
-  const dayOverrides = useUserWorkoutPlanStore((state) => state.dayOverrides);
+  const template = usePlanStore((state) => state.template);
+  const dayOverrides = usePlanStore((state) => state.dayOverrides);
+  const totalDays = template.days.length;
 
   const startDate = useProgressStore((state) => state.startDate);
   const completed = useProgressStore((state) => state.completed);
@@ -42,7 +42,7 @@ export function ProgressPage() {
 
   const total = useMemo(() => totalXp(days, snapshot, xpConfig), [days, snapshot]);
 
-  const level = getLevelState(total, gamification.levels);
+  const level = getLevelState(total, levels);
   const streak = getStreak(days, snapshot, currentDay);
 
   const allTasks = days.flatMap((item) => item.tasks);
@@ -162,7 +162,7 @@ export function ProgressPage() {
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <Typography as="h3" align="start">
-              {completedDays} из {PLAN_LENGTH_DAYS} дней
+              {completedDays} из {totalDays} дней
             </Typography>
 
             <Typography align="start" tone="muted" className="text-xs">
@@ -171,11 +171,11 @@ export function ProgressPage() {
           </div>
 
           <Typography as="h3" align="start" className="text-blue-400">
-            {Math.round((completedDays / PLAN_LENGTH_DAYS) * 100)}%
+            {Math.round((completedDays / totalDays) * 100)}%
           </Typography>
         </div>
 
-        <Progress value={completedDays} max={PLAN_LENGTH_DAYS} color="green" size="lg" />
+        <Progress value={completedDays} max={totalDays} color="green" size="lg" />
       </Card>
 
       <div className="flex w-full justify-center">
@@ -231,7 +231,7 @@ export function ProgressPage() {
               cells={calendarCells}
               selected={day}
               today={
-                getCurrentDay(startDate, todayISO(), PLAN_LENGTH_DAYS).isBeforeStart
+                getCurrentDay(startDate, todayISO(), totalDays).isBeforeStart
                   ? undefined
                   : currentDay
               }
@@ -265,7 +265,7 @@ export function ProgressPage() {
 
           <Card title="Уровни">
             <div className="flex flex-col gap-3">
-              {gamification.levels.map((item) => {
+              {levels.map((item) => {
                 const unlocked = item.xp !== null && total >= item.xp;
 
                 return (

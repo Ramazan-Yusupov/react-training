@@ -1,5 +1,6 @@
 import type { PlanTask } from '@/entities/plan';
 import { ToggleTask } from '@/features/toggle-task';
+
 import { TaskEditor } from './TaskEditor';
 
 interface TaskItemProps {
@@ -8,8 +9,14 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, day }: TaskItemProps) {
+  const isStandalone = task.groupId === null;
+
   return (
-    <div className="flex min-w-0 items-start gap-2">
+    <div
+      className={`flex min-w-0 items-start gap-2 ${
+        isStandalone ? 'rounded-2xl border-2 border-dashed border-slate-800 p-3' : ''
+      }`}
+    >
       <div className="min-w-0 flex-1">
         <ToggleTask task={task} />
       </div>

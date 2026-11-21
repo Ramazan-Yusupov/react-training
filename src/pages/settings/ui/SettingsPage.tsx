@@ -25,17 +25,13 @@ function validateBackup(value: unknown): value is BackupData {
 
   const validProgress =
     typeof progress.startDate === 'string' &&
-    (typeof progress.postureStartDate === 'string' || progress.postureStartDate === null) &&
     isRecord(progress.completed) &&
-    isRecord(progress.microBreaks) &&
-    isRecord(progress.corsetMinutes) &&
-    isRecord(progress.measurements);
+    isRecord(progress.microBreaks);
 
   const validSettings =
     typeof settings.workStartHour === 'number' &&
     settings.workStartHour >= 5 &&
     settings.workStartHour <= 12 &&
-    typeof settings.showOptionalPosture === 'boolean' &&
     isRecord(settings.rewards);
 
   return validProgress && validSettings;
@@ -62,11 +58,8 @@ export function SettingsPage() {
       exportedAt: new Date().toISOString(),
       progress: {
         startDate: progressState.startDate,
-        postureStartDate: progressState.postureStartDate,
         completed: progressState.completed,
         microBreaks: progressState.microBreaks,
-        corsetMinutes: progressState.corsetMinutes,
-        measurements: progressState.measurements,
       },
       settings: {
         workStartHour: settingsState.workStartHour,
@@ -74,7 +67,9 @@ export function SettingsPage() {
       },
     };
 
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {
+      type: 'application/json',
+    });
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -98,8 +93,16 @@ export function SettingsPage() {
         return;
       }
 
-      replaceProgress(parsed.progress);
-      replaceSettings(parsed.settings);
+      replaceProgress({
+        startDate: parsed.progress.startDate,
+        completed: parsed.progress.completed,
+        microBreaks: parsed.progress.microBreaks,
+      });
+
+      replaceSettings({
+        workStartHour: parsed.settings.workStartHour,
+        rewards: parsed.settings.rewards,
+      });
 
       toast.success('Данные успешно восстановлены');
     } catch {
@@ -160,8 +163,7 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани тренировки, выполненные задачи, замеры, настройки и выбранные награды в
-              JSON-файл.
+              Сохрани выполненные задачи, прогресс, настройки и выбранные награды в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>
@@ -188,8 +190,8 @@ export function SettingsPage() {
 
           <Card title="Сброс данных" border="1px" borderColor="rgb(239 68 68 / 0.35)">
             <Typography align="start" tone="muted" className="text-sm">
-              Удаляет историю выполнения задач, замеры, очки и прогресс обоих планов. Настройки и
-              выбранные награды останутся.
+              Удаляет историю выполнения задач и накопленный прогресс. Настройки и выбранные награды
+              останутся.
             </Typography>
 
             <Button variant="danger" fullWidth onClick={() => setResetOpen(true)}>
@@ -204,13 +206,6 @@ export function SettingsPage() {
                   Приложение
                 </Typography>
                 <Typography>Planer</Typography>
-              </div>
-
-              <div className="flex justify-between gap-3">
-                <Typography align="start" tone="muted">
-                  Продолжительность планов
-                </Typography>
-                <Typography>30 дней</Typography>
               </div>
 
               <div className="flex justify-between gap-3">
@@ -241,7 +236,7 @@ export function SettingsPage() {
         }
       >
         <Typography align="start">
-          История тренировок, выполнения задач и замеры будут сброшены. Это действие нельзя
+          История выполнения задач и накопленный прогресс будут сброшены. Это действие нельзя
           отменить.
         </Typography>
       </Modal>

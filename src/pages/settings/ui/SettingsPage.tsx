@@ -1,7 +1,6 @@
 import { gamification } from '@/entities/plan';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { useSettingsStore, type SettingsData } from '@/entities/settings';
-import { OptionalPostureSwitch } from '@/features/toggle-optional-posture';
 import { WorkStartSelect } from '@/features/set-work-start';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
@@ -71,7 +70,6 @@ export function SettingsPage() {
       },
       settings: {
         workStartHour: settingsState.workStartHour,
-        showOptionalPosture: settingsState.showOptionalPosture,
         rewards: settingsState.rewards,
       },
     };
@@ -135,10 +133,6 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Режим дня">
             <WorkStartSelect />
-
-            <div className="border-t border-white/10 pt-4">
-              <OptionalPostureSwitch />
-            </div>
           </Card>
 
           <Card title="Награды за уровни">

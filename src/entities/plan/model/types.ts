@@ -9,6 +9,8 @@ import type {
   workoutPlanSchema,
 } from './schemas';
 
+export type { PlanGroup, PlanTask, PlanDay, PlanTemplate, UserPlanData } from './planSchema';
+
 export type Slot = z.infer<typeof slotSchema>;
 export type TaskType = z.infer<typeof taskTypeSchema>;
 export type Task = z.infer<typeof taskSchema>;

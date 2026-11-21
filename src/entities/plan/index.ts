@@ -6,7 +6,18 @@ export type { EditScope } from './model/userPlanStore';
 
 export type { UserWorkoutPlanData } from './model/userPlanSchema';
 
-export type { Task, TaskType, Slot, WorkoutDay, WorkoutGroup } from './model/types';
+export type {
+  Task,
+  TaskType,
+  Slot,
+  WorkoutDay,
+  WorkoutGroup,
+  PlanGroup,
+  PlanTask,
+  PlanDay,
+  PlanTemplate,
+  UserPlanData,
+} from './model/types';
 
 export { resolveWorkoutDay } from './lib/resolveWorkoutDay';
 

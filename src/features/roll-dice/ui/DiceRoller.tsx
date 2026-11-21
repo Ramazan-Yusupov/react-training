@@ -20,11 +20,10 @@ const microBreakOptions = [
 ];
 
 /** Кубик: случайная идея для микро-паузы. */
-export function DiceRoller({ day, xpPerBreak = 2 }: DiceRollerProps) {
+export function DiceRoller({ day, xpPerBreak = xpConfig.microBreakXp }: DiceRollerProps) {
   const [face, setFace] = useState<number | null>(null);
 
   const count = useProgressStore((state) => state.microBreaks[day] ?? 0);
-
   const setMicroBreaks = useProgressStore((state) => state.setMicroBreaks);
 
   const result = microBreakOptions.find((item) => item.face === face);

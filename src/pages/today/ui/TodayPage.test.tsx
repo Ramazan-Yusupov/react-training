@@ -63,10 +63,10 @@ describe('страница «Сегодня»', () => {
     expect(screen.getByText('За день: 15 XP')).toBeTruthy();
   });
 
-  it('кубик показывает микро-паузу и засчитывает выполнение', () => {
+  it('виджет микро-пауз показывает идею и засчитывает выполнение', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByText('Кубик'));
+    fireEvent.click(screen.getByRole('tab', { name: 'Микро-паузы' }));
     fireEvent.click(screen.getByText('Бросить кубик'));
 
     expect(screen.getByText(/Встань|Переведи|Расслабь|Сделай|Выпей|Отведи/)).toBeTruthy();
@@ -74,6 +74,7 @@ describe('страница «Сегодня»', () => {
     fireEvent.click(screen.getByText('Сделал'));
 
     expect(useProgressStore.getState().microBreaks[1]).toBe(1);
+    expect(screen.getByText('+2 XP')).toBeTruthy();
   });
 
   it('таймер 50/10 работает по часам', () => {

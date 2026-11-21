@@ -1,5 +1,5 @@
-import { PLAN_LENGTH_DAYS } from '@/shared/config';
-import { Button, Badge } from '@/shared/ui';
+import { usePlanStore } from '@/entities/plan';
+import { Badge, Button } from '@/shared/ui';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 
 interface DaySwitcherProps {
@@ -8,14 +8,16 @@ interface DaySwitcherProps {
   className?: string;
 }
 
-/** Единый переключатель выбранного дня для тренировок и плана осанки. */
+/** Универсальный переключатель выбранного дня. */
 export function DaySwitcher({ day, onChange, className }: DaySwitcherProps) {
+  const totalDays = usePlanStore((state) => state.template.days.length);
+
   const previousDay = () => {
     onChange(Math.max(1, day - 1));
   };
 
   const nextDay = () => {
-    onChange(Math.min(PLAN_LENGTH_DAYS, day + 1));
+    onChange(Math.min(totalDays, day + 1));
   };
 
   return (
@@ -24,9 +26,9 @@ export function DaySwitcher({ day, onChange, className }: DaySwitcherProps) {
         <FaArrowLeft size={20} />
       </Button>
 
-      <Badge color="blue" text={`День ${day} / ${PLAN_LENGTH_DAYS}`} />
+      <Badge color="blue" text={`День ${day} / ${totalDays}`} />
 
-      <Button variant="secondary" size="sm" disabled={day >= PLAN_LENGTH_DAYS} onClick={nextDay}>
+      <Button variant="secondary" size="sm" disabled={day >= totalDays} onClick={nextDay}>
         <FaArrowRight size={20} />
       </Button>
     </div>

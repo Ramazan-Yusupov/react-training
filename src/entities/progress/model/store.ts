@@ -31,21 +31,32 @@ export const useProgressStore = create<ProgressState>()(
 
       toggleTask: (taskId) => {
         const isDone = Boolean(get().completed[taskId]);
+
         set((state) => {
           const completed = { ...state.completed };
-          if (isDone) delete completed[taskId];
-          else completed[taskId] = new Date().toISOString();
+
+          if (isDone) {
+            delete completed[taskId];
+          } else {
+            completed[taskId] = new Date().toISOString();
+          }
+
           return { completed };
         });
+
         return !isDone;
       },
 
       setMicroBreaks: (day, count) =>
-        set((state) => ({ microBreaks: { ...state.microBreaks, [day]: Math.max(0, count) } })),
-
-      startWorkoutToday: () => set({ startDate: todayISO() }),
+        set((state) => ({
+          microBreaks: {
+            ...state.microBreaks,
+            [day]: Math.max(0, count),
+          },
+        })),
 
       replaceAll: (data) => set({ ...data }),
+
       reset: () => set({ ...createInitialProgress() }),
     }),
     {

@@ -35,7 +35,7 @@ describe('страница «Сегодня»', () => {
   it('показывает первый день и стартовую задачу', () => {
     renderDay1();
 
-    expect(screen.getByText('День 1 из 30')).toBeTruthy();
+    expect(screen.getByText('День 1 из 7')).toBeTruthy();
     expect(screen.getByText('Создать план')).toBeTruthy();
     expect(screen.queryByText(/Отжимания/)).toBeNull();
     expect(screen.queryByText(/Турник/)).toBeNull();

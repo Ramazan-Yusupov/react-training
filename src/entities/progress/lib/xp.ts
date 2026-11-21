@@ -5,7 +5,7 @@
 
 export interface TaskLike {
   id: string;
-  type: string;
+  type?: string;
   xp: number;
   required: boolean;
   xpPerUnit?: number | undefined;

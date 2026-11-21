@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useUserWorkoutPlanStore } from '@/entities/plan';
-import type { Task } from '@/entities/plan';
+import { usePlanStore } from '@/entities/plan';
+import type { PlanTask } from '@/entities/plan';
 import { Button, Checkbox, IconButton, Input, Modal } from '@/shared/ui';
 import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
@@ -9,15 +9,15 @@ type EditorMode = 'add' | 'edit' | 'delete' | null;
 interface TaskEditorProps {
   day: number;
   groupId?: string;
-  task?: Task;
+  task?: PlanTask;
 }
 
 export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
-  const addCustomTask = useUserWorkoutPlanStore((state) => state.addCustomTask);
-  const updateTask = useUserWorkoutPlanStore((state) => state.updateTask);
-  const deleteTask = useUserWorkoutPlanStore((state) => state.deleteTask);
+  const addTask = usePlanStore((state) => state.addTask);
+  const updateTask = usePlanStore((state) => state.updateTask);
+  const deleteTask = usePlanStore((state) => state.deleteTask);
 
-  const currentDay = useUserWorkoutPlanStore(
+  const currentDay = usePlanStore(
     (state) =>
       state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day),
   );
@@ -29,9 +29,7 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
-  const taskCount =
-    currentDay?.tasks.filter((item) => item.groupId === groupId && item.type === 'custom').length ??
-    0;
+  const taskCount = currentDay?.tasks.filter((item) => item.groupId === groupId).length ?? 0;
 
   const isLimitReached = taskCount >= 10;
 
@@ -78,13 +76,13 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
     const values = validate();
     if (!values) return;
 
-    const result = addCustomTask(day, groupId, values, scope);
+    const result = addTask(day, groupId, values, scope);
 
     if (!result) {
       setError(
         scope === 'all'
-          ? 'Не удалось добавить задачу: в одной из карточек уже достигнут лимит в 10 задач.'
-          : 'В этой карточке уже есть 10 пользовательских задач.',
+          ? 'В одной из карточек уже достигнут лимит в 10 задач.'
+          : 'В этой карточке уже есть 10 задач.',
       );
       return;
     }
@@ -270,8 +268,7 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
 
       <Modal open={mode === 'delete'} onClose={close} title="Удалить задачу?">
         <p className="text-sm text-gray-300">
-          Задача «{task.title}» будет удалена из выбранной области. Сохранённые записи о выполнении
-          автоматически не удаляются.
+          Задача «{task.title}» будет удалена из выбранной области.
         </p>
 
         <div className="flex flex-col gap-2">

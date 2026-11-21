@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useUserWorkoutPlanStore } from '@/entities/plan';
-import type { WorkoutGroup } from '@/entities/plan';
+import { usePlanStore } from '@/entities/plan';
+import type { PlanGroup } from '@/entities/plan';
 import { Button, IconButton, Input, Modal } from '@/shared/ui';
 import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
@@ -8,13 +8,13 @@ type EditorMode = 'add' | 'edit' | 'delete' | null;
 
 interface GroupEditorProps {
   day: number;
-  group?: WorkoutGroup;
+  group?: PlanGroup;
 }
 
 export function GroupEditor({ day, group }: GroupEditorProps) {
-  const addGroup = useUserWorkoutPlanStore((state) => state.addGroup);
-  const updateGroup = useUserWorkoutPlanStore((state) => state.updateGroup);
-  const deleteGroup = useUserWorkoutPlanStore((state) => state.deleteGroup);
+  const addGroup = usePlanStore((state) => state.addGroup);
+  const updateGroup = usePlanStore((state) => state.updateGroup);
+  const deleteGroup = usePlanStore((state) => state.deleteGroup);
 
   const [mode, setMode] = useState<EditorMode>(null);
   const [title, setTitle] = useState(group?.title ?? '');
@@ -63,7 +63,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
             maxLength={40}
           />
 
-          <p className="text-sm text-gray-400">Выбери, в каких днях появится новая карточка.</p>
+          <p className="text-sm text-gray-400">Выбери, где будет отображаться карточка.</p>
 
           <div className="flex flex-col gap-2">
             <Button
@@ -81,7 +81,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
               disabled={!title.trim()}
               onClick={() => handleAdd('all')}
             >
-              Во всех 30 днях
+              Во всех днях
             </Button>
 
             <Button variant="ghost" fullWidth onClick={close}>
@@ -143,7 +143,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
             disabled={!title.trim()}
             onClick={() => handleUpdate('all')}
           >
-            Во всех 30 днях
+            Во всех днях
           </Button>
 
           <Button variant="ghost" fullWidth onClick={close}>
@@ -154,8 +154,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
 
       <Modal open={mode === 'delete'} onClose={close} title="Удалить карточку?">
         <p className="text-sm text-gray-300">
-          Карточка «{group.title}» и её задачи будут удалены из выбранной области. Записи о
-          выполнении в истории прогресса автоматически не удаляются.
+          Карточка «{group.title}» и её задачи будут удалены из выбранной области.
         </p>
 
         <div className="flex flex-col gap-2">
@@ -164,7 +163,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
           </Button>
 
           <Button variant="outline" fullWidth onClick={() => handleDelete('all')}>
-            Во всех 30 днях
+            Во всех днях
           </Button>
 
           <Button variant="ghost" fullWidth onClick={close}>

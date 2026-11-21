@@ -1,18 +1,16 @@
 import { Badge, Checkbox, Tooltip } from '@/shared/ui';
-import { describeTarget } from '../lib/describeTask';
-import type { Task } from '../model/types';
+import type { PlanTask } from '../model/planSchema';
 
 interface TaskRowProps {
-  task: Task;
+  task: PlanTask;
   checked: boolean;
   onToggle: () => void;
-  time?: string | undefined;
+  time?: string;
   xp?: number;
 }
 
 export function TaskRow({ task, checked, onToggle, time, xp = task.xp }: TaskRowProps) {
-  const target = describeTarget(task);
-  const meta = [time, `${task.durationMin} мин`, target].filter(Boolean).join(' · ');
+  const meta = [time, `${task.durationMin} мин`].filter(Boolean).join(' · ');
 
   return (
     <Checkbox

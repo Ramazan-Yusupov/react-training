@@ -1,6 +1,5 @@
-import { useUserWorkoutPlanStore } from '@/entities/plan';
+import { usePlanStore } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
-import { useSettingsStore } from '@/entities/settings';
 import { Card, ErrorUI, Typography } from '@/shared/ui';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
@@ -14,30 +13,25 @@ interface DayBoardProps {
 
 export function DayBoard({ day }: DayBoardProps) {
   const startDate = useProgressStore((state) => state.startDate);
-  const workStartHour = useSettingsStore((state) => state.workStartHour);
 
-  const templateDay = useUserWorkoutPlanStore((state) =>
-    state.template.days.find((item) => item.day === day),
-  );
+  const template = usePlanStore((state) => state.template);
+  const dayOverride = usePlanStore((state) => state.dayOverrides[String(day)]);
 
-  const dayOverride = useUserWorkoutPlanStore((state) => state.dayOverrides[String(day)]);
+  const planDay = dayOverride ?? template.days.find((item) => item.day === day);
 
-  const workoutDay = dayOverride ?? templateDay;
-
-  if (!workoutDay) {
+  if (!planDay) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  const groups = workoutDay.groups ?? [];
-
   return (
     <Card>
-      <DayHeader day={workoutDay} startDate={startDate} />
-      <DayProgress day={workoutDay} />
+      <DayHeader day={planDay} startDate={startDate} totalDays={template.days.length} />
+
+      <DayProgress day={planDay} />
 
       <div className="flex flex-col gap-3">
-        {groups.map((group) => {
-          const tasks = workoutDay.tasks.filter((task) => task.groupId === group.id);
+        {planDay.groups.map((group) => {
+          const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
 
           return (
             <section
@@ -46,12 +40,11 @@ export function DayBoard({ day }: DayBoardProps) {
             >
               <div className="flex min-w-0 items-center justify-between gap-2">
                 <Typography as="h6" align="start" tone="accent" text={group.title} />
-
                 <GroupEditor day={day} group={group} />
               </div>
 
               {tasks.map((task) => (
-                <TaskItem key={task.id} task={task} day={day} workStartHour={workStartHour} />
+                <TaskItem key={task.id} task={task} day={day} />
               ))}
 
               <TaskEditor day={day} groupId={group.id} />

@@ -1,26 +1,20 @@
+export { usePlanStore, createInitialPlan } from './model/planStore';
+
+export type { EditScope } from './model/planStore';
+
+export type { PlanGroup, PlanTask, PlanDay, PlanTemplate, UserPlanData } from './model/planSchema';
+
+// Старую модель пока оставляем для компонентов,
+// которые ещё не переведены на универсальный план.
 export { workoutPlan, gamification, getWorkoutDay } from './model/plans';
 
 export { useUserWorkoutPlanStore, createInitialUserWorkoutPlan } from './model/userPlanStore';
 
-export type { EditScope } from './model/userPlanStore';
-
 export type { UserWorkoutPlanData } from './model/userPlanSchema';
 
-export type {
-  Task,
-  TaskType,
-  Slot,
-  WorkoutDay,
-  WorkoutGroup,
-  PlanGroup,
-  PlanTask,
-  PlanDay,
-  PlanTemplate,
-  UserPlanData,
-} from './model/types';
+export type { Task, TaskType, Slot, WorkoutDay, WorkoutGroup } from './model/types';
 
 export { resolveWorkoutDay } from './lib/resolveWorkoutDay';
-
 export { SLOT_LABELS, DAY_KIND_LABELS } from './config/slots';
 export { xpConfig } from './config/xp';
 export { groupTasksBySlot } from './lib/groupTasksBySlot';

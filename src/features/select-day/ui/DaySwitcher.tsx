@@ -1,6 +1,7 @@
 import { usePlanStore } from '@/entities/plan';
+import { usePlanDayActions } from '@/features/manage-plan-days';
 import { Badge, Button } from '@/shared/ui';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
+import { FaArrowLeft, FaArrowRight, FaMinus, FaPlus } from 'react-icons/fa6';
 
 interface DaySwitcherProps {
   day: number;
@@ -8,9 +9,14 @@ interface DaySwitcherProps {
   className?: string;
 }
 
-/** Универсальный переключатель выбранного дня. */
+/** Переключение и управление днями пользовательского плана. */
 export function DaySwitcher({ day, onChange, className }: DaySwitcherProps) {
   const totalDays = usePlanStore((state) => state.template.days.length);
+
+  const { handleAddDay, handleRemoveLastDay } = usePlanDayActions({
+    day,
+    onChange,
+  });
 
   const previousDay = () => {
     onChange(Math.max(1, day - 1));
@@ -23,14 +29,31 @@ export function DaySwitcher({ day, onChange, className }: DaySwitcherProps) {
   return (
     <div className={`flex items-center justify-center gap-2 ${className ?? ''}`}>
       <Button variant="secondary" size="sm" disabled={day <= 1} onClick={previousDay}>
-        <FaArrowLeft size={20} />
+        <FaArrowLeft size={16} />
       </Button>
 
       <Badge color="blue" text={`День ${day} / ${totalDays}`} />
 
       <Button variant="secondary" size="sm" disabled={day >= totalDays} onClick={nextDay}>
-        <FaArrowRight size={20} />
+        <FaArrowRight size={16} />
       </Button>
+
+      <div className="ml-2 flex items-center gap-1">
+        <Button variant="secondary" size="sm" onClick={handleAddDay}>
+          <FaPlus size={14} />
+          <span className="sr-only">Добавить день</span>
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={totalDays <= 1}
+          onClick={handleRemoveLastDay}
+        >
+          <FaMinus size={14} />
+          <span className="sr-only">Удалить последний день</span>
+        </Button>
+      </div>
     </div>
   );
 }

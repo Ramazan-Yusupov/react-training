@@ -16,7 +16,7 @@ export type EditScope = 'all' | 'day';
 
 const MAX_TASKS_PER_GROUP = 10;
 const STORAGE_KEY = 'planer-user-plan-v2';
-const STORAGE_VERSION = 3;
+const STORAGE_VERSION = 4;
 
 type TaskInput = {
   title: string;
@@ -52,10 +52,15 @@ interface PlanActions {
   addTaskToAllDaysWithGroup: (day: number, groupId: string, input: TaskInput) => string | null;
 
   updateTask: (day: number, taskId: string, updates: TaskUpdate, scope: EditScope) => void;
+
   deleteTask: (day: number, taskId: string, scope: EditScope) => void;
 
   addWidget: (day: number, type: PlanWidgetType, scope: EditScope) => string | null;
+
   updateWidget: (day: number, widgetId: string, updates: WidgetUpdate, scope: EditScope) => void;
+
+  updateWidgetNotes: (day: number, widgetId: string, notes: string) => void;
+
   deleteWidget: (day: number, widgetId: string, scope: EditScope) => void;
 
   replaceAll: (data: UserPlanData) => void;
@@ -96,6 +101,104 @@ function createStarterDay(day: number): PlanDay {
   };
 }
 
+/**
+ * Преобразует старые Accordion-виджеты в заметки,
+ * сохраняя заголовки и содержимое их секций.
+ */
+function migrateLegacyWidgetData(data: unknown): unknown {
+  if (!data || typeof data !== 'object') {
+    return data;
+  }
+
+  const record = data as Record<string, unknown>;
+
+  const migrateDay = (day: unknown): unknown => {
+    if (!day || typeof day !== 'object') {
+      return day;
+    }
+
+    const dayRecord = day as Record<string, unknown>;
+
+    if (!Array.isArray(dayRecord.widgets)) {
+      return day;
+    }
+
+    const widgets = dayRecord.widgets.map((widget) => {
+      if (!widget || typeof widget !== 'object') {
+        return widget;
+      }
+
+      const widgetRecord = widget as Record<string, unknown>;
+
+      const { accordionItems, ...widgetWithoutAccordion } = widgetRecord;
+
+      if (widgetRecord.type === 'accordion') {
+        const migratedNotes = Array.isArray(accordionItems)
+          ? accordionItems
+              .map((item) => {
+                if (!item || typeof item !== 'object') {
+                  return '';
+                }
+
+                const section = item as Record<string, unknown>;
+                const title = typeof section.title === 'string' ? section.title : '';
+                const content = typeof section.content === 'string' ? section.content : '';
+
+                return [title, content].filter(Boolean).join('\n');
+              })
+              .filter(Boolean)
+              .join('\n\n')
+          : '';
+
+        return {
+          ...widgetWithoutAccordion,
+          type: 'day-notes',
+          notes: typeof widgetRecord.notes === 'string' ? widgetRecord.notes : migratedNotes,
+        };
+      }
+
+      return {
+        ...widgetWithoutAccordion,
+        notes: typeof widgetRecord.notes === 'string' ? widgetRecord.notes : '',
+      };
+    });
+
+    return {
+      ...dayRecord,
+      widgets,
+    };
+  };
+
+  const template =
+    record.template && typeof record.template === 'object'
+      ? (record.template as Record<string, unknown>)
+      : null;
+
+  const dayOverrides =
+    record.dayOverrides && typeof record.dayOverrides === 'object'
+      ? (record.dayOverrides as Record<string, unknown>)
+      : null;
+
+  return {
+    ...record,
+    ...(template
+      ? {
+          template: {
+            ...template,
+            days: Array.isArray(template.days) ? template.days.map(migrateDay) : template.days,
+          },
+        }
+      : {}),
+    ...(dayOverrides
+      ? {
+          dayOverrides: Object.fromEntries(
+            Object.entries(dayOverrides).map(([key, day]) => [key, migrateDay(day)]),
+          ),
+        }
+      : {}),
+  };
+}
+
 /** Добавляет элемент в конец общего порядка, не создавая дубликатов. */
 function appendContentOrder(day: PlanDay, item: PlanContentOrderItem): PlanContentOrderItem[] {
   const contentOrder = day.contentOrder ?? [];
@@ -109,7 +212,6 @@ function appendContentOrder(day: PlanDay, item: PlanContentOrderItem): PlanConte
 
 /** Восстанавливает порядок и добавляет элементы, которых в нём ещё нет. */
 function normalizePlanDay(day: PlanDay): PlanDay {
-  // Поддерживаем старые сохранённые дни без поля widgets.
   const widgets = day.widgets ?? [];
 
   const validGroups = new Set(day.groups.map((group) => group.id));
@@ -169,7 +271,8 @@ function normalizePlanDay(day: PlanDay): PlanDay {
 
 /** Нормализует данные при миграции и импорте, сохраняя существующий план. */
 function normalizePlanData(data: unknown): UserPlanData {
-  const parsed = userPlanSchema.safeParse(data);
+  const migratedData = migrateLegacyWidgetData(data);
+  const parsed = userPlanSchema.safeParse(migratedData);
 
   if (!parsed.success) {
     return createInitialPlan();
@@ -530,7 +633,10 @@ export const usePlanStore = create<PlanState>()(
               tasks: [...currentDay.tasks, newTask],
               contentOrder:
                 newTask.groupId === null
-                  ? appendContentOrder(currentDay, { type: 'task', id: newTask.id })
+                  ? appendContentOrder(currentDay, {
+                      type: 'task',
+                      id: newTask.id,
+                    })
                   : currentDay.contentOrder,
             };
           }
@@ -588,6 +694,7 @@ export const usePlanStore = create<PlanState>()(
           id: widgetId,
           type,
           enabled: true,
+          notes: '',
         };
 
         const updater = (currentDay: PlanDay): PlanDay => {
@@ -620,7 +727,9 @@ export const usePlanStore = create<PlanState>()(
       updateWidget: (day, widgetId, updates, scope) => {
         const selectedDay = getDay(get(), day);
 
-        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) return;
+        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) {
+          return;
+        }
 
         const updater = (currentDay: PlanDay): PlanDay => ({
           ...currentDay,
@@ -634,10 +743,29 @@ export const usePlanStore = create<PlanState>()(
         );
       },
 
+      updateWidgetNotes: (day, widgetId, notes) => {
+        const selectedDay = getDay(get(), day);
+
+        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) {
+          return;
+        }
+
+        set((state) =>
+          updateOneDay(state, day, (currentDay) => ({
+            ...currentDay,
+            widgets: (currentDay.widgets ?? []).map((widget) =>
+              widget.id === widgetId ? { ...widget, notes } : widget,
+            ),
+          })),
+        );
+      },
+
       deleteWidget: (day, widgetId, scope) => {
         const selectedDay = getDay(get(), day);
 
-        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) return;
+        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) {
+          return;
+        }
 
         const updater = (currentDay: PlanDay): PlanDay => ({
           ...currentDay,

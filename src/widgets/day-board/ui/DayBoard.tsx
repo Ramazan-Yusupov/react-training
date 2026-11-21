@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import { usePlanStore } from '@/entities/plan';
+
 import type { PlanContentOrderItem, PlanWidget, PlanWidgetType } from '@/entities/plan';
+
 import { useProgressStore } from '@/entities/progress';
+
 import { MicroBreaks } from '@/widgets/micro-breaks';
 import { XpWeekChart } from '@/widgets/xp-week-chart';
+
 import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
+
 import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
+
 import { FaPlus } from 'react-icons/fa6';
 
 import { DayHeader } from './DayHeader';
@@ -27,15 +34,38 @@ interface PlanWidgetItemProps {
 function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isMicroBreakEditorOpen, setIsMicroBreakEditorOpen] = useState(false);
+  const [isNotesEditorOpen, setIsNotesEditorOpen] = useState(false);
+  const [notesDraft, setNotesDraft] = useState(widget.notes);
 
   const deleteWidget = usePlanStore((state) => state.deleteWidget);
+  const updateWidgetNotes = usePlanStore((state) => state.updateWidgetNotes);
 
   const title =
     widget.type === 'micro-breaks'
       ? 'Микро-паузы'
       : widget.type === 'xp-by-days'
         ? 'XP по дням'
-        : 'Аккордеон';
+        : 'Заметки дня';
+
+  // Синхронизируем черновик с данными виджета.
+  useEffect(() => {
+    setNotesDraft(widget.notes);
+  }, [day, widget.id, widget.notes]);
+
+  // Автосохранение заметок после небольшой паузы во вводе.
+  useEffect(() => {
+    if (widget.type !== 'day-notes' || notesDraft === widget.notes) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      updateWidgetNotes(day, widget.id, notesDraft);
+    }, 500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [day, widget.id, widget.type, widget.notes, notesDraft, updateWidgetNotes]);
 
   const handleDelete = (scope: 'day' | 'all') => {
     deleteWidget(day, widget.id, scope);
@@ -49,23 +79,37 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
 
   const openSettings = () => setIsEditorOpen(true);
 
+  const handleClearNotes = () => {
+    setNotesDraft('');
+  };
+
   return (
     <div className="flex flex-col gap-2">
       {widget.type === 'micro-breaks' && <MicroBreaks day={day} onSettingsClick={openSettings} />}
 
       {widget.type === 'xp-by-days' && <XpWeekChart day={day} onSettingsClick={openSettings} />}
 
-      {widget.type === 'accordion' && (
+      {widget.type === 'day-notes' && (
         <Card>
           <div className="flex items-center justify-between gap-3">
             <Typography as="h6" align="start" tone="accent" text={title} />
-            <Button size="sm" variant="ghost" onClick={openSettings}>
-              Настроить
+
+            <Button size="sm" variant="ghost" onClick={() => setIsNotesEditorOpen(true)}>
+              Редактировать
             </Button>
           </div>
-          <Typography tone="muted" align="start">
-            Редактор аккордеона появится на следующем этапе.
-          </Typography>
+
+          <div className="mt-3">
+            {widget.notes.trim() ? (
+              <p className="whitespace-pre-wrap break-words text-sm text-slate-300">
+                {widget.notes}
+              </p>
+            ) : (
+              <Typography align="start" tone="muted">
+                Пока нет заметок. Нажми «Редактировать», чтобы добавить текст.
+              </Typography>
+            )}
+          </div>
         </Card>
       )}
 
@@ -108,6 +152,41 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
         size="lg"
       >
         <MicroBreaksEditor />
+      </Modal>
+
+      <Modal
+        open={isNotesEditorOpen}
+        onClose={() => setIsNotesEditorOpen(false)}
+        title="Заметки дня"
+        size="lg"
+      >
+        <div className="flex flex-col gap-3">
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-medium text-slate-300">Текст заметки</span>
+
+            <textarea
+              value={notesDraft}
+              onChange={(event) => setNotesDraft(event.target.value)}
+              placeholder="Запиши важные мысли, планы или итоги дня..."
+              rows={8}
+              className="w-full resize-y rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-blue-500"
+            />
+          </label>
+
+          <Typography align="start" tone="muted">
+            Изменения сохраняются автоматически.
+          </Typography>
+
+          <div className="flex flex-col gap-2">
+            <Button fullWidth variant="outline" onClick={handleClearNotes} disabled={!notesDraft}>
+              Очистить заметки
+            </Button>
+
+            <Button fullWidth variant="primary" onClick={() => setIsNotesEditorOpen(false)}>
+              Готово
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
@@ -221,6 +300,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
               >
                 <div className="flex min-w-0 items-center justify-between gap-2">
                   <Typography as="h6" align="start" tone="accent" text={group.title} />
+
                   <GroupEditor day={day} group={group} />
                 </div>
 
@@ -245,7 +325,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
           if (!widget) return null;
 
-          return <PlanWidgetItem key={`widget-${widget.id}`} day={day} widget={widget} />;
+          return <PlanWidgetItem key={`${day}-${widget.id}`} day={day} widget={widget} />;
         })}
 
         <Button
@@ -300,8 +380,8 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
             XP по дням
           </Button>
 
-          <Button fullWidth variant="outline" disabled>
-            Аккордеон — скоро
+          <Button fullWidth variant="outline" onClick={() => selectWidgetType('day-notes')}>
+            Заметки дня
           </Button>
 
           <Button variant="ghost" fullWidth onClick={() => setIsWidgetTypeOpen(false)}>

@@ -8,6 +8,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TodayPage } from './TodayPage';
+import { useMicroBreakStore } from '@/entities/micro-breaks';
 
 const renderDay1 = () =>
   render(
@@ -24,6 +25,8 @@ beforeEach(() => {
   });
 
   useSettingsStore.setState({ ...DEFAULT_SETTINGS });
+
+  useMicroBreakStore.getState().reset();
 });
 
 afterEach(() => {
@@ -74,7 +77,16 @@ describe('страница «Сегодня»', () => {
 
     fireEvent.click(screen.getByText('Бросить кубик'));
 
-    expect(screen.getByText(/Встань|Переведи|Расслабь|Сделай|Выпей|Отведи/)).toBeTruthy();
+    const breakTexts = [
+      'Встань и немного пройдись.',
+      'Переведи взгляд вдаль и отдохни от экрана.',
+      'Расслабь плечи и измени положение тела.',
+      'Сделай несколько спокойных глубоких вдохов.',
+      'Выпей воды и немного отдохни.',
+      'Отведи взгляд от экрана и дай глазам отдохнуть.',
+    ];
+
+    expect(breakTexts.some((text) => screen.queryByText(text) !== null)).toBe(true);
 
     fireEvent.click(screen.getByText('Сделал'));
 

@@ -16,22 +16,15 @@ export const planTaskSchema = z.object({
   scheduledTime: z.string().optional(),
 });
 
-/** Элемент внутри Accordion. */
-export const planAccordionItemSchema = z.object({
-  id: z.string(),
-  title: z.string().trim().min(1),
-  content: z.string(),
-});
-
 /** Типы доступных пользовательских виджетов. */
-export const planWidgetTypeSchema = z.enum(['micro-breaks', 'accordion', 'xp-by-days']);
+export const planWidgetTypeSchema = z.enum(['micro-breaks', 'day-notes', 'xp-by-days']);
 
 /** Экземпляр виджета в пользовательском плане. */
 export const planWidgetSchema = z.object({
   id: z.string(),
   type: planWidgetTypeSchema,
   enabled: z.boolean().default(true),
-  accordionItems: z.array(planAccordionItemSchema).optional(),
+  notes: z.string().default(''),
 });
 
 /** Элементы верхнего уровня в порядке отображения дня. */
@@ -73,7 +66,6 @@ export const userPlanSchema = z.object({
 
 export type PlanGroup = z.infer<typeof planGroupSchema>;
 export type PlanTask = z.infer<typeof planTaskSchema>;
-export type PlanAccordionItem = z.infer<typeof planAccordionItemSchema>;
 export type PlanWidget = z.infer<typeof planWidgetSchema>;
 export type PlanWidgetType = z.infer<typeof planWidgetTypeSchema>;
 export type PlanContentOrderItem = z.infer<typeof planContentOrderItemSchema>;

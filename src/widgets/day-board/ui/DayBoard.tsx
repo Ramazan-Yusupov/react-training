@@ -90,7 +90,7 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
       {widget.type === 'xp-by-days' && <XpWeekChart day={day} onSettingsClick={openSettings} />}
 
       {widget.type === 'day-notes' && (
-        <Card>
+        <Card classNameMain="border-2 border-dotted border-amber-600 p-4 rounded-2xl ">
           <div className="flex items-center justify-between gap-3">
             <Typography as="h6" align="start" tone="accent" text={title} />
 

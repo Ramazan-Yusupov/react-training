@@ -82,6 +82,7 @@ function createStarterDay(day: number): PlanDay {
         groupId: STARTER_GROUP_ID,
       },
     ],
+    widgets: [],
     contentOrder: [{ type: 'group', id: STARTER_GROUP_ID }],
   };
 }
@@ -101,6 +102,7 @@ function normalizePlanDay(day: PlanDay): PlanDay {
   const validGroups = new Set(day.groups.map((group) => group.id));
   const standaloneTasks = day.tasks.filter((task) => task.groupId === null);
   const validTasks = new Set(standaloneTasks.map((task) => task.id));
+  const validWidgets = new Set(day.widgets.map((widget) => widget.id));
 
   const contentOrder: PlanContentOrderItem[] = [];
   const seen = new Set<string>();
@@ -108,6 +110,7 @@ function normalizePlanDay(day: PlanDay): PlanDay {
   for (const item of day.contentOrder ?? []) {
     if (item.type === 'group' && !validGroups.has(item.id)) continue;
     if (item.type === 'task' && !validTasks.has(item.id)) continue;
+    if (item.type === 'widget' && !validWidgets.has(item.id)) continue;
 
     const key = `${item.type}:${item.id}`;
 
@@ -253,6 +256,7 @@ export const usePlanStore = create<PlanState>()(
                   day: lastDay + 1,
                   groups: [],
                   tasks: [],
+                  widgets: [],
                   contentOrder: [],
                 },
               ],

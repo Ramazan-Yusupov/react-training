@@ -1,7 +1,14 @@
-import { userPlanSchema } from './planSchema';
-import type { PlanDay, PlanGroup, PlanTask, UserPlanData } from './planSchema';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+import { userPlanSchema } from './planSchema';
+import type {
+  PlanContentOrderItem,
+  PlanDay,
+  PlanGroup,
+  PlanTask,
+  UserPlanData,
+} from './planSchema';
 
 export type EditScope = 'all' | 'day';
 
@@ -75,6 +82,82 @@ function createStarterDay(day: number): PlanDay {
         groupId: STARTER_GROUP_ID,
       },
     ],
+    contentOrder: [{ type: 'group', id: STARTER_GROUP_ID }],
+  };
+}
+
+/** Добавляет элемент в конец общего порядка, не создавая дубликатов. */
+function appendContentOrder(day: PlanDay, item: PlanContentOrderItem): PlanContentOrderItem[] {
+  const contentOrder = day.contentOrder ?? [];
+  const exists = contentOrder.some(
+    (current) => current.type === item.type && current.id === item.id,
+  );
+
+  return exists ? contentOrder : [...contentOrder, item];
+}
+
+/** Восстанавливает порядок и добавляет элементы, которых в нём ещё нет. */
+function normalizePlanDay(day: PlanDay): PlanDay {
+  const validGroups = new Set(day.groups.map((group) => group.id));
+  const standaloneTasks = day.tasks.filter((task) => task.groupId === null);
+  const validTasks = new Set(standaloneTasks.map((task) => task.id));
+
+  const contentOrder: PlanContentOrderItem[] = [];
+  const seen = new Set<string>();
+
+  for (const item of day.contentOrder ?? []) {
+    if (item.type === 'group' && !validGroups.has(item.id)) continue;
+    if (item.type === 'task' && !validTasks.has(item.id)) continue;
+
+    const key = `${item.type}:${item.id}`;
+
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    contentOrder.push(item);
+  }
+
+  for (const group of day.groups) {
+    const key = `group:${group.id}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      contentOrder.push({ type: 'group', id: group.id });
+    }
+  }
+
+  for (const task of standaloneTasks) {
+    const key = `task:${task.id}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      contentOrder.push({ type: 'task', id: task.id });
+    }
+  }
+
+  return {
+    ...day,
+    contentOrder,
+  };
+}
+
+/** Нормализует данные при миграции и импорте, сохраняя существующий план. */
+function normalizePlanData(data: unknown): UserPlanData {
+  const parsed = userPlanSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return createInitialPlan();
+  }
+
+  return {
+    ...parsed.data,
+    template: {
+      ...parsed.data.template,
+      days: parsed.data.template.days.map(normalizePlanDay),
+    },
+    dayOverrides: Object.fromEntries(
+      Object.entries(parsed.data.dayOverrides).map(([key, day]) => [key, normalizePlanDay(day)]),
+    ),
   };
 }
 
@@ -110,7 +193,7 @@ function updateOneDay(
   return {
     dayOverrides: {
       ...state.dayOverrides,
-      [String(dayNumber)]: updater(currentDay),
+      [String(dayNumber)]: normalizePlanDay(updater(currentDay)),
     },
   };
 }
@@ -122,10 +205,10 @@ function updateAllDays(
   return {
     template: {
       ...state.template,
-      days: state.template.days.map(updater),
+      days: state.template.days.map((day) => normalizePlanDay(updater(day))),
     },
     dayOverrides: Object.fromEntries(
-      Object.entries(state.dayOverrides).map(([key, day]) => [key, updater(day)]),
+      Object.entries(state.dayOverrides).map(([key, day]) => [key, normalizePlanDay(updater(day))]),
     ),
   };
 }
@@ -170,6 +253,7 @@ export const usePlanStore = create<PlanState>()(
                   day: lastDay + 1,
                   groups: [],
                   tasks: [],
+                  contentOrder: [],
                 },
               ],
             },
@@ -223,6 +307,10 @@ export const usePlanStore = create<PlanState>()(
         const updater = (currentDay: PlanDay): PlanDay => ({
           ...currentDay,
           groups: [...currentDay.groups, group],
+          contentOrder: appendContentOrder(currentDay, {
+            type: 'group',
+            id: group.id,
+          }),
         });
 
         set((state) =>
@@ -254,6 +342,9 @@ export const usePlanStore = create<PlanState>()(
           ...currentDay,
           groups: currentDay.groups.filter((group) => group.id !== groupId),
           tasks: currentDay.tasks.filter((task) => task.groupId !== groupId),
+          contentOrder: (currentDay.contentOrder ?? []).filter(
+            (item) => !(item.type === 'group' && item.id === groupId),
+          ),
         });
 
         set((state) =>
@@ -305,18 +396,32 @@ export const usePlanStore = create<PlanState>()(
                 return currentDay;
               }
 
+              const task = createTask(originId, currentDay.day, groupId, input);
+
               return {
                 ...currentDay,
-                tasks: [...currentDay.tasks, createTask(originId, currentDay.day, groupId, input)],
+                tasks: [...currentDay.tasks, task],
+                contentOrder:
+                  groupId === null
+                    ? appendContentOrder(currentDay, { type: 'task', id: task.id })
+                    : currentDay.contentOrder,
               };
             }),
           );
         } else {
           set((currentState) =>
-            updateOneDay(currentState, day, (currentDay) => ({
-              ...currentDay,
-              tasks: [...currentDay.tasks, createTask(originId, day, groupId, input)],
-            })),
+            updateOneDay(currentState, day, (currentDay) => {
+              const task = createTask(originId, day, groupId, input);
+
+              return {
+                ...currentDay,
+                tasks: [...currentDay.tasks, task],
+                contentOrder:
+                  groupId === null
+                    ? appendContentOrder(currentDay, { type: 'task', id: task.id })
+                    : currentDay.contentOrder,
+              };
+            }),
           );
         }
 
@@ -351,11 +456,15 @@ export const usePlanStore = create<PlanState>()(
         set((currentState) =>
           updateAllDays(currentState, (currentDay) => {
             const hasGroup = currentDay.groups.some((group) => group.id === groupId);
+            const task = createTask(originId, currentDay.day, groupId, input);
 
             return {
               ...currentDay,
               groups: hasGroup ? currentDay.groups : [...currentDay.groups, { ...selectedGroup }],
-              tasks: [...currentDay.tasks, createTask(originId, currentDay.day, groupId, input)],
+              tasks: [...currentDay.tasks, task],
+              contentOrder: hasGroup
+                ? currentDay.contentOrder
+                : appendContentOrder(currentDay, { type: 'group', id: groupId }),
             };
           }),
         );
@@ -378,17 +487,20 @@ export const usePlanStore = create<PlanState>()(
           );
 
           if (!existingTask) {
+            const newTask = {
+              ...selectedTask,
+              ...updates,
+              id: `${originId}-day-${currentDay.day}`,
+              originId,
+            };
+
             return {
               ...currentDay,
-              tasks: [
-                ...currentDay.tasks,
-                {
-                  ...selectedTask,
-                  ...updates,
-                  id: `${originId}-day-${currentDay.day}`,
-                  originId,
-                },
-              ],
+              tasks: [...currentDay.tasks, newTask],
+              contentOrder:
+                newTask.groupId === null
+                  ? appendContentOrder(currentDay, { type: 'task', id: newTask.id })
+                  : currentDay.contentOrder,
             };
           }
 
@@ -419,6 +531,12 @@ export const usePlanStore = create<PlanState>()(
         const updater = (currentDay: PlanDay): PlanDay => ({
           ...currentDay,
           tasks: currentDay.tasks.filter((task) => (task.originId ?? task.id) !== originId),
+          contentOrder:
+            selectedTask.groupId === null
+              ? (currentDay.contentOrder ?? []).filter(
+                  (item) => item.type !== 'task' || item.id !== taskId,
+                )
+              : currentDay.contentOrder,
         });
 
         set((currentState) =>
@@ -429,16 +547,16 @@ export const usePlanStore = create<PlanState>()(
       },
 
       replaceAll: (data) => {
-        set(userPlanSchema.parse(data));
+        set(normalizePlanData(data));
       },
 
       reset: () => set(createInitialPlan()),
     }),
     {
       name: STORAGE_KEY,
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => localStorage),
-      migrate: () => createInitialPlan(),
+      migrate: (persistedState) => normalizePlanData(persistedState),
       partialize: (state): UserPlanData => ({
         schemaVersion: state.schemaVersion,
         template: state.template,

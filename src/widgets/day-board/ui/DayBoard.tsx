@@ -1,6 +1,8 @@
 import { usePlanStore } from '@/entities/plan';
+import type { PlanContentOrderItem } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { Card, ErrorUI, Typography } from '@/shared/ui';
+
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
 import { GroupEditor } from './GroupEditor';
@@ -24,7 +26,20 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  const standaloneTasks = planDay.tasks.filter((task) => task.groupId === null);
+  // Для старых данных без contentOrder используем порядок:
+  // сначала карточки, затем самостоятельные задачи.
+  const contentOrder: PlanContentOrderItem[] = planDay.contentOrder ?? [
+    ...planDay.groups.map((group) => ({
+      type: 'group' as const,
+      id: group.id,
+    })),
+    ...planDay.tasks
+      .filter((task) => task.groupId === null)
+      .map((task) => ({
+        type: 'task' as const,
+        id: task.id,
+      })),
+  ];
 
   return (
     <Card>
@@ -38,43 +53,50 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
       <DayProgress day={planDay} />
 
       <div className="flex flex-col gap-3">
-        {planDay.groups.map((group) => {
-          const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
+        {contentOrder.map((item) => {
+          if (item.type === 'group') {
+            const group = planDay.groups.find((current) => current.id === item.id);
 
-          return (
-            <section
-              key={group.id}
-              className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
-            >
-              <div className="flex min-w-0 items-center justify-between gap-2">
-                <Typography as="h6" align="start" tone="accent" text={group.title} />
-                <GroupEditor day={day} group={group} />
-              </div>
+            if (!group) return null;
 
-              {tasks.map((task) => (
-                <TaskItem key={task.id} task={task} day={day} />
-              ))}
+            const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
 
-              <TaskEditor day={day} groupId={group.id} />
-            </section>
-          );
+            return (
+              <section
+                key={`group-${group.id}`}
+                className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
+              >
+                <div className="flex min-w-0 items-center justify-between gap-2">
+                  <Typography as="h6" align="start" tone="accent" text={group.title} />
+                  <GroupEditor day={day} group={group} />
+                </div>
+
+                {tasks.map((task) => (
+                  <TaskItem key={task.id} task={task} day={day} />
+                ))}
+
+                <TaskEditor day={day} groupId={group.id} />
+              </section>
+            );
+          }
+
+          if (item.type === 'task') {
+            const task = planDay.tasks.find(
+              (current) => current.id === item.id && current.groupId === null,
+            );
+
+            if (!task) return null;
+
+            return <TaskItem key={`task-${task.id}`} task={task} day={day} />;
+          }
+
+          // Виджеты подключим после создания их модели.
+          return null;
         })}
 
+        {/* Временные кнопки добавления. Позже заменим единым меню. */}
         <GroupEditor day={day} />
-
-        <section className="flex flex-col gap-3 rounded-2xl border-2 border-dashed border-slate-700 p-3">
-          <Typography as="h6" align="start" tone="accent" text="Задачи без карточки" />
-
-          {standaloneTasks.length > 0 ? (
-            standaloneTasks.map((task) => <TaskItem key={task.id} task={task} day={day} />)
-          ) : (
-            <p className="text-sm text-gray-400">
-              Здесь можно хранить отдельные задачи, не привязанные к карточкам.
-            </p>
-          )}
-
-          <TaskEditor day={day} />
-        </section>
+        <TaskEditor day={day} />
       </div>
     </Card>
   );

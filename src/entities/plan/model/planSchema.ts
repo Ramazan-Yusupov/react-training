@@ -16,10 +16,29 @@ export const planTaskSchema = z.object({
   scheduledTime: z.string().optional(),
 });
 
+/** Элементы верхнего уровня в порядке отображения дня. */
+export const planContentOrderItemSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('group'),
+    id: z.string(),
+  }),
+  z.object({
+    type: z.literal('task'),
+    id: z.string(),
+  }),
+  z.object({
+    type: z.literal('widget'),
+    id: z.string(),
+  }),
+]);
+
 export const planDaySchema = z.object({
   day: z.number().int().positive(),
   groups: z.array(planGroupSchema),
   tasks: z.array(planTaskSchema),
+
+  // Пока optional для совместимости со старыми сохранёнными планами.
+  contentOrder: z.array(planContentOrderItemSchema).optional(),
 });
 
 export const planTemplateSchema = z.object({
@@ -37,6 +56,7 @@ export const userPlanSchema = z.object({
 
 export type PlanGroup = z.infer<typeof planGroupSchema>;
 export type PlanTask = z.infer<typeof planTaskSchema>;
+export type PlanContentOrderItem = z.infer<typeof planContentOrderItemSchema>;
 export type PlanDay = z.infer<typeof planDaySchema>;
 export type PlanTemplate = z.infer<typeof planTemplateSchema>;
 export type UserPlanData = z.infer<typeof userPlanSchema>;

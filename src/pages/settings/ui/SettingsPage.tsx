@@ -1,4 +1,4 @@
-import { gamification } from '@/entities/plan';
+import { levels } from '@/entities/plan';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { useSettingsStore, type SettingsData } from '@/entities/settings';
 import { WorkStartSelect } from '@/features/set-work-start';
@@ -143,7 +143,7 @@ export function SettingsPage() {
               Придумай небольшую награду, которую получишь после достижения каждого уровня.
             </Typography>
 
-            {gamification.levels.map((level) => (
+            {levels.map((level) => (
               <Input
                 key={level.id}
                 label={level.title}

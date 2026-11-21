@@ -1,4 +1,4 @@
-import { gamification, xpConfig, useUserWorkoutPlanStore } from '@/entities/plan';
+import { levels, usePlanStore, xpConfig } from '@/entities/plan';
 import {
   getCurrentDay,
   getLevelState,
@@ -6,14 +6,13 @@ import {
   totalXp,
   useProgressStore,
 } from '@/entities/progress';
-import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { todayISO } from '@/shared/lib';
 import { useMemo } from 'react';
 
 /** XP, уровень и серия на основе пользовательского плана. */
 export function useXpSummary() {
-  const template = useUserWorkoutPlanStore((state) => state.template);
-  const dayOverrides = useUserWorkoutPlanStore((state) => state.dayOverrides);
+  const template = usePlanStore((state) => state.template);
+  const dayOverrides = usePlanStore((state) => state.dayOverrides);
 
   const completed = useProgressStore((state) => state.completed);
   const microBreaks = useProgressStore((state) => state.microBreaks);
@@ -25,22 +24,20 @@ export function useXpSummary() {
     const snapshot = { completed, microBreaks };
 
     const xp = totalXp(days, snapshot, xpConfig);
-    const level = getLevelState(xp, gamification.levels);
+    const level = getLevelState(xp, levels);
 
-    const currentDay = getCurrentDay(startDate, todayISO(), PLAN_LENGTH_DAYS).day;
+    const currentDay = getCurrentDay(startDate, todayISO(), template.days.length).day;
 
     const streak = getStreak(days, snapshot, currentDay);
 
-    const reachedLevels = gamification.levels.filter(
-      (item) => item.xp !== null && xp >= item.xp,
-    ).length;
+    const reachedLevels = levels.filter((item) => item.xp !== null && xp >= item.xp).length;
 
     return {
       xp,
       level,
       streak,
       reachedLevels,
-      levels: gamification.levels,
+      levels: levels,
     };
   }, [template.days, dayOverrides, completed, microBreaks, startDate]);
 }

@@ -84,7 +84,7 @@ export interface LevelState {
   xpToNext: number;
 }
 
-export function getLevelState(xp: number, levels: LevelLike[]): LevelState {
+export function getLevelState(xp: number, levels: readonly LevelLike[]): LevelState {
   const thresholds = levels
     .filter((level): level is LevelLike & { xp: number } => level.xp !== null)
     .sort((a, b) => a.xp - b.xp);

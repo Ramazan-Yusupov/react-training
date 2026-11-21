@@ -1,7 +1,8 @@
-import { gamification } from '../model/plans';
-
-/** Параметры подсчёта очков из gamification.json */
+/**
+ * Базовые настройки начисления XP.
+ * В дальнейшем пользователь сможет настраивать их самостоятельно.
+ */
 export const xpConfig = {
-  microBreakCap: gamification.microBreakDailyCap,
-  dayBonus: gamification.dayBonus.xp,
-};
+  microBreakCap: 8,
+  dayBonus: 10,
+} as const;

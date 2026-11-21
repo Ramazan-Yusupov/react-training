@@ -1,4 +1,5 @@
 import { levels } from '@/entities/plan';
+import { useMicroBreakStore, type MicroBreakData } from '@/entities/micro-breaks';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { useSettingsStore, type SettingsData } from '@/entities/settings';
 import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
@@ -10,18 +11,59 @@ interface BackupData {
   exportedAt: string;
   progress: ProgressData;
   settings: SettingsData;
+  microBreaks?: MicroBreakData;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isMicroBreakData(value: unknown): value is MicroBreakData {
+  if (!isRecord(value) || !Array.isArray(value.items)) {
+    return false;
+  }
+
+  const ids = new Set<string>();
+
+  for (const item of value.items) {
+    if (!isRecord(item)) {
+      return false;
+    }
+
+    const validItem =
+      typeof item.id === 'string' &&
+      item.id.trim().length > 0 &&
+      typeof item.text === 'string' &&
+      item.text.trim().length > 0 &&
+      typeof item.durationMinutes === 'number' &&
+      Number.isInteger(item.durationMinutes) &&
+      item.durationMinutes >= 1 &&
+      item.durationMinutes <= 60 &&
+      typeof item.enabled === 'boolean' &&
+      typeof item.order === 'number' &&
+      Number.isInteger(item.order) &&
+      item.order >= 0;
+
+    if (!validItem || ids.has(item.id as string)) {
+      return false;
+    }
+
+    ids.add(item.id as string);
+  }
+
+  return true;
+}
+
 function validateBackup(value: unknown): value is BackupData {
-  if (!isRecord(value) || value.version !== 1) return false;
+  if (!isRecord(value) || value.version !== 1) {
+    return false;
+  }
 
-  const { progress, settings } = value;
+  const { progress, settings, microBreaks } = value;
 
-  if (!isRecord(progress) || !isRecord(settings)) return false;
+  if (!isRecord(progress) || !isRecord(settings)) {
+    return false;
+  }
 
   const validProgress =
     typeof progress.startDate === 'string' &&
@@ -32,7 +74,10 @@ function validateBackup(value: unknown): value is BackupData {
   // это поле было в старых резервных копиях и теперь не используется.
   const validSettings = isRecord(settings.rewards);
 
-  return validProgress && validSettings;
+  // microBreaks отсутствует в старых резервных копиях версии 1.
+  const validMicroBreaks = microBreaks === undefined || isMicroBreakData(microBreaks);
+
+  return validProgress && validSettings && validMicroBreaks;
 }
 
 export function SettingsPage() {
@@ -46,10 +91,12 @@ export function SettingsPage() {
   const resetProgress = useProgressStore((state) => state.reset);
 
   const replaceSettings = useSettingsStore((state) => state.replaceAll);
+  const replaceMicroBreaks = useMicroBreakStore((state) => state.replaceAll);
 
   const handleExport = () => {
     const progressState = useProgressStore.getState();
     const settingsState = useSettingsStore.getState();
+    const microBreakState = useMicroBreakStore.getState();
 
     const backup: BackupData = {
       version: 1,
@@ -61,6 +108,9 @@ export function SettingsPage() {
       },
       settings: {
         rewards: settingsState.rewards,
+      },
+      microBreaks: {
+        items: microBreakState.items,
       },
     };
 
@@ -99,6 +149,12 @@ export function SettingsPage() {
       replaceSettings({
         rewards: parsed.settings.rewards as Record<string, string>,
       });
+
+      // Старые резервные копии не содержат пользовательские микро-паузы.
+      // В таком случае оставляем текущий список без изменений.
+      if (parsed.microBreaks) {
+        replaceMicroBreaks(parsed.microBreaks);
+      }
 
       toast.success('Данные успешно восстановлены');
     } catch {
@@ -157,7 +213,7 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани выполненные задачи, прогресс и выбранные награды в JSON-файл.
+              Сохрани прогресс, награды и свой список микро-пауз в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>

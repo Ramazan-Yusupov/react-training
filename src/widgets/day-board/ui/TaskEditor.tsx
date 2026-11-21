@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { usePlanStore } from '@/entities/plan';
 import type { PlanTask } from '@/entities/plan';
 import { Button, Checkbox, IconButton, Input, Modal } from '@/shared/ui';
 import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
-type EditorMode = 'add' | 'edit' | 'delete' | null;
+type EditorMode = 'add' | 'edit' | 'delete' | 'all-scope' | null;
 
 interface TaskEditorProps {
   day: number;
@@ -14,6 +14,7 @@ interface TaskEditorProps {
 
 export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   const addTask = usePlanStore((state) => state.addTask);
+  const addTaskToAllDaysWithGroup = usePlanStore((state) => state.addTaskToAllDaysWithGroup);
   const updateTask = usePlanStore((state) => state.updateTask);
   const deleteTask = usePlanStore((state) => state.deleteTask);
 
@@ -22,6 +23,9 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
       state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day),
   );
 
+  const templateDays = usePlanStore((state) => state.template.days);
+  const dayOverrides = usePlanStore((state) => state.dayOverrides);
+
   const [mode, setMode] = useState<EditorMode>(null);
   const [title, setTitle] = useState(task?.title ?? '');
   const [durationMin, setDurationMin] = useState(String(task?.durationMin ?? 5));
@@ -29,9 +33,23 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
-  const taskCount = currentDay?.tasks.filter((item) => item.groupId === groupId).length ?? 0;
+  const missingGroupDays = useMemo(() => {
+    if (!groupId) return [];
 
-  const isLimitReached = taskCount >= 10;
+    return templateDays
+      .filter((templateDay) => {
+        const current = dayOverrides[String(templateDay.day)] ?? templateDay;
+
+        return !current.groups.some((group) => group.id === groupId);
+      })
+      .map((item) => item.day);
+  }, [templateDays, dayOverrides, groupId]);
+
+  const taskGroupId = groupId ?? null;
+
+  const taskCount = currentDay?.tasks.filter((item) => item.groupId === taskGroupId).length ?? 0;
+
+  const isLimitReached = groupId !== undefined && taskCount >= 10;
 
   const close = () => {
     setMode(null);
@@ -71,12 +89,17 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   };
 
   const handleAdd = (scope: 'day' | 'all') => {
-    if (!groupId) return;
-
     const values = validate();
+
     if (!values) return;
 
-    const result = addTask(day, groupId, values, scope);
+    // Если карточки нет во всех днях, сначала предлагаем выбрать стратегию.
+    if (scope === 'all' && groupId && missingGroupDays.length > 0) {
+      setMode('all-scope');
+      return;
+    }
+
+    const result = addTask(day, taskGroupId, values, scope);
 
     if (!result) {
       setError(
@@ -90,10 +113,45 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
     close();
   };
 
+  const handleAddToAllDays = () => {
+    const values = validate();
+
+    if (!values || !groupId) return;
+
+    const result = addTaskToAllDaysWithGroup(day, groupId, values);
+
+    if (!result) {
+      setError(
+        'Не удалось добавить задачу. Возможно, в одной из карточек достигнут лимит в 10 задач.',
+      );
+      setMode('add');
+      return;
+    }
+
+    close();
+  };
+
+  const handleAddToExistingGroups = () => {
+    const values = validate();
+
+    if (!values || !groupId) return;
+
+    const result = addTask(day, groupId, values, 'all');
+
+    if (!result) {
+      setError('Не удалось добавить задачу. Проверь лимит задач.');
+      setMode('add');
+      return;
+    }
+
+    close();
+  };
+
   const handleUpdate = (scope: 'day' | 'all') => {
     if (!task) return;
 
     const values = validate();
+
     if (!values) return;
 
     updateTask(day, task.id, values, scope);
@@ -163,18 +221,20 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   );
 
   if (!task) {
-    if (!groupId) return null;
-
     return (
       <>
         <Button
           size="sm"
-          variant="ghost"
+          variant={groupId ? 'ghost' : 'outline'}
           icon={<FaPlus />}
           disabled={isLimitReached}
           onClick={() => setMode('add')}
         >
-          {isLimitReached ? 'Лимит задач достигнут' : `Добавить задачу (${taskCount}/10)`}
+          {groupId
+            ? isLimitReached
+              ? 'Лимит задач достигнут'
+              : `Добавить задачу (${taskCount}/10)`
+            : 'Добавить задачу без карточки'}
         </Button>
 
         <Modal open={mode === 'add'} onClose={close} title="Новая задача" size="lg">
@@ -198,7 +258,44 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
               disabled={!title.trim()}
               onClick={() => handleAdd('all')}
             >
-              Во всех днях с этой карточкой
+              Во всех днях
+            </Button>
+
+            <Button variant="ghost" fullWidth onClick={close}>
+              Отмена
+            </Button>
+          </div>
+        </Modal>
+
+        <Modal
+          open={mode === 'all-scope'}
+          onClose={close}
+          title="Карточка есть не во всех днях"
+          size="lg"
+        >
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-gray-300">Карточка отсутствует в следующих днях:</p>
+
+            <p className="text-sm text-amber-400">{missingGroupDays.join(', ')}</p>
+
+            <p className="text-sm text-gray-300">Как поступить с задачей?</p>
+
+            <Button
+              variant="primary"
+              fullWidth
+              disabled={!title.trim()}
+              onClick={handleAddToAllDays}
+            >
+              Создать карточку в недостающих днях и добавить задачу
+            </Button>
+
+            <Button
+              variant="outline"
+              fullWidth
+              disabled={!title.trim()}
+              onClick={handleAddToExistingGroups}
+            >
+              Добавить только в дни с этой карточкой
             </Button>
 
             <Button variant="ghost" fullWidth onClick={close}>

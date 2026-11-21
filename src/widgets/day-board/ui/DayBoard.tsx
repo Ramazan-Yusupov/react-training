@@ -24,6 +24,8 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
+  const standaloneTasks = planDay.tasks.filter((task) => task.groupId === null);
+
   return (
     <Card>
       <DayHeader
@@ -59,6 +61,20 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         })}
 
         <GroupEditor day={day} />
+
+        <section className="flex flex-col gap-3 rounded-2xl border-2 border-dashed border-slate-700 p-3">
+          <Typography as="h6" align="start" tone="accent" text="Задачи без карточки" />
+
+          {standaloneTasks.length > 0 ? (
+            standaloneTasks.map((task) => <TaskItem key={task.id} task={task} day={day} />)
+          ) : (
+            <p className="text-sm text-gray-400">
+              Здесь можно хранить отдельные задачи, не привязанные к карточкам.
+            </p>
+          )}
+
+          <TaskEditor day={day} />
+        </section>
       </div>
     </Card>
   );

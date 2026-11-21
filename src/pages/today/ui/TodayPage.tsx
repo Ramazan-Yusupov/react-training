@@ -2,7 +2,6 @@ import { DaySwitcher, useSelectedDay } from '@/features/select-day';
 import { DayBoard } from '@/widgets/day-board';
 import { FocusTools } from '@/widgets/focus-tools';
 import { MonthStrip } from '@/widgets/month-strip';
-import { XpWeekChart } from '@/widgets/xp-week-chart';
 
 export function TodayPage() {
   const { day, setDay } = useSelectedDay();
@@ -19,11 +18,8 @@ export function TodayPage() {
         </section>
 
         <aside className="flex min-w-0 flex-col gap-4 sm:gap-6">
-          <FocusTools day={day} />
-
+          <FocusTools />
           <MonthStrip selected={day} onSelect={setDay} />
-
-          <XpWeekChart day={day} />
         </aside>
       </div>
     </div>

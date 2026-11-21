@@ -47,22 +47,22 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
     setIsMicroBreakEditorOpen(true);
   };
 
+  const openSettings = () => setIsEditorOpen(true);
+
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-3">
-        <Typography as="h6" align="start" tone="accent" text={title} />
+      {widget.type === 'micro-breaks' && <MicroBreaks day={day} onSettingsClick={openSettings} />}
 
-        <Button size="sm" variant="ghost" onClick={() => setIsEditorOpen(true)}>
-          Настроить
-        </Button>
-      </div>
-
-      {widget.type === 'micro-breaks' && <MicroBreaks day={day} />}
-
-      {widget.type === 'xp-by-days' && <XpWeekChart day={day} />}
+      {widget.type === 'xp-by-days' && <XpWeekChart day={day} onSettingsClick={openSettings} />}
 
       {widget.type === 'accordion' && (
         <Card>
+          <div className="flex items-center justify-between gap-3">
+            <Typography as="h6" align="start" tone="accent" text={title} />
+            <Button size="sm" variant="ghost" onClick={openSettings}>
+              Настроить
+            </Button>
+          </div>
           <Typography tone="muted" align="start">
             Редактор аккордеона появится на следующем этапе.
           </Typography>

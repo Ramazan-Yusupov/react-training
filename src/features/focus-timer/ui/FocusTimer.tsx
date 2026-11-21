@@ -24,13 +24,15 @@ export function FocusTimer() {
         text={formatClock(remaining)}
       />
       <Progress value={total - remaining} max={total} color={mode === 'work' ? 'blue' : 'green'} />
-      <div className="flex flex-wrap justify-center gap-2">
-        {running ? (
-          <Button variant="primary" icon={<FaPause />} title="Пауза" onClick={pause} />
-        ) : (
-          <Button variant="primary" icon={<FaPlay />} title="Старт" onClick={start} />
-        )}
-        <Button icon={<FaRotateLeft />} title="Сброс" onClick={reset} />
+      <div className="flex flex-col justify-center gap-2">
+        <div className="flex gap-2">
+          {running ? (
+            <Button variant="primary" icon={<FaPause />} title="Пауза" onClick={pause} />
+          ) : (
+            <Button variant="primary" icon={<FaPlay />} title="Старт" onClick={start} />
+          )}
+          <Button icon={<FaRotateLeft />} title="Сброс" onClick={reset} />
+        </div>
         <Button variant="ghost" icon={<FaForwardStep />} title="Пропустить" onClick={skip} />
       </div>
     </div>

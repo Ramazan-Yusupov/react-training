@@ -3,12 +3,28 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type TimerMode = 'work' | 'break';
 
-const DURATION: Record<TimerMode, number> = { work: FOCUS_TIMER.WORK, break: FOCUS_TIMER.BREAK };
+export interface FocusTimerDurations {
+  workDuration: number;
+  breakDuration: number;
+}
 
-/** Таймер 50/10. Время считается по часам (Date.now), поэтому не уплывает в фоновой вкладке. */
-export function useFocusTimer(onPhaseEnd?: (finished: TimerMode) => void) {
+const DEFAULT_DURATIONS: FocusTimerDurations = {
+  workDuration: FOCUS_TIMER.WORK,
+  breakDuration: FOCUS_TIMER.BREAK,
+};
+
+/** Таймер с настраиваемой длительностью. Время считается через Date.now(). */
+export function useFocusTimer(
+  onPhaseEnd?: (finished: TimerMode) => void,
+  durations: FocusTimerDurations = DEFAULT_DURATIONS,
+) {
+  const { workDuration, breakDuration } = durations;
+
+  const getDuration = (timerMode: TimerMode) =>
+    timerMode === 'work' ? workDuration : breakDuration;
+
   const [mode, setMode] = useState<TimerMode>('work');
-  const [remaining, setRemaining] = useState<number>(DURATION.work);
+  const [remaining, setRemaining] = useState<number>(workDuration);
   const [running, setRunning] = useState(false);
 
   const endsAt = useRef(0);
@@ -19,48 +35,78 @@ export function useFocusTimer(onPhaseEnd?: (finished: TimerMode) => void) {
     callbackRef.current = onPhaseEnd;
   }, [onPhaseEnd]);
 
+  // При изменении настроек останавливаем таймер и начинаем новый рабочий период.
+  useEffect(() => {
+    setRunning(false);
+    modeRef.current = 'work';
+    setMode('work');
+    setRemaining(workDuration);
+    endsAt.current = 0;
+  }, [workDuration, breakDuration]);
+
   useEffect(() => {
     if (!running) return;
 
     const id = setInterval(() => {
       const left = Math.round((endsAt.current - Date.now()) / 1000);
+
       if (left > 0) {
         setRemaining(left);
         return;
       }
+
       const finished = modeRef.current;
       const next: TimerMode = finished === 'work' ? 'break' : 'work';
+      const nextDuration = getDuration(next);
+
       modeRef.current = next;
-      endsAt.current = Date.now() + DURATION[next] * 1000;
+      endsAt.current = Date.now() + nextDuration * 1000;
+
       setMode(next);
-      setRemaining(DURATION[next]);
+      setRemaining(nextDuration);
+
       callbackRef.current?.(finished);
     }, 250);
 
     return () => clearInterval(id);
-  }, [running]);
+  }, [running, workDuration, breakDuration]);
 
   const start = useCallback(() => {
     endsAt.current = Date.now() + remaining * 1000;
     setRunning(true);
   }, [remaining]);
 
-  const pause = useCallback(() => setRunning(false), []);
+  const pause = useCallback(() => {
+    setRunning(false);
+  }, []);
 
   const reset = useCallback(() => {
     setRunning(false);
     modeRef.current = 'work';
     setMode('work');
-    setRemaining(DURATION.work);
-  }, []);
+    setRemaining(workDuration);
+    endsAt.current = 0;
+  }, [workDuration]);
 
   const skip = useCallback(() => {
     const next: TimerMode = modeRef.current === 'work' ? 'break' : 'work';
-    modeRef.current = next;
-    endsAt.current = Date.now() + DURATION[next] * 1000;
-    setMode(next);
-    setRemaining(DURATION[next]);
-  }, []);
+    const nextDuration = getDuration(next);
 
-  return { mode, remaining, running, total: DURATION[mode], start, pause, reset, skip };
+    modeRef.current = next;
+    endsAt.current = Date.now() + nextDuration * 1000;
+
+    setMode(next);
+    setRemaining(nextDuration);
+  }, [workDuration, breakDuration]);
+
+  return {
+    mode,
+    remaining,
+    running,
+    total: getDuration(mode),
+    start,
+    pause,
+    reset,
+    skip,
+  };
 }

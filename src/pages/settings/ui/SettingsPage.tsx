@@ -1,8 +1,7 @@
 import { levels } from '@/entities/plan';
 import { useMicroBreakStore, type MicroBreakData } from '@/entities/micro-breaks';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
-import { useSettingsStore, type SettingsData } from '@/entities/settings';
-import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
+import { DEFAULT_SETTINGS, useSettingsStore, type SettingsData } from '@/entities/settings';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
 
@@ -16,6 +15,10 @@ interface BackupData {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isValidDuration(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 1;
 }
 
 function isMicroBreakData(value: unknown): value is MicroBreakData {
@@ -70,11 +73,12 @@ function validateBackup(value: unknown): value is BackupData {
     isRecord(progress.completed) &&
     isRecord(progress.microBreaks);
 
-  // workStartHour намеренно не проверяем:
-  // это поле было в старых резервных копиях и теперь не используется.
-  const validSettings = isRecord(settings.rewards);
+  // Новые поля необязательны для совместимости со старыми копиями.
+  const validSettings =
+    isRecord(settings.rewards) &&
+    (settings.workDurationMin === undefined || isValidDuration(settings.workDurationMin)) &&
+    (settings.breakDurationMin === undefined || isValidDuration(settings.breakDurationMin));
 
-  // microBreaks отсутствует в старых резервных копиях версии 1.
   const validMicroBreaks = microBreaks === undefined || isMicroBreakData(microBreaks);
 
   return validProgress && validSettings && validMicroBreaks;
@@ -108,6 +112,8 @@ export function SettingsPage() {
       },
       settings: {
         rewards: settingsState.rewards,
+        workDurationMin: settingsState.workDurationMin,
+        breakDurationMin: settingsState.breakDurationMin,
       },
       microBreaks: {
         items: microBreakState.items,
@@ -148,6 +154,8 @@ export function SettingsPage() {
 
       replaceSettings({
         rewards: parsed.settings.rewards as Record<string, string>,
+        workDurationMin: parsed.settings.workDurationMin ?? DEFAULT_SETTINGS.workDurationMin,
+        breakDurationMin: parsed.settings.breakDurationMin ?? DEFAULT_SETTINGS.breakDurationMin,
       });
 
       // Старые резервные копии не содержат пользовательские микро-паузы.
@@ -180,7 +188,7 @@ export function SettingsPage() {
         </Typography>
 
         <Typography align="start" tone="muted">
-          Награды, микро-паузы и управление данными
+          Награды и управление данными
         </Typography>
       </header>
 
@@ -206,14 +214,12 @@ export function SettingsPage() {
               />
             ))}
           </Card>
-
-          <MicroBreaksEditor />
         </section>
 
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани прогресс, награды и свой список микро-пауз в JSON-файл.
+              Сохрани прогресс, награды, настройки таймера и свой список микро-пауз в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>

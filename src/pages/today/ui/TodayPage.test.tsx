@@ -77,16 +77,11 @@ describe('страница «Сегодня»', () => {
 
     fireEvent.click(screen.getByText('Бросить кубик'));
 
-    const breakTexts = [
-      'Встань и немного пройдись.',
-      'Переведи взгляд вдаль и отдохни от экрана.',
-      'Расслабь плечи и измени положение тела.',
-      'Сделай несколько спокойных глубоких вдохов.',
-      'Выпей воды и немного отдохни.',
-      'Отведи взгляд от экрана и дай глазам отдохнуть.',
-    ];
+    const enabledBreaks = useMicroBreakStore.getState().items.filter((item) => item.enabled);
 
-    expect(breakTexts.some((text) => screen.queryByText(text) !== null)).toBe(true);
+    expect(enabledBreaks.length).toBeGreaterThan(0);
+
+    expect(enabledBreaks.some((item) => screen.queryByText(item.text) !== null)).toBe(true);
 
     fireEvent.click(screen.getByText('Сделал'));
 

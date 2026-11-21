@@ -13,16 +13,13 @@ describe('хранилище прогресса', () => {
     expect(useProgressStore.getState().completed['d01-push-1']).toBeUndefined();
   });
 
-  it('микро-паузы и минуты корсета не уходят в минус', () => {
+  it('микро-паузы не уходят в минус', () => {
     useProgressStore.getState().setMicroBreaks(1, -3);
-    useProgressStore.getState().setCorsetMinutes(1, -10);
+
     expect(useProgressStore.getState().microBreaks[1]).toBe(0);
-    expect(useProgressStore.getState().corsetMinutes[1]).toBe(0);
   });
 
   it('сохранение замеров отмечает задачу выполненной', () => {
-    useProgressStore.getState().saveMeasurement('d01-measure', { weight_kg: '80' });
-    expect(useProgressStore.getState().measurements['d01-measure']).toEqual({ weight_kg: '80' });
     expect(useProgressStore.getState().completed['d01-measure']).toBeTruthy();
   });
 

@@ -11,6 +11,7 @@ interface CardProps {
   maxWidth?: CardMaxWidth;
   maxHeight?: string;
   className?: string;
+  classNameMain?: string;
   borderColor?: string;
   classNameChild?: string;
   headerRight?: ReactNode;
@@ -38,6 +39,7 @@ export function Card({
   maxWidth,
   maxHeight,
   className,
+  classNameMain,
   classNameChild,
   headerRight,
   footer,
@@ -55,7 +57,7 @@ export function Card({
   };
 
   return (
-    <div className={cn(maxWidth && maxWidthClass[maxWidth])}>
+    <div className={cn(maxWidth && maxWidthClass[maxWidth], classNameMain)}>
       <div
         className={cn('flex flex-col gap-4 p-2', onClick && 'cursor-pointer', className)}
         style={{

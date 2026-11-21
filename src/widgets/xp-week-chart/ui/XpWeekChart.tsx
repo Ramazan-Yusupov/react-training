@@ -29,7 +29,10 @@ export function XpWeekChart({ day }: XpWeekChartProps) {
   }, [template.days, dayOverrides, completed, microBreaks, day]);
 
   return (
-    <Card title="XP по дням">
+    <Card
+      title="XP по дням"
+      classNameMain="border-2 border-dotted border-amber-600 p-2 rounded-2xl"
+    >
       <BarChart data={data} valueLabel="XP" />
     </Card>
   );

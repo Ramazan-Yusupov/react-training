@@ -4,6 +4,7 @@ import type { PlanContentOrderItem, PlanWidget, PlanWidgetType } from '@/entitie
 import { useProgressStore } from '@/entities/progress';
 import { MicroBreaks } from '@/widgets/micro-breaks';
 import { XpWeekChart } from '@/widgets/xp-week-chart';
+import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
 import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
 import { FaPlus } from 'react-icons/fa6';
 
@@ -25,8 +26,8 @@ interface PlanWidgetItemProps {
 
 function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isMicroBreakEditorOpen, setIsMicroBreakEditorOpen] = useState(false);
 
-  const updateWidget = usePlanStore((state) => state.updateWidget);
   const deleteWidget = usePlanStore((state) => state.deleteWidget);
 
   const title =
@@ -36,14 +37,14 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
         ? 'XP по дням'
         : 'Аккордеон';
 
-  const handleEnabledChange = (scope: 'day' | 'all', enabled: boolean) => {
-    updateWidget(day, widget.id, { enabled }, scope);
-    setIsEditorOpen(false);
-  };
-
   const handleDelete = (scope: 'day' | 'all') => {
     deleteWidget(day, widget.id, scope);
     setIsEditorOpen(false);
+  };
+
+  const openMicroBreakEditor = () => {
+    setIsEditorOpen(false);
+    setIsMicroBreakEditorOpen(true);
   };
 
   return (
@@ -56,26 +57,16 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
         </Button>
       </div>
 
-      {widget.enabled ? (
-        <>
-          {widget.type === 'micro-breaks' && <MicroBreaks day={day} />}
+      {widget.type === 'micro-breaks' && <MicroBreaks day={day} />}
 
-          {widget.type === 'xp-by-days' && <XpWeekChart day={day} />}
+      {widget.type === 'xp-by-days' && <XpWeekChart day={day} />}
 
-          {widget.type === 'accordion' && (
-            <Card>
-              <Typography tone="muted" align="start">
-                Редактор аккордеона появится на следующем этапе.
-              </Typography>
-            </Card>
-          )}
-        </>
-      ) : (
-        <div className="rounded-xl border border-dashed border-white/20 p-4">
+      {widget.type === 'accordion' && (
+        <Card>
           <Typography tone="muted" align="start">
-            Виджет отключён
+            Редактор аккордеона появится на следующем этапе.
           </Typography>
-        </div>
+        </Card>
       )}
 
       <Modal
@@ -88,21 +79,11 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
             Управление виджетом
           </Typography>
 
-          <Button
-            fullWidth
-            variant="outline"
-            onClick={() => handleEnabledChange('day', !widget.enabled)}
-          >
-            {widget.enabled ? 'Отключить на этот день' : 'Включить на этот день'}
-          </Button>
-
-          <Button
-            fullWidth
-            variant="outline"
-            onClick={() => handleEnabledChange('all', !widget.enabled)}
-          >
-            {widget.enabled ? 'Отключить во всех днях' : 'Включить во всех днях'}
-          </Button>
+          {widget.type === 'micro-breaks' && (
+            <Button fullWidth variant="primary" onClick={openMicroBreakEditor}>
+              Редактировать список микро-пауз
+            </Button>
+          )}
 
           <div className="my-1 border-t border-white/10" />
 
@@ -118,6 +99,15 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
             Отмена
           </Button>
         </div>
+      </Modal>
+
+      <Modal
+        open={isMicroBreakEditorOpen}
+        onClose={() => setIsMicroBreakEditorOpen(false)}
+        title="Редактор микро-пауз"
+        size="lg"
+      >
+        <MicroBreaksEditor />
       </Modal>
     </div>
   );
@@ -147,8 +137,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  // Для старых данных без contentOrder используем порядок:
-  // сначала карточки, затем самостоятельные задачи и виджеты.
   const contentOrder: PlanContentOrderItem[] = planDay.contentOrder ?? [
     ...planDay.groups.map((group) => ({
       type: 'group' as const,
@@ -271,7 +259,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         </Button>
       </div>
 
-      {/* Общее меню добавления */}
       <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">
         <div className="flex flex-col gap-2">
           <Button
@@ -299,7 +286,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         </div>
       </Modal>
 
-      {/* Выбор типа виджета */}
       <Modal
         open={isWidgetTypeOpen}
         onClose={() => setIsWidgetTypeOpen(false)}
@@ -324,7 +310,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         </div>
       </Modal>
 
-      {/* Выбор области отображения виджета */}
       <Modal
         open={isWidgetScopeOpen}
         onClose={() => {
@@ -355,7 +340,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         </div>
       </Modal>
 
-      {/* Выбор места для новой задачи */}
       <Modal
         open={isTaskTargetOpen}
         onClose={() => setIsTaskTargetOpen(false)}
@@ -400,7 +384,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         </div>
       </Modal>
 
-      {/* Редакторы создания открываются из общего меню */}
       <GroupEditor
         day={day}
         open={isGroupEditorOpen}

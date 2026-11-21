@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { usePlanStore } from '@/entities/plan';
 import type { PlanContentOrderItem } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
-import { Card, ErrorUI, Typography } from '@/shared/ui';
+import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
+import { FaPlus } from 'react-icons/fa6';
 
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
@@ -15,6 +17,14 @@ interface DayBoardProps {
 }
 
 export function DayBoard({ day, onDayChange }: DayBoardProps) {
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const [isTaskTargetOpen, setIsTaskTargetOpen] = useState(false);
+  const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
+  const [isTaskEditorOpen, setIsTaskEditorOpen] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState('');
+
+  const [taskGroupId, setTaskGroupId] = useState<string | undefined>(undefined);
+
   const startDate = useProgressStore((state) => state.startDate);
 
   const template = usePlanStore((state) => state.template);
@@ -40,6 +50,26 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         id: task.id,
       })),
   ];
+
+  const openTaskTarget = () => {
+    setSelectedGroupId(planDay.groups[0]?.id ?? '');
+    setIsAddMenuOpen(false);
+    setIsTaskTargetOpen(true);
+  };
+
+  const openStandaloneTask = () => {
+    setTaskGroupId(undefined);
+    setIsTaskTargetOpen(false);
+    setIsTaskEditorOpen(true);
+  };
+
+  const openGroupTask = () => {
+    if (!selectedGroupId) return;
+
+    setTaskGroupId(selectedGroupId);
+    setIsTaskTargetOpen(false);
+    setIsTaskEditorOpen(true);
+  };
 
   return (
     <Card>
@@ -74,8 +104,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
                 {tasks.map((task) => (
                   <TaskItem key={task.id} task={task} day={day} />
                 ))}
-
-                <TaskEditor day={day} groupId={group.id} />
               </section>
             );
           }
@@ -94,10 +122,105 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
           return null;
         })}
 
-        {/* Временные кнопки добавления. Позже заменим единым меню. */}
-        <GroupEditor day={day} />
-        <TaskEditor day={day} />
+        <Button
+          size="md"
+          variant="outline"
+          icon={<FaPlus />}
+          fullWidth
+          onClick={() => setIsAddMenuOpen(true)}
+        >
+          Добавить карточку, виджет, задачу
+        </Button>
       </div>
+
+      {/* Общее меню добавления */}
+      <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">
+        <div className="flex flex-col gap-2">
+          <Button
+            fullWidth
+            variant="outline"
+            onClick={() => {
+              setIsAddMenuOpen(false);
+              setIsGroupEditorOpen(true);
+            }}
+          >
+            Карточку
+          </Button>
+
+          <Button fullWidth variant="outline" onClick={openTaskTarget}>
+            Задачу
+          </Button>
+
+          <Button fullWidth variant="outline" disabled>
+            Виджет — скоро
+          </Button>
+
+          <Button variant="ghost" fullWidth onClick={() => setIsAddMenuOpen(false)}>
+            Отмена
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Выбор места для новой задачи */}
+      <Modal
+        open={isTaskTargetOpen}
+        onClose={() => setIsTaskTargetOpen(false)}
+        title="Где создать задачу?"
+      >
+        <div className="flex flex-col gap-3">
+          <Button fullWidth variant="outline" onClick={openStandaloneTask}>
+            Самостоятельная задача
+          </Button>
+
+          <div className="flex flex-col gap-2">
+            <Select
+              label="Выбери карточку"
+              value={selectedGroupId}
+              onChange={(event) => setSelectedGroupId(event.target.value)}
+              options={planDay.groups.map((group) => ({
+                value: group.id,
+                label: group.title,
+              }))}
+              placeholder="Выбрать карточку"
+            />
+
+            <Button
+              fullWidth
+              variant="primary"
+              disabled={!selectedGroupId || planDay.groups.length === 0}
+              onClick={openGroupTask}
+            >
+              Добавить в карточку
+            </Button>
+          </div>
+
+          {planDay.groups.length === 0 && (
+            <p className="text-sm text-gray-400">
+              Сначала создай карточку, если хочешь добавить задачу внутрь неё.
+            </p>
+          )}
+
+          <Button variant="ghost" fullWidth onClick={() => setIsTaskTargetOpen(false)}>
+            Отмена
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Редакторы создания открываются из общего меню */}
+      <GroupEditor
+        day={day}
+        open={isGroupEditorOpen}
+        onOpenChange={setIsGroupEditorOpen}
+        hideTrigger
+      />
+
+      <TaskEditor
+        day={day}
+        groupId={taskGroupId}
+        open={isTaskEditorOpen}
+        onOpenChange={setIsTaskEditorOpen}
+        hideTrigger
+      />
     </Card>
   );
 }

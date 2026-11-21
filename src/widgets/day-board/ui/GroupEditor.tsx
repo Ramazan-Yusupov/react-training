@@ -9,9 +9,18 @@ type EditorMode = 'add' | 'edit' | 'delete' | null;
 interface GroupEditorProps {
   day: number;
   group?: PlanGroup;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function GroupEditor({ day, group }: GroupEditorProps) {
+export function GroupEditor({
+  day,
+  group,
+  open,
+  onOpenChange,
+  hideTrigger = false,
+}: GroupEditorProps) {
   const addGroup = usePlanStore((state) => state.addGroup);
   const updateGroup = usePlanStore((state) => state.updateGroup);
   const deleteGroup = usePlanStore((state) => state.deleteGroup);
@@ -19,9 +28,12 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
   const [mode, setMode] = useState<EditorMode>(null);
   const [title, setTitle] = useState(group?.title ?? '');
 
+  const isAddOpen = open ?? mode === 'add';
+
   const close = () => {
     setMode(null);
     setTitle(group?.title ?? '');
+    onOpenChange?.(false);
   };
 
   const handleAdd = (scope: 'day' | 'all') => {
@@ -29,7 +41,7 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
 
     addGroup(day, title, scope);
     setTitle('');
-    setMode(null);
+    close();
   };
 
   const handleUpdate = (scope: 'day' | 'all') => {
@@ -49,11 +61,13 @@ export function GroupEditor({ day, group }: GroupEditorProps) {
   if (!group) {
     return (
       <>
-        <Button size="sm" variant="outline" icon={<FaPlus />} onClick={() => setMode('add')}>
-          Добавить карточку
-        </Button>
+        {!hideTrigger && (
+          <Button size="sm" variant="outline" icon={<FaPlus />} onClick={() => setMode('add')}>
+            Добавить карточку
+          </Button>
+        )}
 
-        <Modal open={mode === 'add'} onClose={close} title="Новая карточка" size="md">
+        <Modal open={isAddOpen} onClose={close} title="Новая карточка" size="md">
           <Input
             label="Название карточки"
             placeholder="Например, Учёба"

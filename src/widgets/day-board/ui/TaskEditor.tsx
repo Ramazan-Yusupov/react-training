@@ -10,9 +10,19 @@ interface TaskEditorProps {
   day: number;
   groupId?: string;
   task?: PlanTask;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
+export function TaskEditor({
+  day,
+  groupId,
+  task,
+  open,
+  onOpenChange,
+  hideTrigger = false,
+}: TaskEditorProps) {
   const addTask = usePlanStore((state) => state.addTask);
   const addTaskToAllDaysWithGroup = usePlanStore((state) => state.addTaskToAllDaysWithGroup);
   const updateTask = usePlanStore((state) => state.updateTask);
@@ -32,6 +42,8 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   const [xp, setXp] = useState(String(task?.xp ?? 5));
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
+
+  const isAddOpen = (open ?? mode === 'add') && mode !== 'all-scope';
 
   const missingGroupDays = useMemo(() => {
     if (!groupId) return [];
@@ -58,6 +70,7 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
     setXp(String(task?.xp ?? 5));
     setRequired(task?.required ?? true);
     setError('');
+    onOpenChange?.(false);
   };
 
   const validate = () => {
@@ -93,7 +106,6 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
 
     if (!values) return;
 
-    // Если карточки нет во всех днях, сначала предлагаем выбрать стратегию.
     if (scope === 'all' && groupId && missingGroupDays.length > 0) {
       setMode('all-scope');
       return;
@@ -223,21 +235,23 @@ export function TaskEditor({ day, groupId, task }: TaskEditorProps) {
   if (!task) {
     return (
       <>
-        <Button
-          size="sm"
-          variant={groupId ? 'ghost' : 'outline'}
-          icon={<FaPlus />}
-          disabled={isLimitReached}
-          onClick={() => setMode('add')}
-        >
-          {groupId
-            ? isLimitReached
-              ? 'Лимит задач достигнут'
-              : `Добавить задачу (${taskCount}/10)`
-            : 'Добавить задачу без карточки'}
-        </Button>
+        {!hideTrigger && (
+          <Button
+            size="sm"
+            variant={groupId ? 'ghost' : 'outline'}
+            icon={<FaPlus />}
+            disabled={isLimitReached}
+            onClick={() => setMode('add')}
+          >
+            {groupId
+              ? isLimitReached
+                ? 'Лимит задач достигнут'
+                : `Добавить задачу (${taskCount}/10)`
+              : 'Добавить задачу без карточки'}
+          </Button>
+        )}
 
-        <Modal open={mode === 'add'} onClose={close} title="Новая задача" size="lg">
+        <Modal open={isAddOpen} onClose={close} title="Новая задача" size="lg">
           {renderFields()}
 
           <p className="text-sm text-gray-400">Где создать задачу?</p>

@@ -7,6 +7,8 @@ import type {
   PlanDay,
   PlanGroup,
   PlanTask,
+  PlanWidget,
+  PlanWidgetType,
   UserPlanData,
 } from './planSchema';
 
@@ -14,6 +16,7 @@ export type EditScope = 'all' | 'day';
 
 const MAX_TASKS_PER_GROUP = 10;
 const STORAGE_KEY = 'planer-user-plan-v2';
+const STORAGE_VERSION = 3;
 
 type TaskInput = {
   title: string;
@@ -26,6 +29,8 @@ type TaskInput = {
 type TaskUpdate = Partial<
   Pick<PlanTask, 'title' | 'durationMin' | 'xp' | 'required' | 'scheduledTime'>
 >;
+
+type WidgetUpdate = Partial<Pick<PlanWidget, 'enabled'>>;
 
 interface PlanActions {
   addDay: () => void;
@@ -48,6 +53,10 @@ interface PlanActions {
 
   updateTask: (day: number, taskId: string, updates: TaskUpdate, scope: EditScope) => void;
   deleteTask: (day: number, taskId: string, scope: EditScope) => void;
+
+  addWidget: (day: number, type: PlanWidgetType, scope: EditScope) => string | null;
+  updateWidget: (day: number, widgetId: string, updates: WidgetUpdate, scope: EditScope) => void;
+  deleteWidget: (day: number, widgetId: string, scope: EditScope) => void;
 
   replaceAll: (data: UserPlanData) => void;
   reset: () => void;
@@ -90,6 +99,7 @@ function createStarterDay(day: number): PlanDay {
 /** Добавляет элемент в конец общего порядка, не создавая дубликатов. */
 function appendContentOrder(day: PlanDay, item: PlanContentOrderItem): PlanContentOrderItem[] {
   const contentOrder = day.contentOrder ?? [];
+
   const exists = contentOrder.some(
     (current) => current.type === item.type && current.id === item.id,
   );
@@ -99,10 +109,13 @@ function appendContentOrder(day: PlanDay, item: PlanContentOrderItem): PlanConte
 
 /** Восстанавливает порядок и добавляет элементы, которых в нём ещё нет. */
 function normalizePlanDay(day: PlanDay): PlanDay {
+  // Поддерживаем старые сохранённые дни без поля widgets.
+  const widgets = day.widgets ?? [];
+
   const validGroups = new Set(day.groups.map((group) => group.id));
   const standaloneTasks = day.tasks.filter((task) => task.groupId === null);
   const validTasks = new Set(standaloneTasks.map((task) => task.id));
-  const validWidgets = new Set(day.widgets.map((widget) => widget.id));
+  const validWidgets = new Set(widgets.map((widget) => widget.id));
 
   const contentOrder: PlanContentOrderItem[] = [];
   const seen = new Set<string>();
@@ -138,8 +151,18 @@ function normalizePlanDay(day: PlanDay): PlanDay {
     }
   }
 
+  for (const widget of widgets) {
+    const key = `widget:${widget.id}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      contentOrder.push({ type: 'widget', id: widget.id });
+    }
+  }
+
   return {
     ...day,
+    widgets,
     contentOrder,
   };
 }
@@ -196,7 +219,7 @@ function updateOneDay(
   return {
     dayOverrides: {
       ...state.dayOverrides,
-      [String(dayNumber)]: normalizePlanDay(updater(currentDay)),
+      [String(dayNumber)]: normalizePlanDay(updater(normalizePlanDay(currentDay))),
     },
   };
 }
@@ -208,10 +231,13 @@ function updateAllDays(
   return {
     template: {
       ...state.template,
-      days: state.template.days.map((day) => normalizePlanDay(updater(day))),
+      days: state.template.days.map((day) => normalizePlanDay(updater(normalizePlanDay(day)))),
     },
     dayOverrides: Object.fromEntries(
-      Object.entries(state.dayOverrides).map(([key, day]) => [key, normalizePlanDay(updater(day))]),
+      Object.entries(state.dayOverrides).map(([key, day]) => [
+        key,
+        normalizePlanDay(updater(normalizePlanDay(day))),
+      ]),
     ),
   };
 }
@@ -380,6 +406,7 @@ export const usePlanStore = create<PlanState>()(
 
             return (
               currentDay?.groups.some((group) => group.id === groupId) &&
+              currentDay &&
               countGroupTasks(currentDay, groupId) >= MAX_TASKS_PER_GROUP
             );
           });
@@ -550,6 +577,81 @@ export const usePlanStore = create<PlanState>()(
         );
       },
 
+      addWidget: (day, type, scope) => {
+        const selectedDay = getDay(get(), day);
+
+        if (!selectedDay) return null;
+
+        const widgetId = createId();
+
+        const widget: PlanWidget = {
+          id: widgetId,
+          type,
+          enabled: true,
+        };
+
+        const updater = (currentDay: PlanDay): PlanDay => {
+          const widgets = currentDay.widgets ?? [];
+
+          if (widgets.some((item) => item.id === widgetId)) {
+            return {
+              ...currentDay,
+              widgets,
+            };
+          }
+
+          return {
+            ...currentDay,
+            widgets: [...widgets, widget],
+            contentOrder: appendContentOrder(currentDay, {
+              type: 'widget',
+              id: widgetId,
+            }),
+          };
+        };
+
+        set((state) =>
+          scope === 'all' ? updateAllDays(state, updater) : updateOneDay(state, day, updater),
+        );
+
+        return widgetId;
+      },
+
+      updateWidget: (day, widgetId, updates, scope) => {
+        const selectedDay = getDay(get(), day);
+
+        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) return;
+
+        const updater = (currentDay: PlanDay): PlanDay => ({
+          ...currentDay,
+          widgets: (currentDay.widgets ?? []).map((widget) =>
+            widget.id === widgetId ? { ...widget, ...updates } : widget,
+          ),
+        });
+
+        set((state) =>
+          scope === 'all' ? updateAllDays(state, updater) : updateOneDay(state, day, updater),
+        );
+      },
+
+      deleteWidget: (day, widgetId, scope) => {
+        const selectedDay = getDay(get(), day);
+
+        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) return;
+
+        const updater = (currentDay: PlanDay): PlanDay => ({
+          ...currentDay,
+          widgets: (currentDay.widgets ?? []).filter((widget) => widget.id !== widgetId),
+          contentOrder: (currentDay.contentOrder ?? []).filter(
+            (item) => !(item.type === 'widget' && item.id === widgetId),
+          ),
+        });
+
+        set((state) =>
+          scope === 'all' ? updateAllDays(state, updater) : updateOneDay(state, day, updater),
+        );
+      },
+
       replaceAll: (data) => {
         set(normalizePlanData(data));
       },
@@ -558,7 +660,7 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 2,
+      version: STORAGE_VERSION,
       storage: createJSONStorage(() => localStorage),
       migrate: (persistedState) => normalizePlanData(persistedState),
       partialize: (state): UserPlanData => ({

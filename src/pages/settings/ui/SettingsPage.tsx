@@ -1,7 +1,6 @@
 import { levels } from '@/entities/plan';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { useSettingsStore, type SettingsData } from '@/entities/settings';
-import { WorkStartSelect } from '@/features/set-work-start';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
 
@@ -28,11 +27,9 @@ function validateBackup(value: unknown): value is BackupData {
     isRecord(progress.completed) &&
     isRecord(progress.microBreaks);
 
-  const validSettings =
-    typeof settings.workStartHour === 'number' &&
-    settings.workStartHour >= 5 &&
-    settings.workStartHour <= 12 &&
-    isRecord(settings.rewards);
+  // workStartHour намеренно не проверяем:
+  // это поле было в старых резервных копиях и теперь не используется.
+  const validSettings = isRecord(settings.rewards);
 
   return validProgress && validSettings;
 }
@@ -62,7 +59,6 @@ export function SettingsPage() {
         microBreaks: progressState.microBreaks,
       },
       settings: {
-        workStartHour: settingsState.workStartHour,
         rewards: settingsState.rewards,
       },
     };
@@ -100,8 +96,7 @@ export function SettingsPage() {
       });
 
       replaceSettings({
-        workStartHour: parsed.settings.workStartHour,
-        rewards: parsed.settings.rewards,
+        rewards: parsed.settings.rewards as Record<string, string>,
       });
 
       toast.success('Данные успешно восстановлены');
@@ -128,16 +123,12 @@ export function SettingsPage() {
         </Typography>
 
         <Typography align="start" tone="muted">
-          Персональные параметры, награды и управление данными
+          Награды и управление данными
         </Typography>
       </header>
 
       <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
         <section className="flex min-w-0 flex-col gap-4">
-          <Card title="Режим дня">
-            <WorkStartSelect />
-          </Card>
-
           <Card title="Награды за уровни">
             <Typography align="start" tone="muted" className="text-sm">
               Придумай небольшую награду, которую получишь после достижения каждого уровня.
@@ -163,7 +154,7 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани выполненные задачи, прогресс, настройки и выбранные награды в JSON-файл.
+              Сохрани выполненные задачи, прогресс и выбранные награды в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>
@@ -190,8 +181,7 @@ export function SettingsPage() {
 
           <Card title="Сброс данных" border="1px" borderColor="rgb(239 68 68 / 0.35)">
             <Typography align="start" tone="muted" className="text-sm">
-              Удаляет историю выполнения задач и накопленный прогресс. Настройки и выбранные награды
-              останутся.
+              Удаляет историю выполнения задач и накопленный прогресс. Выбранные награды останутся.
             </Typography>
 
             <Button variant="danger" fullWidth onClick={() => setResetOpen(true)}>

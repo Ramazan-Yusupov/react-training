@@ -1,10 +1,9 @@
-import { WorkStartSelect } from '@/features/set-work-start';
-import { Card } from '@/shared/ui';
+import { Card, Typography } from '@/shared/ui';
 
 export function QuickSettings() {
   return (
     <Card title="Быстрые настройки">
-      <WorkStartSelect />
+      <Typography>Здесь будут отображаться выбранные пользователем быстрые настройки.</Typography>
     </Card>
   );
 }

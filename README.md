@@ -1,32 +1,100 @@
-# React + TypeScript + Vite
+Начал аудит актуальной ветки main репозитория react-training.
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Уже обнаружил важный момент: страница «План» фактически отключена от маршрутизации и основной навигации, но её старые файлы ещё лежат в проекте. При этом в PlanPage.tsx остались ссылки на 30-дневную программу, отжимания, турник и старое хранилище. Значит, удаление страницы ещё не доведено до конца.
 
-Currently, two official plugins are available:
+Также подтвердилось, что новая универсальная модель usePlanStore уже используется страницами «Сегодня» и «Прогресс». Её сохраняем — удалять вместе со старой страницей нельзя.
+Результаты первого аудита
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Что можно удалить после финальной проверки импортов
+   Кандидаты на удаление
+   Файл / папка Причина
+   src/pages/plan/ Старая страница уже не подключена к роутеру
+   src/entities/plan/model/plans.ts Загружает старую программу и gamification.json
+   src/shared/data/plan-workout-30d.json Данные старой 30-дневной программы
+   src/shared/data/gamification.json Содержит старую персональную геймификацию
+   src/entities/plan/model/userPlanStore.ts Старое хранилище пользовательской программы
+   src/entities/plan/model/userPlanSchema.ts Схема старой модели
+   src/entities/plan/model/schemas.ts Zod-схемы старых тренировочных данных
+   src/entities/plan/config/slots.ts Старые временные слоты и типы дней
+   src/entities/plan/lib/resolveWorkoutDay.ts Логика старой модели
+   src/entities/plan/lib/groupTasksBySlot.ts Группировка по старым временным слотам
+   src/entities/plan/lib/describeTask.ts Описания старых типов упражнений
 
-## React Compiler
+Это предварительные кандидаты: перед удалением проверим все импорты, в том числе тестовые. 2. Что нужно переписать
+Требует изменений
+Файл Что меняем
+src/entities/plan/index.ts Удаляем экспорты старой модели, сохраняем универсальные
+src/shared/config/pages.config.ts Удаляем PLAN и POSTURE
+src/shared/config/plan.config.ts Удаляем старые константы программы, сохраняем нужные настройки таймера и хранения
+src/entities/settings/model/store.ts Убираем workStartHour, если больше не нужен
+src/pages/settings/ui/SettingsPage.tsx Убираем зависимость от gamification.json
+src/features/set-work-start/ Удаляем, если настройка времени начала работы больше не нужна
+src/entities/progress/model/store.ts Убираем старые действия и постепенно отделяем микро-паузы
+src/entities/progress/lib/xp.ts Оставляем универсальный расчёт XP, убираем привязку к micro-break
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Особенно важно: SettingsPage.tsx всё ещё импортирует gamification ради списка уровней. Поэтому удалять gamification.json до переноса этой логики нельзя. 3. Что сохраняем
+Новая архитектура
+Файл / часть Решение
+planSchema.ts Сохранить
+planStore.ts Сохранить
+PlanDay, PlanGroup, PlanTask Сохранить
+usePlanStore Сохранить
+DayBoard Сохранить
+TaskEditor Сохранить
+GroupEditor Сохранить
+TaskItem Сохранить
+TaskRow Сохранить
+ToggleTask Сохранить
+ProgressPage Сохранить и развивать
+levels.ts Сохранить, позднее сделать уровни универсальными
+xpConfig Сохранить
+useSelectedDay Сохранить
 
-## Expanding the Oxlint configuration
+Отдельно: TaskRow.tsx уже принимает PlanTask, то есть это не часть старой тренировочной архитектуры, несмотря на расположение внутри entities/plan. 4. Что требует отдельного решения
+Микро-паузы. Сейчас MicroBreakCounter принимает старый Task, использует xpPerUnit и target. В новой модели этих полей нет. Мы не будем удалять функциональность, а позже превратим счётчик в самостоятельный виджет.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Настройка начала работы. workStartHour и WorkStartSelect всё ещё описывают старый режим дня и корсет. Нужно убрать их, если они больше не выполняют полезную универсальную функцию.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+Начальные данные. Сейчас createInitialPlan() создаёт 7 дней с карточкой «Утро» и задачей «Создать план». Это оставляем как демонстрационные данные, но в будущем можно будет предложить пользователю пустой план или выбор стартового шаблона.
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Обновлённая последовательность работ
+
+1. Удаление остатков страницы «План»
+
+   Удалить src/pages/plan, убрать старые константы маршрутов и проверить, что навигация и роутер не содержат ссылок на неё.
+   Первый этап
+
+2. Очистка старой модели
+
+   Удалить userPlanStore, plans, старые схемы и JSON после переноса всех оставшихся зависимостей.
+
+3. Очистка настроек
+
+   Убрать параметры корсета, старого режима дня и ненужные настройки.
+
+4. Универсализация виджетов
+
+   Переделать микро-паузы и подготовить систему самостоятельных пользовательских виджетов.
+
+5. Завершение системы прогресса
+
+   Проверить начисление XP, уровни, streak, календарь и графики на разных пользовательских планах.
+
+6. Очистка проекта
+
+   Удалить неиспользуемые компоненты, типы, импорты, конфиги и тесты старой программы.
+
+7. Проверка перед дальнейшим развитием
+
+   Сборка, тесты, проверка сценариев создания задач, изменения дней, сохранения и сброса данных.
+
+Начинаем с первого этапа
+Я предлагаю сейчас не трогать planStore.ts и planSchema.ts. Сначала полностью удалим остатки старой страницы «План»:
+
+- src/pages/plan/;
+- PAGES.PLAN;
+- связанные с ней старые импорты;
+- константы, которые больше нигде не нужны.
+  После этого проверим сборку и тесты. Затем перейдём к старому userPlanStore.
+
+Код пока не менял — это аудит актуального GitHub main. Важно, чтобы очистка не затронула локальные незапушенные изменения.

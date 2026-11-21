@@ -1,11 +1,10 @@
-import { useUserWorkoutPlanStore } from '@/entities/plan';
+import { usePlanStore } from '@/entities/plan';
 import {
   getCurrentDay,
   isDayComplete,
   requiredProgress,
   useProgressStore,
 } from '@/entities/progress';
-import { PLAN_LENGTH_DAYS } from '@/shared/config';
 import { WEEKDAYS_SHORT, getIsoWeekday, todayISO } from '@/shared/lib';
 import { Calendar, type CalendarCell, Card } from '@/shared/ui';
 import { useMemo } from 'react';
@@ -15,16 +14,18 @@ interface MonthStripProps {
   onSelect: (day: number) => void;
 }
 
-/** Календарь активности на основе пользовательского плана. */
+/** Календарь активности на основе универсального пользовательского плана. */
 export function MonthStrip({ selected, onSelect }: MonthStripProps) {
-  const template = useUserWorkoutPlanStore((state) => state.template);
-  const dayOverrides = useUserWorkoutPlanStore((state) => state.dayOverrides);
+  const template = usePlanStore((state) => state.template);
+  const dayOverrides = usePlanStore((state) => state.dayOverrides);
 
   const startDate = useProgressStore((state) => state.startDate);
   const completed = useProgressStore((state) => state.completed);
   const microBreaks = useProgressStore((state) => state.microBreaks);
 
-  const current = getCurrentDay(startDate, todayISO(), PLAN_LENGTH_DAYS);
+  const totalDays = template.days.length;
+
+  const current = getCurrentDay(startDate, todayISO(), totalDays);
 
   const cells = useMemo<CalendarCell[]>(() => {
     const snapshot = { completed, microBreaks };
@@ -53,7 +54,7 @@ export function MonthStrip({ selected, onSelect }: MonthStripProps) {
   }, [template.days, dayOverrides, completed, microBreaks, current.day, current.isBeforeStart]);
 
   return (
-    <Card title="Месяц">
+    <Card title="Активность">
       <Calendar
         cells={cells}
         selected={selected}

@@ -30,7 +30,15 @@ interface PlanActions {
   updateGroup: (day: number, groupId: string, title: string, scope: EditScope) => void;
   deleteGroup: (day: number, groupId: string, scope: EditScope) => void;
 
-  addTask: (day: number, groupId: string, input: TaskInput, scope: EditScope) => string | null;
+  addTask: (
+    day: number,
+    groupId: string | null,
+    input: TaskInput,
+    scope: EditScope,
+  ) => string | null;
+
+  addTaskToAllDaysWithGroup: (day: number, groupId: string, input: TaskInput) => string | null;
+
   updateTask: (day: number, taskId: string, updates: TaskUpdate, scope: EditScope) => void;
   deleteTask: (day: number, taskId: string, scope: EditScope) => void;
 
@@ -124,6 +132,24 @@ function updateAllDays(
 
 function countGroupTasks(day: PlanDay, groupId: string): number {
   return day.tasks.filter((task) => task.groupId === groupId).length;
+}
+
+function createTask(
+  originId: string,
+  dayNumber: number,
+  groupId: string | null,
+  input: TaskInput,
+): PlanTask {
+  return {
+    id: `${originId}-day-${dayNumber}`,
+    originId,
+    title: input.title.trim(),
+    durationMin: input.durationMin ?? 5,
+    xp: input.xp ?? 5,
+    required: input.required ?? true,
+    groupId,
+    ...(input.scheduledTime ? { scheduledTime: input.scheduledTime } : {}),
+  };
 }
 
 export const usePlanStore = create<PlanState>()(
@@ -243,15 +269,17 @@ export const usePlanStore = create<PlanState>()(
         const state = get();
         const selectedDay = getDay(state, day);
 
-        if (!selectedDay?.groups.some((group) => group.id === groupId)) {
+        if (!selectedDay) return null;
+
+        if (groupId !== null && !selectedDay.groups.some((group) => group.id === groupId)) {
           return null;
         }
 
         if (scope === 'day') {
-          if (countGroupTasks(selectedDay, groupId) >= MAX_TASKS_PER_GROUP) {
+          if (groupId !== null && countGroupTasks(selectedDay, groupId) >= MAX_TASKS_PER_GROUP) {
             return null;
           }
-        } else {
+        } else if (groupId !== null) {
           const hasLimit = state.template.days.some((templateDay) => {
             const currentDay = getDay(state, templateDay.day);
 
@@ -266,27 +294,20 @@ export const usePlanStore = create<PlanState>()(
 
         const originId = createId();
 
-        const createTask = (dayNumber: number): PlanTask => ({
-          id: `${originId}-day-${dayNumber}`,
-          originId,
-          title,
-          durationMin: input.durationMin ?? 5,
-          xp: input.xp ?? 5,
-          required: input.required ?? true,
-          groupId,
-          ...(input.scheduledTime ? { scheduledTime: input.scheduledTime } : {}),
-        });
-
         if (scope === 'all') {
           set((currentState) =>
             updateAllDays(currentState, (currentDay) => {
-              if (!currentDay.groups.some((group) => group.id === groupId)) {
+              if (groupId !== null && !currentDay.groups.some((group) => group.id === groupId)) {
+                return currentDay;
+              }
+
+              if (groupId !== null && countGroupTasks(currentDay, groupId) >= MAX_TASKS_PER_GROUP) {
                 return currentDay;
               }
 
               return {
                 ...currentDay,
-                tasks: [...currentDay.tasks, createTask(currentDay.day)],
+                tasks: [...currentDay.tasks, createTask(originId, currentDay.day, groupId, input)],
               };
             }),
           );
@@ -294,10 +315,50 @@ export const usePlanStore = create<PlanState>()(
           set((currentState) =>
             updateOneDay(currentState, day, (currentDay) => ({
               ...currentDay,
-              tasks: [...currentDay.tasks, createTask(day)],
+              tasks: [...currentDay.tasks, createTask(originId, day, groupId, input)],
             })),
           );
         }
+
+        return originId;
+      },
+
+      addTaskToAllDaysWithGroup: (day, groupId, input) => {
+        const title = input.title.trim();
+
+        if (!title) return null;
+
+        const state = get();
+        const selectedDay = getDay(state, day);
+        const selectedGroup = selectedDay?.groups.find((group) => group.id === groupId);
+
+        if (!selectedGroup) return null;
+
+        const hasLimit = state.template.days.some((templateDay) => {
+          const currentDay = getDay(state, templateDay.day);
+
+          return (
+            currentDay &&
+            currentDay.groups.some((group) => group.id === groupId) &&
+            countGroupTasks(currentDay, groupId) >= MAX_TASKS_PER_GROUP
+          );
+        });
+
+        if (hasLimit) return null;
+
+        const originId = createId();
+
+        set((currentState) =>
+          updateAllDays(currentState, (currentDay) => {
+            const hasGroup = currentDay.groups.some((group) => group.id === groupId);
+
+            return {
+              ...currentDay,
+              groups: hasGroup ? currentDay.groups : [...currentDay.groups, { ...selectedGroup }],
+              tasks: [...currentDay.tasks, createTask(originId, currentDay.day, groupId, input)],
+            };
+          }),
+        );
 
         return originId;
       },

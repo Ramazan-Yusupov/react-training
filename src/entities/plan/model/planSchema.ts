@@ -12,7 +12,7 @@ export const planTaskSchema = z.object({
   durationMin: z.number().min(0),
   xp: z.number().min(0),
   required: z.boolean(),
-  groupId: z.string(),
+  groupId: z.string().nullable(),
   scheduledTime: z.string().optional(),
 });
 

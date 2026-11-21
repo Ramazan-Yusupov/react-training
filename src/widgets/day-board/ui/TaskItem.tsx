@@ -14,7 +14,7 @@ export function TaskItem({ task, day }: TaskItemProps) {
         <ToggleTask task={task} />
       </div>
 
-      <TaskEditor day={day} task={task} groupId={task.groupId} />
+      <TaskEditor day={day} task={task} groupId={task.groupId ?? undefined} />
     </div>
   );
 }

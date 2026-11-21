@@ -1,6 +1,7 @@
 import { levels } from '@/entities/plan';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { useSettingsStore, type SettingsData } from '@/entities/settings';
+import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
 
@@ -123,7 +124,7 @@ export function SettingsPage() {
         </Typography>
 
         <Typography align="start" tone="muted">
-          Награды и управление данными
+          Награды, микро-паузы и управление данными
         </Typography>
       </header>
 
@@ -149,6 +150,8 @@ export function SettingsPage() {
               />
             ))}
           </Card>
+
+          <MicroBreaksEditor />
         </section>
 
         <section className="flex min-w-0 flex-col gap-4">

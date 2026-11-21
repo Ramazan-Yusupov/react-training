@@ -1,8 +1,16 @@
 export { usePlanStore, createInitialPlan } from './model/planStore';
 
 export type { EditScope } from './model/planStore';
-export type { PlanContentOrderItem } from './model/planSchema';
-export type { PlanGroup, PlanTask, PlanDay, PlanTemplate, UserPlanData } from './model/planSchema';
+export type {
+  PlanContentOrderItem,
+  PlanGroup,
+  PlanTask,
+  PlanWidget,
+  PlanWidgetType,
+  PlanDay,
+  PlanTemplate,
+  UserPlanData,
+} from './model/planSchema';
 
 export { xpConfig } from './config/xp';
 export { levels } from './config/levels';

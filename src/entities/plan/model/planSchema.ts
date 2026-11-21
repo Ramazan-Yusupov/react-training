@@ -16,8 +16,8 @@ export const planTaskSchema = z.object({
   scheduledTime: z.string().optional(),
 });
 
-/** Типы доступных виджетов. */
-export const planWidgetTypeSchema = z.enum(['focus-tools']);
+/** Типы доступных пользовательских виджетов. */
+export const planWidgetTypeSchema = z.enum(['micro-breaks', 'accordion', 'xp-by-days']);
 
 /** Экземпляр виджета в пользовательском плане. */
 export const planWidgetSchema = z.object({

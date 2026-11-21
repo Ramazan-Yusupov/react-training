@@ -12,6 +12,7 @@ export interface ProgressData {
 interface ProgressActions {
   toggleTask: (taskId: string) => boolean;
   setMicroBreaks: (day: number, count: number) => void;
+  clearMicroBreaks: (day: number) => void;
   replaceAll: (data: ProgressData) => void;
   reset: () => void;
 }
@@ -54,6 +55,13 @@ export const useProgressStore = create<ProgressState>()(
             [day]: Math.max(0, count),
           },
         })),
+      clearMicroBreaks: (day) =>
+        set((state) => {
+          const microBreaks = { ...state.microBreaks };
+          delete microBreaks[day];
+
+          return { microBreaks };
+        }),
 
       replaceAll: (data) => set({ ...data }),
 

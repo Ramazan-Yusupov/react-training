@@ -35,4 +35,18 @@ describe('хранилище прогресса', () => {
     expect(useProgressStore.getState().completed).toEqual({});
     expect(useProgressStore.getState().microBreaks).toEqual({});
   });
+
+  it('очищает микро-паузы удалённого дня', () => {
+    const { setMicroBreaks, clearMicroBreaks } = useProgressStore.getState();
+
+    setMicroBreaks(7, 5);
+    expect(useProgressStore.getState().microBreaks[7]).toBe(5);
+
+    clearMicroBreaks(7);
+    expect(useProgressStore.getState().microBreaks[7]).toBeUndefined();
+
+    // Повторное использование номера дня не возвращает старый счётчик.
+    setMicroBreaks(7, 1);
+    expect(useProgressStore.getState().microBreaks[7]).toBe(1);
+  });
 });

@@ -101,7 +101,7 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
 
           <div className="mt-3">
             {widget.notes.trim() ? (
-              <p className="whitespace-pre-wrap break-words text-sm text-slate-300">
+              <p className="whitespace-pre-wrap wrap-break-words text-sm text-slate-300">
                 {widget.notes}
               </p>
             ) : (

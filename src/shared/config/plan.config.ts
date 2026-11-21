@@ -2,6 +2,7 @@
 export const STORAGE_KEYS = {
   PROGRESS: 'planer-progress-v1',
   SETTINGS: 'planer-settings-v1',
+  MICRO_BREAKS: 'planer-micro-breaks-v1',
 } as const;
 
 /** Режим таймера 50/10 (в секундах). */

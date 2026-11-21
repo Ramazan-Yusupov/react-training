@@ -1,4 +1,4 @@
-import { type Task, ExerciseDetails, getTaskTime } from '@/entities/plan';
+import { type Task, getTaskTime } from '@/entities/plan';
 import { MicroBreakCounter } from '@/features/micro-breaks';
 import { ToggleTask } from '@/features/toggle-task';
 import { TaskEditor } from './TaskEditor';
@@ -16,10 +16,7 @@ export function TaskItem({ task, day, workStartHour }: TaskItemProps) {
         {task.type === 'micro-break' ? (
           <MicroBreakCounter task={task} day={day} />
         ) : (
-          <>
-            <ToggleTask task={task} time={getTaskTime(task, workStartHour)} />
-            <ExerciseDetails exerciseRef={task.exerciseRef} />
-          </>
+          <ToggleTask task={task} time={getTaskTime(task, workStartHour)} />
         )}
       </div>
 

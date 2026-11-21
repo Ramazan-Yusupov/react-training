@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+
 import { createInitialProgress, useProgressStore } from '@/entities/progress';
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/entities/settings';
 import { todayISO } from '@/shared/lib';
@@ -17,7 +18,11 @@ const renderDay1 = () =>
   );
 
 beforeEach(() => {
-  useProgressStore.setState({ ...createInitialProgress(), startDate: todayISO() });
+  useProgressStore.setState({
+    ...createInitialProgress(),
+    startDate: todayISO(),
+  });
+
   useSettingsStore.setState({ ...DEFAULT_SETTINGS });
 });
 
@@ -27,83 +32,65 @@ afterEach(() => {
 });
 
 describe('страница «Сегодня»', () => {
-  it('показывает день 1 и его задачи', () => {
+  it('показывает первый день и стартовую задачу', () => {
     renderDay1();
 
     expect(screen.getByText('День 1 из 30')).toBeTruthy();
-    expect(screen.getByLabelText(/Отжимания, подход 1/)).toBeTruthy();
-    expect(screen.getByLabelText(/Турник/)).toBeTruthy();
+    expect(screen.getByText('Создать план')).toBeTruthy();
+    expect(screen.queryByText(/Отжимания/)).toBeNull();
+    expect(screen.queryByText(/Турник/)).toBeNull();
     expect(screen.queryByText(/План начнётся/)).toBeNull();
   });
 
-  it('отметка задачи сохраняется, очки и уведомление появляются', () => {
+  it('отметка стартовой задачи сохраняется и начисляет XP', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByLabelText(/Отжимания, подход 1/));
+    fireEvent.click(screen.getByLabelText(/Создать план/));
 
-    expect(useProgressStore.getState().completed['d01-push-1']).toBeTruthy();
-    expect(screen.getByText('За день: 10 XP')).toBeTruthy();
-    expect(screen.getByText(/\+10 XP: Отжимания, подход 1/)).toBeTruthy();
+    const completed = Object.values(useProgressStore.getState().completed);
+
+    expect(completed.length).toBe(1);
+    expect(completed[0]).toBeTruthy();
+    expect(screen.getByText('За день: 15 XP')).toBeTruthy();
   });
 
-  it('все обязательные задачи закрывают день и дают бонус', () => {
+  it('выполнение обязательной задачи закрывает день', () => {
     renderDay1();
 
-    for (const label of [
-      /Разминка для отжиманий/,
-      /Отжимания, подход 1/,
-      /Отжимания, подход 2/,
-      /Отжимания, подход 3/,
-      /Турник/,
-    ]) {
-      const boxes = screen.getAllByLabelText(label);
-      fireEvent.click(boxes[0]!);
-    }
+    fireEvent.click(screen.getByLabelText(/Создать план/));
 
-    expect(screen.getByText(/День закрыт, бонус \+10 XP/)).toBeTruthy();
-
-    // 5 + 10 + 10 + 10 + 20 + бонус 10
-    expect(screen.getByText('65 XP')).toBeTruthy();
-    expect(screen.getByText('Серия: 1')).toBeTruthy();
+    expect(screen.getByText(/1 из 1/)).toBeTruthy();
+    expect(screen.getByText('За день: 15 XP')).toBeTruthy();
   });
 
-  it('микро-паузы: плюс увеличивает счётчик и очки', () => {
+  it('кубик показывает микро-паузу и засчитывает выполнение', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByLabelText('Добавить микро-паузу'));
-    fireEvent.click(screen.getByLabelText('Добавить микро-паузу'));
+    fireEvent.click(screen.getByText('Кубик'));
+    fireEvent.click(screen.getByText('Бросить кубик'));
 
-    expect(useProgressStore.getState().microBreaks[1]).toBe(2);
-    expect(screen.getByText('2 из 8')).toBeTruthy();
-    expect(screen.getByText('За день: 4 XP')).toBeTruthy();
+    expect(screen.getByText(/Встань|Переведи|Расслабь|Сделай|Выпей|Отведи/)).toBeTruthy();
 
-    fireEvent.click(screen.getByLabelText('Убрать микро-паузу'));
+    fireEvent.click(screen.getByText('Сделал'));
 
     expect(useProgressStore.getState().microBreaks[1]).toBe(1);
   });
 
-  it('таймер 50/10: идёт по часам', () => {
+  it('таймер 50/10 работает по часам', () => {
     vi.useFakeTimers();
+
     renderDay1();
 
     expect(screen.getByText('50:00')).toBeTruthy();
 
     fireEvent.click(screen.getByText('Старт'));
 
-    act(() => vi.advanceTimersByTime(3000));
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
 
     expect(screen.getByText('49:57')).toBeTruthy();
 
     fireEvent.click(screen.getByText('Пауза'));
-  });
-
-  it('кубик: бросок показывает упражнение, «Сделал» засчитывает паузу', () => {
-    renderDay1();
-
-    fireEvent.click(screen.getByText('Кубик'));
-    fireEvent.click(screen.getByText('Бросить кубик'));
-    fireEvent.click(screen.getByText('Сделал'));
-
-    expect(useProgressStore.getState().microBreaks[1]).toBe(1);
   });
 });

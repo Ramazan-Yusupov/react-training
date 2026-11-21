@@ -37,7 +37,6 @@ export const taskSchema = z.object({
   groupId: z.string().optional(),
   originId: z.string().optional(),
   suggestedTime: z.string().optional(),
-  exerciseRef: z.string().optional(),
   xpPerUnit: z.number().optional(),
   target: z.record(z.string(), z.unknown()).optional(),
   fields: z.array(z.string()).optional(),
@@ -68,15 +67,6 @@ export const workoutDaySchema = z.object({
   tasks: z.array(taskSchema),
 });
 
-export const postureDaySchema = z.object({
-  day: z.number(),
-  week: z.number(),
-  corsetOff: z.boolean(),
-  totalMinutesAllBlocks: z.number(),
-  totalMinutesMorningOnly: z.number(),
-  tasks: z.array(taskSchema),
-});
-
 const planBase = {
   schemaVersion: z.number(),
   id: z.string(),
@@ -92,70 +82,20 @@ export const workoutPlanSchema = z.object({
   type: z.literal('workout'),
   startDateSuggested: z.string(),
   slots: z.array(slotSchema),
-  totals: z.object({ pushupRepsPlanned: z.number() }),
+  totals: z.object({
+    pushupRepsPlanned: z.number(),
+  }),
   days: z.array(workoutDaySchema),
-});
-
-export const posturePlanSchema = z.object({
-  ...planBase,
-  type: z.literal('posture'),
-  goal: z.string(),
-  rules: z.object({
-    maxContinuousMinutes: z.number(),
-    restDays: z.array(z.number()),
-    defaultEnabledBlocks: z.array(z.number()),
-    userOverride: z
-      .object({ note: z.string(), days: z.string(), block1Minutes: z.number() })
-      .optional(),
-  }),
-  postTest: z.object({ day: z.number(), steps: z.array(z.string()) }),
-  afterMonth: z.array(z.object({ id: z.string(), title: z.string(), text: z.string() })),
-  redFlags: z.array(z.string()),
-  breakLifehack: z.object({
-    windows: z.array(z.string()),
-    everyMinutes: z.string(),
-    actions: z.array(z.string()),
-  }),
-  days: z.array(postureDaySchema),
-});
-
-const exerciseItemSchema = z.object({ name: z.string(), dose: z.string(), why: z.string() });
-
-export const exercisesSchema = z.object({
-  schemaVersion: z.number(),
-  warmups: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      durationMin: z.number(),
-      items: z.array(exerciseItemSchema),
-      shortVersion: z.string().optional(),
-    }),
-  ),
-  microBreakDice: z.array(z.object({ face: z.number(), text: z.string() })),
-  bodyBlocks: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      weekday: z.number(),
-      durationMin: z.number(),
-      items: z.array(exerciseItemSchema),
-    }),
-  ),
-  equipment: z.array(z.object({ name: z.string(), use: z.string() })),
-  postureTop5: z.array(z.object({ name: z.string(), dose: z.string(), note: z.string() })),
-  postureTrainingStructure: z.array(
-    z.object({ start: z.string(), end: z.string(), text: z.string() }),
-  ),
-  extras: z.array(z.object({ name: z.string(), why: z.string() })),
-  ergonomics: z.array(z.string()),
 });
 
 export const gamificationSchema = z.object({
   schemaVersion: z.number(),
   xpByTaskType: z.record(z.string(), z.number()),
   microBreakDailyCap: z.number(),
-  dayBonus: z.object({ xp: z.number(), rule: z.string() }),
+  dayBonus: z.object({
+    xp: z.number(),
+    rule: z.string(),
+  }),
   levels: z.array(
     z.object({
       id: z.string(),
@@ -173,5 +113,10 @@ export const gamificationSchema = z.object({
       keepsStreak: z.boolean(),
     }),
   }),
-  motivationTips: z.array(z.object({ title: z.string(), text: z.string() })),
+  motivationTips: z.array(
+    z.object({
+      title: z.string(),
+      text: z.string(),
+    }),
+  ),
 });

@@ -45,7 +45,7 @@ describe('страница «Сегодня»', () => {
   it('отметка стартовой задачи сохраняется и начисляет XP', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByLabelText(/Создать план/));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Создать план/ }));
 
     const completed = Object.values(useProgressStore.getState().completed);
 
@@ -57,7 +57,7 @@ describe('страница «Сегодня»', () => {
   it('выполнение обязательной задачи закрывает день', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByLabelText(/Создать план/));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Создать план/ }));
 
     expect(screen.getByText(/1 из 1/)).toBeTruthy();
     expect(screen.getByText('За день: 15 XP')).toBeTruthy();

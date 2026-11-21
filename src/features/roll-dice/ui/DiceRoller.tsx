@@ -1,7 +1,8 @@
+import { useMicroBreakStore, type MicroBreak } from '@/entities/micro-breaks';
 import { xpConfig } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { Button, Typography, toast } from '@/shared/ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FaCheck, FaDiceD6 } from 'react-icons/fa6';
 
 interface DiceRollerProps {
@@ -10,33 +11,40 @@ interface DiceRollerProps {
   xpPerBreak?: number;
 }
 
-const microBreakOptions = [
-  { face: 1, text: 'Встань и немного пройдись.' },
-  { face: 2, text: 'Переведи взгляд вдаль и отдохни от экрана.' },
-  { face: 3, text: 'Расслабь плечи и измени положение тела.' },
-  { face: 4, text: 'Сделай несколько спокойных глубоких вдохов.' },
-  { face: 5, text: 'Выпей воды и немного отдохни.' },
-  { face: 6, text: 'Отведи взгляд от экрана и дай глазам отдохнуть.' },
-];
-
-/** Кубик: случайная идея для микро-паузы. */
+/** Кубик: случайно выбирает одну из включённых пользовательских микро-пауз. */
 export function DiceRoller({ day, xpPerBreak = xpConfig.microBreakXp }: DiceRollerProps) {
-  const [face, setFace] = useState<number | null>(null);
+  const [selectedBreakId, setSelectedBreakId] = useState<string | null>(null);
+
+  const items = useMicroBreakStore((state) => state.items);
+
+  const enabledItems = useMemo(
+    () => items.filter((item) => item.enabled).sort((a, b) => a.order - b.order),
+    [items],
+  );
 
   const count = useProgressStore((state) => state.microBreaks[day] ?? 0);
   const setMicroBreaks = useProgressStore((state) => state.setMicroBreaks);
 
-  const result = microBreakOptions.find((item) => item.face === face);
+  const result: MicroBreak | undefined = enabledItems.find((item) => item.id === selectedBreakId);
 
   const roll = () => {
-    const picked = microBreakOptions[Math.floor(Math.random() * microBreakOptions.length)];
+    if (enabledItems.length === 0) {
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * enabledItems.length);
+    const picked = enabledItems[randomIndex];
 
     if (picked) {
-      setFace(picked.face);
+      setSelectedBreakId(picked.id);
     }
   };
 
   const done = () => {
+    if (!result) {
+      return;
+    }
+
     setMicroBreaks(day, count + 1);
 
     toast.success(
@@ -45,23 +53,39 @@ export function DiceRoller({ day, xpPerBreak = xpConfig.microBreakXp }: DiceRoll
         : 'Лимит очков за паузы на сегодня достигнут',
     );
 
-    setFace(null);
+    setSelectedBreakId(null);
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Button variant="primary" icon={<FaDiceD6 />} title="Бросить кубик" onClick={roll} />
+      <Button
+        variant="primary"
+        icon={<FaDiceD6 />}
+        title="Бросить кубик"
+        onClick={roll}
+        disabled={enabledItems.length === 0}
+      />
 
       {result ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-white/10 p-4">
-          <Typography as="h3" tone="accent" text={String(result.face)} />
+        <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-white/10 p-4">
+          <Typography as="h3" tone="accent">
+            {result.durationMinutes} мин.
+          </Typography>
 
-          <Typography as="p" text={result.text} />
+          <Typography as="p" align="center">
+            {result.text}
+          </Typography>
 
           <Button size="sm" icon={<FaCheck />} title="Сделал" onClick={done} />
         </div>
+      ) : enabledItems.length === 0 ? (
+        <Typography as="p" tone="muted" align="center">
+          Нет включённых микро-пауз. Добавь или включи варианты в настройках.
+        </Typography>
       ) : (
-        <Typography as="p" tone="muted" text="Брось кубик и выполни небольшую микро-паузу." />
+        <Typography as="p" tone="muted" align="center">
+          Брось кубик и выполни небольшую микро-паузу.
+        </Typography>
       )}
     </div>
   );

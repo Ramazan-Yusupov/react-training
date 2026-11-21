@@ -4,5 +4,6 @@
  */
 export const xpConfig = {
   microBreakCap: 8,
+  microBreakXp: 2,
   dayBonus: 10,
 } as const;

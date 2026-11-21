@@ -1,7 +1,9 @@
 export { useProgressStore, createInitialProgress } from './model/store';
 export type { ProgressData } from './model/store';
+
 export {
   taskXp,
+  microBreakXp,
   dayXp,
   totalXp,
   isDayComplete,
@@ -9,6 +11,7 @@ export {
   getLevelState,
   getStreak,
 } from './lib/xp';
+
 export type {
   DayLike,
   TaskLike,
@@ -17,4 +20,5 @@ export type {
   LevelState,
   ProgressSnapshot,
 } from './lib/xp';
+
 export { getCurrentDay } from './lib/currentDay';

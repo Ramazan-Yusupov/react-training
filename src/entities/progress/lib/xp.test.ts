@@ -7,19 +7,23 @@ import {
   getLevelState,
   getStreak,
   isDayComplete,
+  microBreakXp,
   requiredProgress,
   taskXp,
   totalXp,
 } from './xp';
 
-const config: XpConfig = { microBreakCap: 8, dayBonus: 10 };
+const config: XpConfig = {
+  microBreakCap: 8,
+  microBreakXp: 2,
+  dayBonus: 10,
+};
 
 const day = (number: number): DayLike => ({
   day: number,
   tasks: [
-    { id: `d${number}-a`, type: 'pushup-set', xp: 10, required: true },
-    { id: `d${number}-b`, type: 'pushup-set', xp: 10, required: true },
-    { id: `d${number}-micro`, type: 'micro-break', xp: 0, required: false, xpPerUnit: 2 },
+    { id: `d${number}-a`, xp: 10, required: true },
+    { id: `d${number}-b`, xp: 10, required: true },
   ],
 });
 
@@ -29,29 +33,52 @@ const snapshot = (completed: string[], microBreaks: Record<number, number> = {})
 });
 
 describe('очки', () => {
-  it('taskXp: обычная задача и микро-паузы с лимитом', () => {
-    const [a, , micro] = day(1).tasks;
-    expect(taskXp(a!, 1, snapshot(['d1-a']), config)).toBe(10);
-    expect(taskXp(a!, 1, snapshot([]), config)).toBe(0);
-    expect(taskXp(micro!, 1, snapshot([], { 1: 5 }), config)).toBe(10);
-    expect(taskXp(micro!, 1, snapshot([], { 1: 20 }), config)).toBe(16);
+  it('taskXp начисляет XP только за отмеченную задачу', () => {
+    const [a] = day(1).tasks;
+
+    expect(taskXp(a!, snapshot(['d1-a']))).toBe(10);
+    expect(taskXp(a!, snapshot([]))).toBe(0);
+  });
+
+  it('microBreakXp начисляет XP за микро-паузы с дневным лимитом', () => {
+    expect(microBreakXp(1, snapshot([], { 1: 5 }), config)).toBe(10);
+    expect(microBreakXp(1, snapshot([], { 1: 20 }), config)).toBe(16);
+    expect(microBreakXp(1, snapshot([]), config)).toBe(0);
   });
 
   it('бонус дня начисляется только когда выполнены все обязательные задачи', () => {
     expect(isDayComplete(day(1), snapshot(['d1-a']))).toBe(false);
     expect(dayXp(day(1), snapshot(['d1-a']), config)).toBe(10);
+
     expect(isDayComplete(day(1), snapshot(['d1-a', 'd1-b']))).toBe(true);
     expect(dayXp(day(1), snapshot(['d1-a', 'd1-b']), config)).toBe(30);
+
     expect(dayXp(day(1), snapshot(['d1-a', 'd1-b']), config, false)).toBe(20);
-    expect(requiredProgress(day(1), snapshot(['d1-a']))).toEqual({ done: 1, total: 2 });
+    expect(requiredProgress(day(1), snapshot(['d1-a']))).toEqual({
+      done: 1,
+      total: 2,
+    });
+  });
+
+  it('микро-паузы добавляются к XP дня независимо от задач', () => {
+    const progress = snapshot(['d1-a'], { 1: 3 });
+
+    expect(dayXp(day(1), progress, config)).toBe(16);
+  });
+
+  it('микро-паузы учитываются вместе с бонусом за завершённый день', () => {
+    const progress = snapshot(['d1-a', 'd1-b'], { 1: 3 });
+
+    expect(dayXp(day(1), progress, config)).toBe(36);
   });
 
   it('день без обязательных задач не считается выполненным', () => {
     expect(isDayComplete({ day: 1, tasks: [] }, snapshot([]))).toBe(false);
   });
 
-  it('totalXp суммирует по дням', () => {
+  it('totalXp суммирует задачи и микро-паузы по дням', () => {
     const all = snapshot(['d1-a', 'd1-b', 'd2-a'], { 2: 3 });
+
     expect(totalXp([day(1), day(2)], all, config)).toBe(30 + 10 + 6);
   });
 });
@@ -65,6 +92,7 @@ describe('уровни', () => {
 
   it('до первого уровня', () => {
     const state = getLevelState(250, levels);
+
     expect(state.current).toBeNull();
     expect(state.next?.id).toBe('bronze');
     expect(state.progress).toBe(0.5);
@@ -74,7 +102,9 @@ describe('уровни', () => {
   it('между уровнями и на максимуме', () => {
     expect(getLevelState(500, levels).current?.id).toBe('bronze');
     expect(getLevelState(850, levels).progress).toBeCloseTo(0.5);
+
     const top = getLevelState(5000, levels);
+
     expect(top.current?.id).toBe('silver');
     expect(top.next).toBeNull();
     expect(top.progress).toBe(1);

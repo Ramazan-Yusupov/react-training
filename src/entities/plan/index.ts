@@ -10,6 +10,7 @@ export type {
   PlanDay,
   PlanTemplate,
   UserPlanData,
+  PlanAccordionItem,
 } from './model/planSchema';
 
 export { xpConfig } from './config/xp';

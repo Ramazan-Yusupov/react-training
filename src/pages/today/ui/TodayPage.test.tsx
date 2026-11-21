@@ -63,10 +63,15 @@ describe('страница «Сегодня»', () => {
     expect(screen.getByText('За день: 15 XP')).toBeTruthy();
   });
 
-  it('виджет микро-пауз показывает идею и засчитывает выполнение', () => {
+  it('виджет микро-пауз добавляется и засчитывает выполнение', () => {
     renderDay1();
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Микро-паузы' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить карточку, виджет, задачу' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Виджет' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Микро-паузы' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Только день 1' }));
+
     fireEvent.click(screen.getByText('Бросить кубик'));
 
     expect(screen.getByText(/Встань|Переведи|Расслабь|Сделай|Выпей|Отведи/)).toBeTruthy();

@@ -182,9 +182,15 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
           <div className="flex items-center justify-between gap-3">
             <Typography as="h6" align="start" tone="accent" text={title} />
 
-            <Button size="sm" variant="ghost" onClick={() => setIsNotesEditorOpen(true)}>
-              Редактировать
-            </Button>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button size="sm" variant="ghost" onClick={() => setIsNotesEditorOpen(true)}>
+                Редактировать
+              </Button>
+
+              <Button size="sm" variant="outline" onClick={openSettings}>
+                Удалить
+              </Button>
+            </div>
           </div>
 
           <div className="mt-3">

@@ -122,6 +122,15 @@ function createStarterDay(day: number): PlanDay {
 }
 
 /**
+ * Для новых виджетов используется seriesId.
+ * Для старых виджетов без seriesId возвращаем id:
+ * это сохраняет совместимость с прежней моделью.
+ */
+function getWidgetSeriesId(widget: PlanWidget): string {
+  return widget.seriesId ?? widget.id;
+}
+
+/**
  * Преобразует старые Accordion-виджеты в заметки,
  * сохраняя заголовки и содержимое их секций.
  */
@@ -823,53 +832,69 @@ export const usePlanStore = create<PlanState>()(
 
         if (!selectedDay) return null;
 
-        const widgetId = createId();
-
-        const widget: PlanWidget = {
-          id: widgetId,
-          type,
-          enabled: true,
-          notes: '',
-        };
-
-        const updater = (currentDay: PlanDay): PlanDay => {
-          const widgets = currentDay.widgets ?? [];
-
-          if (widgets.some((item) => item.id === widgetId)) {
-            return {
-              ...currentDay,
-              widgets,
-            };
-          }
-
-          return {
-            ...currentDay,
-            widgets: [...widgets, widget],
-            contentOrder: appendContentOrder(currentDay, {
-              type: 'widget',
-              id: widgetId,
-            }),
+        if (scope === 'day') {
+          const widget: PlanWidget = {
+            id: createId(),
+            type,
+            enabled: true,
+            notes: '',
           };
-        };
+
+          set((state) =>
+            updateOneDay(state, day, (currentDay) => ({
+              ...currentDay,
+              widgets: [...(currentDay.widgets ?? []), widget],
+              contentOrder: appendContentOrder(currentDay, {
+                type: 'widget',
+                id: widget.id,
+              }),
+            })),
+          );
+
+          return widget.id;
+        }
+
+        // Общая серия, но отдельный экземпляр и отдельный id для каждого дня.
+        const seriesId = createId();
 
         set((state) =>
-          scope === 'all' ? updateAllDays(state, updater) : updateOneDay(state, day, updater),
+          updateAllDays(state, (currentDay) => {
+            const widget: PlanWidget = {
+              id: createId(),
+              seriesId,
+              type,
+              enabled: true,
+              notes: '',
+            };
+
+            return {
+              ...currentDay,
+              widgets: [...(currentDay.widgets ?? []), widget],
+              contentOrder: appendContentOrder(currentDay, {
+                type: 'widget',
+                id: widget.id,
+              }),
+            };
+          }),
         );
 
-        return widgetId;
+        return seriesId;
       },
 
       updateWidget: (day, widgetId, updates, scope) => {
         const selectedDay = getDay(get(), day);
+        const selectedWidget = selectedDay?.widgets?.find((widget) => widget.id === widgetId);
 
-        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) {
+        if (!selectedWidget) {
           return;
         }
+
+        const seriesId = getWidgetSeriesId(selectedWidget);
 
         const updater = (currentDay: PlanDay): PlanDay => ({
           ...currentDay,
           widgets: (currentDay.widgets ?? []).map((widget) =>
-            widget.id === widgetId ? { ...widget, ...updates } : widget,
+            getWidgetSeriesId(widget) === seriesId ? { ...widget, ...updates } : widget,
           ),
         });
 
@@ -885,6 +910,7 @@ export const usePlanStore = create<PlanState>()(
           return;
         }
 
+        // Заметки всегда обновляются только у выбранного экземпляра.
         set((state) =>
           updateOneDay(state, day, (currentDay) => ({
             ...currentDay,
@@ -1004,18 +1030,29 @@ export const usePlanStore = create<PlanState>()(
 
       deleteWidget: (day, widgetId, scope) => {
         const selectedDay = getDay(get(), day);
+        const selectedWidget = selectedDay?.widgets?.find((widget) => widget.id === widgetId);
 
-        if (!selectedDay?.widgets?.some((widget) => widget.id === widgetId)) {
+        if (!selectedWidget) {
           return;
         }
 
-        const updater = (currentDay: PlanDay): PlanDay => ({
-          ...currentDay,
-          widgets: (currentDay.widgets ?? []).filter((widget) => widget.id !== widgetId),
-          contentOrder: (currentDay.contentOrder ?? []).filter(
-            (item) => !(item.type === 'widget' && item.id === widgetId),
-          ),
-        });
+        const seriesId = getWidgetSeriesId(selectedWidget);
+
+        const updater = (currentDay: PlanDay): PlanDay => {
+          const widgets = (currentDay.widgets ?? []).filter((widget) =>
+            scope === 'all' ? getWidgetSeriesId(widget) !== seriesId : widget.id !== widgetId,
+          );
+
+          const remainingWidgetIds = new Set(widgets.map((widget) => widget.id));
+
+          return {
+            ...currentDay,
+            widgets,
+            contentOrder: (currentDay.contentOrder ?? []).filter(
+              (item) => item.type !== 'widget' || remainingWidgetIds.has(item.id),
+            ),
+          };
+        };
 
         set((state) =>
           scope === 'all' ? updateAllDays(state, updater) : updateOneDay(state, day, updater),

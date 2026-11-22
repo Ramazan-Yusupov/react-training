@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
-import { createInitialPlan, normalizePlanData } from './planStore';
+import { createInitialPlan, normalizePlanData, usePlanStore } from './planStore';
+
+afterEach(() => {
+  usePlanStore.getState().reset();
+});
 
 describe('модель пользовательского плана', () => {
   it('создаёт начальный план на 30 дней', () => {
@@ -61,11 +65,8 @@ describe('модель пользовательского плана', () => {
     const migrated = normalizePlanData(oldPlan, true);
 
     expect(migrated.template.days).toHaveLength(30);
-
     expect(migrated.template.days[0]?.groups[0]?.title).toBe('Работа');
-
     expect(migrated.template.days[0]?.tasks[0]?.title).toBe('Моя задача');
-
     expect(migrated.template.days[0]?.tasks[0]?.xp).toBe(20);
     expect(migrated.template.days[29]?.day).toBe(30);
   });
@@ -95,7 +96,6 @@ describe('модель пользовательского плана', () => {
     );
 
     expect(migrated.dayOverrides['5']?.groups[0]?.title).toBe('Особенный день');
-
     expect(migrated.template.days).toHaveLength(30);
   });
 
@@ -141,7 +141,6 @@ describe('модель пользовательского плана', () => {
     });
 
     expect(migrated.template.days[0]?.tasks).toHaveLength(1);
-
     expect(migrated.template.days[0]?.tasks[0]?.title).toBe('Валидная задача');
   });
 
@@ -235,5 +234,89 @@ describe('модель пользовательского плана', () => {
       enabled: true,
       notes: 'Раздел 1\nСодержимое раздела',
     });
+  });
+
+  it('создаёт отдельные экземпляры виджета при добавлении во все дни', () => {
+    usePlanStore.getState().reset();
+
+    usePlanStore.getState().addWidget(1, 'day-notes', 'all');
+
+    const state = usePlanStore.getState();
+    const firstDayWidget = state.template.days[0]?.widgets[0];
+    const secondDayWidget = state.template.days[1]?.widgets[0];
+
+    expect(firstDayWidget).toBeDefined();
+    expect(secondDayWidget).toBeDefined();
+
+    expect(firstDayWidget?.id).not.toBe(secondDayWidget?.id);
+    expect(firstDayWidget?.seriesId).toBe(secondDayWidget?.seriesId);
+  });
+
+  it('сохраняет заметки экземпляров независимо друг от друга', () => {
+    usePlanStore.getState().reset();
+
+    usePlanStore.getState().addWidget(1, 'day-notes', 'all');
+
+    const firstDayWidget = usePlanStore.getState().template.days[0]?.widgets[0];
+    const secondDayWidget = usePlanStore.getState().template.days[1]?.widgets[0];
+
+    expect(firstDayWidget).toBeDefined();
+    expect(secondDayWidget).toBeDefined();
+
+    if (!firstDayWidget || !secondDayWidget) return;
+
+    usePlanStore.getState().updateWidgetNotes(1, firstDayWidget.id, 'Заметка первого дня');
+
+    const state = usePlanStore.getState();
+    const updatedFirstDayWidget = state.dayOverrides['1']?.widgets.find(
+      (widget) => widget.id === firstDayWidget.id,
+    );
+    const unchangedSecondDayWidget = state.template.days[1]?.widgets.find(
+      (widget) => widget.id === secondDayWidget.id,
+    );
+
+    expect(updatedFirstDayWidget?.notes).toBe('Заметка первого дня');
+    expect(unchangedSecondDayWidget?.notes).toBe('');
+  });
+
+  it('удаляет только экземпляр выбранного дня при scope day', () => {
+    usePlanStore.getState().reset();
+
+    usePlanStore.getState().addWidget(1, 'day-notes', 'all');
+
+    const firstDayWidget = usePlanStore.getState().template.days[0]?.widgets[0];
+    const secondDayWidget = usePlanStore.getState().template.days[1]?.widgets[0];
+
+    expect(firstDayWidget).toBeDefined();
+    expect(secondDayWidget).toBeDefined();
+
+    if (!firstDayWidget || !secondDayWidget) return;
+
+    usePlanStore.getState().deleteWidget(1, firstDayWidget.id, 'day');
+
+    const state = usePlanStore.getState();
+
+    expect(state.dayOverrides['1']?.widgets).toHaveLength(0);
+    expect(state.template.days[1]?.widgets).toHaveLength(1);
+    expect(state.template.days[1]?.widgets[0]?.id).toBe(secondDayWidget.id);
+  });
+
+  it('удаляет все экземпляры одной серии при scope all', () => {
+    usePlanStore.getState().reset();
+
+    usePlanStore.getState().addWidget(1, 'day-notes', 'all');
+
+    const firstDayWidget = usePlanStore.getState().template.days[0]?.widgets[0];
+
+    expect(firstDayWidget).toBeDefined();
+
+    if (!firstDayWidget) return;
+
+    usePlanStore.getState().deleteWidget(1, firstDayWidget.id, 'all');
+
+    const state = usePlanStore.getState();
+
+    expect(state.dayOverrides['1']?.widgets).toHaveLength(0);
+    expect(state.template.days.every((day) => day.widgets.length === 0)).toBe(true);
   });
 });

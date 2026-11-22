@@ -22,6 +22,12 @@ export const planWidgetTypeSchema = z.enum(['micro-breaks', 'day-notes', 'xp-by-
 /** Экземпляр виджета в пользовательском плане. */
 export const planWidgetSchema = z.object({
   id: z.string(),
+  /**
+   * Общий идентификатор серии.
+   * У каждого дня собственный id, но экземпляры, созданные
+   * командой «Во всех днях», имеют одинаковый seriesId.
+   */
+  seriesId: z.string().optional(),
   type: planWidgetTypeSchema,
   enabled: z.boolean().default(true),
   notes: z.string().default(''),

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { createInitialProgress, useProgressStore } from '@/entities/progress';
+import { useMicroBreakStore } from '@/entities/micro-breaks';
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/entities/settings';
 import { todayISO } from '@/shared/lib';
 import { Toaster } from '@/shared/ui';
@@ -8,7 +9,6 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TodayPage } from './TodayPage';
-import { useMicroBreakStore } from '@/entities/micro-breaks';
 
 const renderDay1 = () =>
   render(
@@ -38,7 +38,7 @@ describe('страница «Сегодня»', () => {
   it('показывает первый день и стартовую задачу', () => {
     renderDay1();
 
-    expect(screen.getByText('День 1 из 7')).toBeTruthy();
+    expect(screen.getByText('День 1 из 30')).toBeTruthy();
     expect(screen.getByText('Создать план')).toBeTruthy();
     expect(screen.queryByText(/Отжимания/)).toBeNull();
     expect(screen.queryByText(/Турник/)).toBeNull();
@@ -81,7 +81,9 @@ describe('страница «Сегодня»', () => {
 
     expect(enabledBreaks.length).toBeGreaterThan(0);
 
-    expect(enabledBreaks.some((item) => screen.queryByText(item.text) !== null)).toBe(true);
+    const visibleBreak = enabledBreaks.find((item) => screen.queryByText(item.text) !== null);
+
+    expect(visibleBreak).toBeTruthy();
 
     fireEvent.click(screen.getByText('Сделал'));
 

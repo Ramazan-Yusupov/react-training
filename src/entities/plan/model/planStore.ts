@@ -1,7 +1,13 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { userPlanSchema } from './planSchema';
+import {
+  planContentOrderItemSchema,
+  planGroupSchema,
+  planTaskSchema,
+  planWidgetSchema,
+} from './planSchema';
+
 import type {
   PlanContentOrderItem,
   PlanDay,
@@ -15,8 +21,9 @@ import type {
 export type EditScope = 'all' | 'day';
 
 const MAX_TASKS_PER_GROUP = 10;
+const PLAN_DAYS_COUNT = 30;
 const STORAGE_KEY = 'planer-user-plan-v2';
-const STORAGE_VERSION = 4;
+const STORAGE_VERSION = 5;
 
 type TaskInput = {
   title: string;
@@ -85,6 +92,10 @@ const createId = () =>
 const STARTER_GROUP_ID = 'starter-morning';
 const STARTER_TASK_ID = 'starter-create-plan';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function createStarterDay(day: number): PlanDay {
   return {
     day,
@@ -115,43 +126,38 @@ function createStarterDay(day: number): PlanDay {
  * сохраняя заголовки и содержимое их секций.
  */
 function migrateLegacyWidgetData(data: unknown): unknown {
-  if (!data || typeof data !== 'object') {
+  if (!isRecord(data)) {
     return data;
   }
 
-  const record = data as Record<string, unknown>;
+  const record = data;
 
   const migrateDay = (day: unknown): unknown => {
-    if (!day || typeof day !== 'object') {
+    if (!isRecord(day)) {
       return day;
     }
 
-    const dayRecord = day as Record<string, unknown>;
-
-    if (!Array.isArray(dayRecord.widgets)) {
+    if (!Array.isArray(day.widgets)) {
       return day;
     }
 
-    const widgets = dayRecord.widgets.map((widget) => {
-      if (!widget || typeof widget !== 'object') {
+    const widgets = day.widgets.map((widget) => {
+      if (!isRecord(widget)) {
         return widget;
       }
 
-      const widgetRecord = widget as Record<string, unknown>;
+      const { accordionItems, ...widgetWithoutAccordion } = widget;
 
-      const { accordionItems, ...widgetWithoutAccordion } = widgetRecord;
-
-      if (widgetRecord.type === 'accordion') {
+      if (widget.type === 'accordion') {
         const migratedNotes = Array.isArray(accordionItems)
           ? accordionItems
               .map((item) => {
-                if (!item || typeof item !== 'object') {
+                if (!isRecord(item)) {
                   return '';
                 }
 
-                const section = item as Record<string, unknown>;
-                const title = typeof section.title === 'string' ? section.title : '';
-                const content = typeof section.content === 'string' ? section.content : '';
+                const title = typeof item.title === 'string' ? item.title : '';
+                const content = typeof item.content === 'string' ? item.content : '';
 
                 return [title, content].filter(Boolean).join('\n');
               })
@@ -162,31 +168,24 @@ function migrateLegacyWidgetData(data: unknown): unknown {
         return {
           ...widgetWithoutAccordion,
           type: 'day-notes',
-          notes: typeof widgetRecord.notes === 'string' ? widgetRecord.notes : migratedNotes,
+          notes: typeof widget.notes === 'string' ? widget.notes : migratedNotes,
         };
       }
 
       return {
         ...widgetWithoutAccordion,
-        notes: typeof widgetRecord.notes === 'string' ? widgetRecord.notes : '',
+        notes: typeof widget.notes === 'string' ? widget.notes : '',
       };
     });
 
     return {
-      ...dayRecord,
+      ...day,
       widgets,
     };
   };
 
-  const template =
-    record.template && typeof record.template === 'object'
-      ? (record.template as Record<string, unknown>)
-      : null;
-
-  const dayOverrides =
-    record.dayOverrides && typeof record.dayOverrides === 'object'
-      ? (record.dayOverrides as Record<string, unknown>)
-      : null;
+  const template = isRecord(record.template) ? record.template : null;
+  const dayOverrides = isRecord(record.dayOverrides) ? record.dayOverrides : null;
 
   return {
     ...record,
@@ -278,24 +277,141 @@ function normalizePlanDay(day: PlanDay): PlanDay {
   };
 }
 
-/** Нормализует данные при миграции и импорте, сохраняя существующий план. */
-function normalizePlanData(data: unknown): UserPlanData {
-  const migratedData = migrateLegacyWidgetData(data);
-  const parsed = userPlanSchema.safeParse(migratedData);
+/**
+ * Безопасно разбирает один день.
+ * Повреждённые отдельные группы, задачи и виджеты пропускаются,
+ * а валидные записи сохраняются.
+ */
+function parsePlanDay(data: unknown, fallbackDay: number): PlanDay | null {
+  if (!isRecord(data)) {
+    return null;
+  }
 
-  if (!parsed.success) {
-    return createInitialPlan();
+  const dayNumber =
+    typeof data.day === 'number' && Number.isInteger(data.day) && data.day > 0
+      ? data.day
+      : fallbackDay;
+
+  const groups = Array.isArray(data.groups)
+    ? data.groups.flatMap((item) => {
+        const parsed = planGroupSchema.safeParse(item);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+
+  const tasks = Array.isArray(data.tasks)
+    ? data.tasks.flatMap((item) => {
+        const parsed = planTaskSchema.safeParse(item);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+
+  const widgets = Array.isArray(data.widgets)
+    ? data.widgets.flatMap((item) => {
+        const parsed = planWidgetSchema.safeParse(item);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+
+  const contentOrder = Array.isArray(data.contentOrder)
+    ? data.contentOrder.flatMap((item) => {
+        const parsed = planContentOrderItemSchema.safeParse(item);
+        return parsed.success ? [parsed.data] : [];
+      })
+    : [];
+
+  return normalizePlanDay({
+    day: dayNumber,
+    groups,
+    tasks,
+    widgets,
+    contentOrder,
+  });
+}
+
+/**
+ * Нормализует данные при миграции и импорте.
+ *
+ * ensureDays = true используется при миграции LocalStorage:
+ * если в старом плане меньше 30 дней, недостающие дни добавляются.
+ *
+ * При обычном импорте ensureDays остаётся false:
+ * количество дней импортируемого плана не меняется.
+ */
+export function normalizePlanData(data: unknown, ensureDays = false): UserPlanData {
+  const migratedData = migrateLegacyWidgetData(data);
+  const basePlan = createInitialPlan();
+
+  if (!isRecord(migratedData)) {
+    return basePlan;
+  }
+
+  const rawTemplate = isRecord(migratedData.template) ? migratedData.template : {};
+
+  const rawDays = Array.isArray(rawTemplate.days) ? rawTemplate.days : [];
+
+  const daysByNumber = new Map<number, PlanDay>();
+
+  rawDays.forEach((rawDay, index) => {
+    const day = parsePlanDay(rawDay, index + 1);
+
+    if (day) {
+      daysByNumber.set(day.day, day);
+    }
+  });
+
+  if (ensureDays) {
+    for (let dayNumber = 1; dayNumber <= PLAN_DAYS_COUNT; dayNumber += 1) {
+      if (!daysByNumber.has(dayNumber)) {
+        daysByNumber.set(dayNumber, createStarterDay(dayNumber));
+      }
+    }
+  }
+
+  const days =
+    daysByNumber.size > 0
+      ? [...daysByNumber.values()].sort((a, b) => a.day - b.day)
+      : basePlan.template.days;
+
+  const rawOverrides = isRecord(migratedData.dayOverrides) ? migratedData.dayOverrides : {};
+
+  const dayOverrides: Record<string, PlanDay> = {};
+
+  for (const [key, rawDay] of Object.entries(rawOverrides)) {
+    const dayNumber = Number(key);
+
+    if (!Number.isInteger(dayNumber) || dayNumber <= 0 || !isRecord(rawDay)) {
+      continue;
+    }
+
+    const day = parsePlanDay(
+      {
+        ...rawDay,
+        day: dayNumber,
+      },
+      dayNumber,
+    );
+
+    if (day) {
+      dayOverrides[key] = day;
+    }
   }
 
   return {
-    ...parsed.data,
+    schemaVersion: typeof migratedData.schemaVersion === 'number' ? migratedData.schemaVersion : 1,
     template: {
-      ...parsed.data.template,
-      days: parsed.data.template.days.map(normalizePlanDay),
+      id: typeof rawTemplate.id === 'string' ? rawTemplate.id : basePlan.template.id,
+      title:
+        typeof rawTemplate.title === 'string' && rawTemplate.title.trim()
+          ? rawTemplate.title.trim()
+          : basePlan.template.title,
+      description:
+        typeof rawTemplate.description === 'string'
+          ? rawTemplate.description
+          : basePlan.template.description,
+      days,
     },
-    dayOverrides: Object.fromEntries(
-      Object.entries(parsed.data.dayOverrides).map(([key, day]) => [key, normalizePlanDay(day)]),
-    ),
+    dayOverrides,
   };
 }
 
@@ -306,7 +422,7 @@ export function createInitialPlan(): UserPlanData {
       id: 'user-plan',
       title: 'Мой план',
       description: 'Мои задачи и цели',
-      days: Array.from({ length: 7 }, (_, index) => createStarterDay(index + 1)),
+      days: Array.from({ length: PLAN_DAYS_COUNT }, (_, index) => createStarterDay(index + 1)),
     },
     dayOverrides: {},
   };
@@ -546,7 +662,10 @@ export const usePlanStore = create<PlanState>()(
                 tasks: [...currentDay.tasks, task],
                 contentOrder:
                   groupId === null
-                    ? appendContentOrder(currentDay, { type: 'task', id: task.id })
+                    ? appendContentOrder(currentDay, {
+                        type: 'task',
+                        id: task.id,
+                      })
                     : currentDay.contentOrder,
               };
             }),
@@ -561,7 +680,10 @@ export const usePlanStore = create<PlanState>()(
                 tasks: [...currentDay.tasks, task],
                 contentOrder:
                   groupId === null
-                    ? appendContentOrder(currentDay, { type: 'task', id: task.id })
+                    ? appendContentOrder(currentDay, {
+                        type: 'task',
+                        id: task.id,
+                      })
                     : currentDay.contentOrder,
               };
             }),
@@ -599,6 +721,7 @@ export const usePlanStore = create<PlanState>()(
         set((currentState) =>
           updateAllDays(currentState, (currentDay) => {
             const hasGroup = currentDay.groups.some((group) => group.id === groupId);
+
             const task = createTask(originId, currentDay.day, groupId, input);
 
             return {
@@ -607,7 +730,10 @@ export const usePlanStore = create<PlanState>()(
               tasks: [...currentDay.tasks, task],
               contentOrder: hasGroup
                 ? currentDay.contentOrder
-                : appendContentOrder(currentDay, { type: 'group', id: groupId }),
+                : appendContentOrder(currentDay, {
+                    type: 'group',
+                    id: groupId,
+                  }),
             };
           }),
         );
@@ -774,10 +900,7 @@ export const usePlanStore = create<PlanState>()(
           updateOneDay(state, day, (currentDay) => {
             const sourceTask = currentDay.tasks.find((task) => task.id === taskId);
 
-            if (!sourceTask || sourceTask.groupId === targetGroupId) {
-              // Перемещение внутри одной карточки тоже разрешено.
-              if (!sourceTask) return currentDay;
-            }
+            if (!sourceTask) return currentDay;
 
             if (
               targetGroupId !== null &&
@@ -802,6 +925,7 @@ export const usePlanStore = create<PlanState>()(
             };
 
             const updatedTasks = [...remainingTasks];
+
             const targetTasks = updatedTasks.filter((task) => task.groupId === targetGroupId);
 
             const safeIndex = Math.max(0, Math.min(targetIndex, targetTasks.length));
@@ -908,7 +1032,7 @@ export const usePlanStore = create<PlanState>()(
       name: STORAGE_KEY,
       version: STORAGE_VERSION,
       storage: createJSONStorage(() => localStorage),
-      migrate: (persistedState) => normalizePlanData(persistedState),
+      migrate: (persistedState) => normalizePlanData(persistedState, true),
       partialize: (state): UserPlanData => ({
         schemaVersion: state.schemaVersion,
         template: state.template,

@@ -33,11 +33,10 @@ import { AddContentMenu } from './AddContentMenu';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
 import { DragPreview, type DragPreviewSize } from './DragPreview';
+import { GroupContentItem } from './GroupContentItem';
 import { getContentSortableId, SortableContentItem } from './SortableContentItem';
 import { PlanWidgetItem } from './PlanWidgetItem';
 import { TaskItem } from './TaskItem';
-import { GroupEditor } from './GroupEditor';
-import { TaskEditor } from './TaskEditor';
 
 interface DayBoardProps {
   day: number;
@@ -244,20 +243,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
                 return (
                   <SortableContentItem key={`group-${group.id}`} item={item}>
-                    <section className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3 pl-10">
-                      <div className="flex min-w-0 items-center justify-between gap-2">
-                        <Typography as="h6" align="start" tone="accent" text={group.title} />
-
-                        <div className="flex shrink-0 items-center gap-1">
-                          <GroupEditor day={day} group={group} />
-                        </div>
-                      </div>
-
-                      {tasks.map((task) => (
-                        <TaskItem key={task.id} task={task} day={day} />
-                      ))}
-                      <TaskEditor day={day} groupId={group.id} />
-                    </section>
+                    <GroupContentItem day={day} group={group} tasks={tasks} />
                   </SortableContentItem>
                 );
               }

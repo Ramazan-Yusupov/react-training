@@ -20,25 +20,24 @@ import {
 } from '@dnd-kit/sortable';
 
 import { usePlanStore } from '@/entities/plan';
-import type { PlanContentOrderItem, PlanWidgetType } from '@/entities/plan';
+import type { PlanContentOrderItem } from '@/entities/plan';
 
 import { useProgressStore } from '@/entities/progress';
 
 import { MicroBreaks } from '@/widgets/micro-breaks';
 import { XpWeekChart } from '@/widgets/xp-week-chart';
 
-import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
+import { Card, ErrorUI, Typography } from '@/shared/ui';
 
-import { FaPlus } from 'react-icons/fa6';
-
+import { AddContentMenu } from './AddContentMenu';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
 import { DragPreview, type DragPreviewSize } from './DragPreview';
-import { GroupEditor } from './GroupEditor';
-import { PlanWidgetItem } from './PlanWidgetItem';
 import { getContentSortableId, SortableContentItem } from './SortableContentItem';
-import { TaskEditor } from './TaskEditor';
+import { PlanWidgetItem } from './PlanWidgetItem';
 import { TaskItem } from './TaskItem';
+import { GroupEditor } from './GroupEditor';
+import { TaskEditor } from './TaskEditor';
 
 interface DayBoardProps {
   day: number;
@@ -46,17 +45,6 @@ interface DayBoardProps {
 }
 
 export function DayBoard({ day, onDayChange }: DayBoardProps) {
-  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-  const [isTaskTargetOpen, setIsTaskTargetOpen] = useState(false);
-  const [isWidgetTypeOpen, setIsWidgetTypeOpen] = useState(false);
-  const [isWidgetScopeOpen, setIsWidgetScopeOpen] = useState(false);
-  const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
-  const [isTaskEditorOpen, setIsTaskEditorOpen] = useState(false);
-
-  const [selectedGroupId, setSelectedGroupId] = useState('');
-  const [selectedWidgetType, setSelectedWidgetType] = useState<PlanWidgetType | null>(null);
-  const [taskGroupId, setTaskGroupId] = useState<string | undefined>(undefined);
-
   const [activeDragItem, setActiveDragItem] = useState<PlanContentOrderItem | null>(null);
   const [activeDragSize, setActiveDragSize] = useState<DragPreviewSize | null>(null);
 
@@ -213,46 +201,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  const openTaskTarget = () => {
-    setSelectedGroupId(planDay.groups[0]?.id ?? '');
-    setIsAddMenuOpen(false);
-    setIsTaskTargetOpen(true);
-  };
-
-  const openStandaloneTask = () => {
-    setTaskGroupId(undefined);
-    setIsTaskTargetOpen(false);
-    setIsTaskEditorOpen(true);
-  };
-
-  const openGroupTask = () => {
-    if (!selectedGroupId) return;
-
-    setTaskGroupId(selectedGroupId);
-    setIsTaskTargetOpen(false);
-    setIsTaskEditorOpen(true);
-  };
-
-  const openWidgetType = () => {
-    setIsAddMenuOpen(false);
-    setIsWidgetTypeOpen(true);
-  };
-
-  const selectWidgetType = (type: PlanWidgetType) => {
-    setSelectedWidgetType(type);
-    setIsWidgetTypeOpen(false);
-    setIsWidgetScopeOpen(true);
-  };
-
-  const handleAddWidget = (scope: 'day' | 'all') => {
-    if (!selectedWidgetType) return;
-
-    addWidget(day, selectedWidgetType, scope);
-
-    setSelectedWidgetType(null);
-    setIsWidgetScopeOpen(false);
-  };
-
   return (
     <Card
       classNameMain="h-full min-h-0"
@@ -268,15 +216,11 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
       <DayProgress day={planDay} />
 
-      <Button
-        size="md"
-        variant="outline"
-        icon={<FaPlus />}
-        fullWidth
-        onClick={() => setIsAddMenuOpen(true)}
-      >
-        Добавить карточку, виджет, задачу
-      </Button>
+      <AddContentMenu
+        day={day}
+        planDay={planDay}
+        onAddWidget={(type, scope) => addWidget(day, type, scope)}
+      />
 
       <DndContext
         sensors={sensors}
@@ -312,7 +256,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
                       {tasks.map((task) => (
                         <TaskItem key={task.id} task={task} day={day} />
                       ))}
-
                       <TaskEditor day={day} groupId={group.id} />
                     </section>
                   </SortableContentItem>
@@ -355,146 +298,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
           document.body,
         )}
       </DndContext>
-
-      <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">
-        <div className="flex flex-col gap-2">
-          <Button
-            fullWidth
-            variant="outline"
-            onClick={() => {
-              setIsAddMenuOpen(false);
-              setIsGroupEditorOpen(true);
-            }}
-          >
-            Карточку
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={openTaskTarget}>
-            Задачу
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={openWidgetType}>
-            Виджет
-          </Button>
-
-          <Button variant="ghost" fullWidth onClick={() => setIsAddMenuOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal
-        open={isWidgetTypeOpen}
-        onClose={() => setIsWidgetTypeOpen(false)}
-        title="Выбери виджет"
-      >
-        <div className="flex flex-col gap-2">
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('micro-breaks')}>
-            Микро-паузы
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('xp-by-days')}>
-            XP по дням
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('day-notes')}>
-            Заметки дня
-          </Button>
-
-          <Button variant="ghost" fullWidth onClick={() => setIsWidgetTypeOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal
-        open={isWidgetScopeOpen}
-        onClose={() => {
-          setIsWidgetScopeOpen(false);
-          setSelectedWidgetType(null);
-        }}
-        title="Где отображать виджет?"
-      >
-        <div className="flex flex-col gap-2">
-          <Button fullWidth variant="primary" onClick={() => handleAddWidget('day')}>
-            Только день {day}
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => handleAddWidget('all')}>
-            Во всех днях
-          </Button>
-
-          <Button
-            variant="ghost"
-            fullWidth
-            onClick={() => {
-              setIsWidgetScopeOpen(false);
-              setSelectedWidgetType(null);
-            }}
-          >
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal
-        open={isTaskTargetOpen}
-        onClose={() => setIsTaskTargetOpen(false)}
-        title="Где создать задачу?"
-      >
-        <div className="flex flex-col gap-3">
-          <Button fullWidth variant="outline" onClick={openStandaloneTask}>
-            Самостоятельная задача
-          </Button>
-
-          <div className="flex flex-col gap-2">
-            <Select
-              label="Выбери карточку"
-              value={selectedGroupId}
-              onChange={(event) => setSelectedGroupId(event.target.value)}
-              options={planDay.groups.map((group) => ({
-                value: group.id,
-                label: group.title,
-              }))}
-              placeholder="Выбрать карточку"
-            />
-
-            <Button
-              fullWidth
-              variant="primary"
-              disabled={!selectedGroupId || planDay.groups.length === 0}
-              onClick={openGroupTask}
-            >
-              Добавить в карточку
-            </Button>
-          </div>
-
-          {planDay.groups.length === 0 && (
-            <p className="text-sm text-gray-400">
-              Сначала создай карточку, если хочешь добавить задачу внутрь неё.
-            </p>
-          )}
-
-          <Button variant="ghost" fullWidth onClick={() => setIsTaskTargetOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <GroupEditor
-        day={day}
-        open={isGroupEditorOpen}
-        onOpenChange={setIsGroupEditorOpen}
-        hideTrigger
-      />
-
-      <TaskEditor
-        day={day}
-        groupId={taskGroupId}
-        open={isTaskEditorOpen}
-        onOpenChange={setIsTaskEditorOpen}
-        hideTrigger
-      />
     </Card>
   );
 }

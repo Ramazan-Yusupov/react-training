@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 
 import {
   DndContext,
@@ -16,11 +16,8 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-
-import { CSS } from '@dnd-kit/utilities';
 
 import { usePlanStore } from '@/entities/plan';
 import type { PlanContentOrderItem, PlanWidgetType } from '@/entities/plan';
@@ -32,87 +29,20 @@ import { XpWeekChart } from '@/widgets/xp-week-chart';
 
 import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
 
-import { FaGripVertical, FaPlus } from 'react-icons/fa6';
+import { FaPlus } from 'react-icons/fa6';
 
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
+import { DragPreview, type DragPreviewSize } from './DragPreview';
 import { GroupEditor } from './GroupEditor';
 import { PlanWidgetItem } from './PlanWidgetItem';
+import { getContentSortableId, SortableContentItem } from './SortableContentItem';
 import { TaskEditor } from './TaskEditor';
 import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
   day: number;
   onDayChange: (day: number) => void;
-}
-
-interface SortableContentItemProps {
-  item: PlanContentOrderItem;
-  children: ReactNode;
-}
-
-interface DragPreviewSize {
-  width: number;
-  height: number;
-}
-
-function getContentSortableId(item: PlanContentOrderItem) {
-  return `${item.type}:${item.id}`;
-}
-
-function SortableContentItem({ item, children }: SortableContentItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: getContentSortableId(item),
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.2 : 1,
-      }}
-      className="relative min-w-0"
-    >
-      <button
-        ref={setActivatorNodeRef}
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label="Перетащить элемент"
-        title="Перетащить"
-        className="absolute left-2 top-3 z-20 flex h-7 w-7 cursor-grab touch-none items-center justify-center rounded-md text-slate-500 transition hover:bg-white/10 hover:text-blue-400 active:cursor-grabbing"
-      >
-        <FaGripVertical size={16} />
-      </button>
-
-      {children}
-    </div>
-  );
-}
-
-function DragPreview({ size, children }: { size: DragPreviewSize; children: ReactNode }) {
-  return (
-    <div
-      style={{
-        width: size.width,
-        height: size.height,
-        boxSizing: 'border-box',
-      }}
-      className="pointer-events-none overflow-hidden rounded-2xl bg-slate-950 shadow-2xl shadow-black/60 ring-2 ring-blue-500/70"
-    >
-      {children}
-    </div>
-  );
 }
 
 export function DayBoard({ day, onDayChange }: DayBoardProps) {

@@ -43,7 +43,7 @@ export function TaskEditor({
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
-  const isAddOpen = (open ?? mode === 'add') && mode === 'add';
+  const isAddOpen = open ?? mode === 'add';
 
   const taskGroupId = groupId ?? null;
 

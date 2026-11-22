@@ -502,6 +502,15 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
       />
 
       <DayProgress day={planDay} />
+      <Button
+        size="md"
+        variant="outline"
+        icon={<FaPlus />}
+        fullWidth
+        onClick={() => setIsAddMenuOpen(true)}
+      >
+        Добавить карточку, виджет, задачу
+      </Button>
 
       <DndContext
         sensors={sensors}
@@ -568,16 +577,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
               );
             })}
           </SortableContext>
-
-          <Button
-            size="md"
-            variant="outline"
-            icon={<FaPlus />}
-            fullWidth
-            onClick={() => setIsAddMenuOpen(true)}
-          >
-            Добавить карточку, виджет, задачу
-          </Button>
         </div>
 
         {createPortal(

@@ -54,9 +54,9 @@ export function DayBoardView({
 
   return (
     <Card
-      classNameMain="h-full min-h-0"
-      className="h-full min-h-0 overflow-hidden"
-      classNameChild="min-h-0 flex-1 overflow-hidden"
+      classNameMain="h-auto min-h-0 xl:h-full"
+      className="h-auto min-h-0 overflow-visible xl:h-full xl:overflow-hidden"
+      classNameChild="min-h-0 flex-none overflow-visible xl:flex-1 xl:overflow-hidden"
     >
       <DayHeader day={planDay} startDate={startDate} totalDays={totalDays} onChange={onDayChange} />
 
@@ -71,7 +71,7 @@ export function DayBoardView({
         onDragEnd={handleDragEnd}
         onDragCancel={resetDragState}
       >
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 scrollbar-none space-y-4">
+        <div className="min-h-0 flex-none overflow-visible space-y-4 pr-1 scrollbar-none xl:flex-1 xl:overflow-y-auto xl:overscroll-contain">
           <SortableContext
             items={contentOrder.map(getContentSortableId)}
             strategy={verticalListSortingStrategy}

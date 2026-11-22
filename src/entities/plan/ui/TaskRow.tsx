@@ -9,8 +9,8 @@ interface TaskRowProps {
   xp?: number;
 }
 
-export function TaskRow({ task, checked, onToggle, time, xp = task.xp }: TaskRowProps) {
-  const meta = [time, `${task.durationMin} мин`].filter(Boolean).join(' · ');
+export function TaskRow({ task, checked, onToggle, xp = task.xp }: TaskRowProps) {
+  const meta = [`${task.durationMin} мин`, task.scheduledTime].filter(Boolean).join(' | ');
 
   return (
     <Checkbox

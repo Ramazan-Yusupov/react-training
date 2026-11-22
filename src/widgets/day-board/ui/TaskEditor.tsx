@@ -39,22 +39,22 @@ export function TaskEditor({
   const [mode, setMode] = useState<EditorMode>(null);
   const [title, setTitle] = useState(task?.title ?? '');
   const [durationMin, setDurationMin] = useState(String(task?.durationMin ?? 5));
+  const [scheduledTime, setScheduledTime] = useState(task?.scheduledTime ?? '');
   const [xp, setXp] = useState(String(task?.xp ?? 5));
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
   const isAddOpen = open ?? mode === 'add';
-
   const taskGroupId = groupId ?? null;
 
   const taskCount = currentDay?.tasks.filter((item) => item.groupId === taskGroupId).length ?? 0;
-
   const isLimitReached = groupId !== undefined && taskCount >= 10;
 
   const close = () => {
     setMode(null);
     setTitle(task?.title ?? '');
     setDurationMin(String(task?.durationMin ?? 5));
+    setScheduledTime(task?.scheduledTime ?? '');
     setXp(String(task?.xp ?? 5));
     setRequired(task?.required ?? true);
     setError('');
@@ -84,6 +84,7 @@ export function TaskEditor({
     return {
       title: normalizedTitle,
       durationMin: duration,
+      scheduledTime: scheduledTime || undefined,
       xp: points,
       required,
     };
@@ -97,11 +98,8 @@ export function TaskEditor({
     let result: string | null;
 
     if (scope === 'all' && groupId) {
-      // Для задачи внутри карточки используем метод,
-      // который добавляет карточку в недостающие дни.
       result = addTaskToAllDaysWithGroup(day, groupId, values);
     } else {
-      // Самостоятельная задача или задача только на текущий день.
       result = addTask(day, taskGroupId, values, scope);
     }
 
@@ -149,7 +147,7 @@ export function TaskEditor({
         autoFocus
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 min-[390px]:grid-cols-2">
         <Input
           label="Длительность (мин)"
           type="number"
@@ -163,17 +161,27 @@ export function TaskEditor({
         />
 
         <Input
-          label="Награда (XP)"
-          type="number"
-          min={0}
-          max={10000}
-          value={xp}
+          label="Время начала"
+          type="time"
+          value={scheduledTime}
           onChange={(event) => {
-            setXp(event.target.value);
+            setScheduledTime(event.target.value);
             setError('');
           }}
         />
       </div>
+
+      <Input
+        label="Награда (XP)"
+        type="number"
+        min={0}
+        max={10000}
+        value={xp}
+        onChange={(event) => {
+          setXp(event.target.value);
+          setError('');
+        }}
+      />
 
       <Checkbox
         checked={required}
@@ -253,6 +261,7 @@ export function TaskEditor({
           onClick={() => {
             setTitle(task.title);
             setDurationMin(String(task.durationMin));
+            setScheduledTime(task.scheduledTime ?? '');
             setXp(String(task.xp));
             setRequired(task.required);
             setError('');

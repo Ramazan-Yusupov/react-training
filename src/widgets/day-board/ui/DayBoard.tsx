@@ -36,6 +36,7 @@ import { DragPreview, type DragPreviewSize } from './DragPreview';
 import { GroupContentItem } from './GroupContentItem';
 import { getContentSortableId, SortableContentItem } from './SortableContentItem';
 import { PlanWidgetItem } from './PlanWidgetItem';
+import { StandaloneTaskItem } from './StandaloneTaskItem';
 import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
@@ -141,7 +142,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
       return (
         <div className="h-full min-w-0 rounded-2xl bg-slate-950">
-          <TaskItem task={task} day={day} />
+          <StandaloneTaskItem task={task} day={day} />
         </div>
       );
     }
@@ -257,7 +258,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
                 return (
                   <SortableContentItem key={`task-${task.id}`} item={item}>
-                    <TaskItem task={task} day={day} />
+                    <StandaloneTaskItem task={task} day={day} />
                   </SortableContentItem>
                 );
               }

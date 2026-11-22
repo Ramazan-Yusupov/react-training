@@ -24,20 +24,17 @@ import type { PlanContentOrderItem } from '@/entities/plan';
 
 import { useProgressStore } from '@/entities/progress';
 
-import { MicroBreaks } from '@/widgets/micro-breaks';
-import { XpWeekChart } from '@/widgets/xp-week-chart';
-
-import { Card, ErrorUI, Typography } from '@/shared/ui';
+import { Card, ErrorUI } from '@/shared/ui';
 
 import { AddContentMenu } from './AddContentMenu';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
 import { DragPreview, type DragPreviewSize } from './DragPreview';
+import { DragPreviewContent } from './DragPreviewContent';
 import { GroupContentItem } from './GroupContentItem';
 import { getContentSortableId, SortableContentItem } from './SortableContentItem';
 import { PlanWidgetItem } from './PlanWidgetItem';
 import { StandaloneTaskItem } from './StandaloneTaskItem';
-import { TaskItem } from './TaskItem';
 
 interface DayBoardProps {
   day: number;
@@ -112,70 +109,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         height: rect.height,
       });
     }
-  };
-
-  const getDragPreviewContent = () => {
-    if (!activeDragItem) return null;
-
-    if (activeDragItem.type === 'group') {
-      const group = planDay?.groups.find((item) => item.id === activeDragItem.id);
-
-      if (!group || !planDay) return null;
-
-      const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
-
-      return (
-        <section className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-10">
-          <Typography as="h6" align="start" tone="accent" text={group.title} />
-
-          {tasks.map((task) => (
-            <TaskItem key={task.id} task={task} day={day} />
-          ))}
-        </section>
-      );
-    }
-
-    if (activeDragItem.type === 'task') {
-      const task = planDay?.tasks.find((item) => item.id === activeDragItem.id);
-
-      if (!task) return null;
-
-      return (
-        <div className="h-full min-w-0 rounded-2xl bg-slate-950">
-          <StandaloneTaskItem task={task} day={day} />
-        </div>
-      );
-    }
-
-    const widget = planDay?.widgets.find((item) => item.id === activeDragItem.id);
-
-    if (!widget) return null;
-
-    if (widget.type === 'micro-breaks') {
-      return <MicroBreaks day={day} onSettingsClick={() => {}} />;
-    }
-
-    if (widget.type === 'xp-by-days') {
-      return <XpWeekChart day={day} onSettingsClick={() => {}} />;
-    }
-
-    return (
-      <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
-        <Typography as="h6" align="start" tone="accent" text="Заметки дня" />
-
-        <div className="mt-3">
-          {widget.notes.trim() ? (
-            <p className="whitespace-pre-wrap wrap-break-words text-sm text-slate-300">
-              {widget.notes}
-            </p>
-          ) : (
-            <Typography align="start" tone="muted">
-              Пока нет заметок.
-            </Typography>
-          )}
-        </div>
-      </Card>
-    );
   };
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
@@ -279,7 +212,9 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         {createPortal(
           <DragOverlay adjustScale={false} dropAnimation={null}>
             {activeDragItem && activeDragSize ? (
-              <DragPreview size={activeDragSize}>{getDragPreviewContent()}</DragPreview>
+              <DragPreview size={activeDragSize}>
+                <DragPreviewContent item={activeDragItem} day={day} planDay={planDay} />
+              </DragPreview>
             ) : null}
           </DragOverlay>,
           document.body,

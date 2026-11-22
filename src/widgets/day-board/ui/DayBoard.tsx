@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { useEffect, useState, type ReactNode } from 'react';
 
 import {
@@ -82,7 +83,7 @@ function SortableContentItem({ item, children }: SortableContentItemProps) {
     <div
       ref={setNodeRef}
       style={{
-        transform: isDragging ? undefined : CSS.Transform.toString(transform),
+        transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.2 : 1,
       }}
@@ -105,46 +106,17 @@ function SortableContentItem({ item, children }: SortableContentItemProps) {
   );
 }
 
-function DragPreview({
-  item,
-  size,
-  title,
-  subtitle,
-}: {
-  item: PlanContentOrderItem;
-  size: DragPreviewSize;
-  title: string;
-  subtitle?: string;
-}) {
-  const borderClass =
-    item.type === 'group'
-      ? 'border-slate-700'
-      : item.type === 'task'
-        ? 'border-dashed border-slate-700'
-        : 'border-dotted border-amber-600';
-
+function DragPreview({ size, children }: { size: DragPreviewSize; children: ReactNode }) {
   return (
     <div
       style={{
         width: size.width,
         height: size.height,
-        maxWidth: '100%',
+        boxSizing: 'border-box',
       }}
-      className={`flex min-w-0 flex-col justify-center gap-2 overflow-hidden rounded-2xl border-2 bg-slate-950 p-3 pl-10 shadow-2xl shadow-black/50 ${borderClass}`}
+      className="pointer-events-none overflow-hidden rounded-2xl bg-slate-950 shadow-2xl shadow-black/60 ring-2 ring-blue-500/70"
     >
-      <div className="flex min-w-0 items-center gap-3">
-        <FaGripVertical className="shrink-0 text-blue-400" size={16} />
-
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-semibold text-blue-400">{title}</div>
-
-          {subtitle && <div className="truncate text-xs text-slate-400">{subtitle}</div>}
-        </div>
-
-        <span className="shrink-0 rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-400">
-          Перемещение
-        </span>
-      </div>
+      {children}
     </div>
   );
 }
@@ -389,6 +361,70 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     }
   };
 
+  const getDragPreviewContent = () => {
+    if (!activeDragItem) return null;
+
+    if (activeDragItem.type === 'group') {
+      const group = planDay?.groups.find((item) => item.id === activeDragItem.id);
+
+      if (!group || !planDay) return null;
+
+      const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
+
+      return (
+        <section className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-10">
+          <Typography as="h6" align="start" tone="accent" text={group.title} />
+
+          {tasks.map((task) => (
+            <TaskItem key={task.id} task={task} day={day} />
+          ))}
+        </section>
+      );
+    }
+
+    if (activeDragItem.type === 'task') {
+      const task = planDay?.tasks.find((item) => item.id === activeDragItem.id);
+
+      if (!task) return null;
+
+      return (
+        <div className="h-full min-w-0 rounded-2xl bg-slate-950">
+          <TaskItem task={task} day={day} />
+        </div>
+      );
+    }
+
+    const widget = planDay?.widgets.find((item) => item.id === activeDragItem.id);
+
+    if (!widget) return null;
+
+    if (widget.type === 'micro-breaks') {
+      return <MicroBreaks day={day} onSettingsClick={() => {}} />;
+    }
+
+    if (widget.type === 'xp-by-days') {
+      return <XpWeekChart day={day} onSettingsClick={() => {}} />;
+    }
+
+    return (
+      <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
+        <Typography as="h6" align="start" tone="accent" text="Заметки дня" />
+
+        <div className="mt-3">
+          {widget.notes.trim() ? (
+            <p className="whitespace-pre-wrap wrap-break-words text-sm text-slate-300">
+              {widget.notes}
+            </p>
+          ) : (
+            <Typography align="start" tone="muted">
+              Пока нет заметок.
+            </Typography>
+          )}
+        </div>
+      </Card>
+    );
+  };
+
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id || !planDay) {
       resetDragState();
@@ -411,28 +447,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
   if (!planDay) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
-
-  const getDragTitle = () => {
-    if (!activeDragItem) return '';
-
-    if (activeDragItem.type === 'group') {
-      return planDay.groups.find((item) => item.id === activeDragItem.id)?.title ?? '';
-    }
-
-    if (activeDragItem.type === 'task') {
-      return planDay.tasks.find((item) => item.id === activeDragItem.id)?.title ?? '';
-    }
-
-    const widget = planDay.widgets.find((item) => item.id === activeDragItem.id);
-
-    if (!widget) return '';
-
-    return widget.type === 'micro-breaks'
-      ? 'Микро-паузы'
-      : widget.type === 'xp-by-days'
-        ? 'XP по дням'
-        : 'Заметки дня';
-  };
 
   const openTaskTarget = () => {
     setSelectedGroupId(planDay.groups[0]?.id ?? '');
@@ -472,24 +486,6 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
     setSelectedWidgetType(null);
     setIsWidgetScopeOpen(false);
-  };
-
-  const getDragSubtitle = () => {
-    if (!activeDragItem) return '';
-
-    if (activeDragItem.type === 'group') {
-      const tasks = planDay.tasks.filter((task) => task.groupId === activeDragItem.id);
-
-      return `${tasks.length} задач`;
-    }
-
-    if (activeDragItem.type === 'task') {
-      const task = planDay.tasks.find((item) => item.id === activeDragItem.id);
-
-      return task ? `${task.durationMin} мин · +${task.xp} XP` : '';
-    }
-
-    return 'Виджет дня';
   };
 
   return (
@@ -577,16 +573,14 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
           </Button>
         </div>
 
-        <DragOverlay adjustScale={false}>
-          {activeDragItem && activeDragSize ? (
-            <DragPreview
-              item={activeDragItem}
-              size={activeDragSize}
-              title={getDragTitle()}
-              subtitle={getDragSubtitle()}
-            />
-          ) : null}
-        </DragOverlay>
+        {createPortal(
+          <DragOverlay adjustScale={false} dropAnimation={null}>
+            {activeDragItem && activeDragSize ? (
+              <DragPreview size={activeDragSize}>{getDragPreviewContent()}</DragPreview>
+            ) : null}
+          </DragOverlay>,
+          document.body,
+        )}
       </DndContext>
 
       <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">

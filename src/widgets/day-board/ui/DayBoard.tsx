@@ -1,23 +1,8 @@
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
 
-import {
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  type DragEndEvent,
-  type DragStartEvent,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
 
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { usePlanStore } from '@/entities/plan';
 import type { PlanContentOrderItem } from '@/entities/plan';
@@ -29,12 +14,14 @@ import { Card, ErrorUI } from '@/shared/ui';
 import { AddContentMenu } from './AddContentMenu';
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
-import { DragPreview, type DragPreviewSize } from './DragPreview';
+import { DragPreview } from './DragPreview';
 import { DragPreviewContent } from './DragPreviewContent';
 import { GroupContentItem } from './GroupContentItem';
 import { getContentSortableId, SortableContentItem } from './SortableContentItem';
 import { PlanWidgetItem } from './PlanWidgetItem';
 import { StandaloneTaskItem } from './StandaloneTaskItem';
+
+import { useDayBoardDnd } from '../model/useDayBoardDnd';
 
 interface DayBoardProps {
   day: number;
@@ -42,27 +29,12 @@ interface DayBoardProps {
 }
 
 export function DayBoard({ day, onDayChange }: DayBoardProps) {
-  const [activeDragItem, setActiveDragItem] = useState<PlanContentOrderItem | null>(null);
-  const [activeDragSize, setActiveDragSize] = useState<DragPreviewSize | null>(null);
-
   const startDate = useProgressStore((state) => state.startDate);
 
   const template = usePlanStore((state) => state.template);
   const dayOverride = usePlanStore((state) => state.dayOverrides[String(day)]);
 
   const addWidget = usePlanStore((state) => state.addWidget);
-  const moveContent = usePlanStore((state) => state.moveContent);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 6,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
 
   const planDay = dayOverride ?? template.days.find((item) => item.day === day);
 
@@ -85,50 +57,18 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
       ])
     : [];
 
-  const resetDragState = () => {
-    setActiveDragItem(null);
-    setActiveDragSize(null);
-  };
-
-  const handleDragStart = ({ active }: DragStartEvent) => {
-    if (!planDay) return;
-
-    const item = contentOrder.find(
-      (current) => getContentSortableId(current) === String(active.id),
-    );
-
-    if (!item) return;
-
-    setActiveDragItem(item);
-
-    const rect = active.rect.current.initial;
-
-    if (rect) {
-      setActiveDragSize({
-        width: rect.width,
-        height: rect.height,
-      });
-    }
-  };
-
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id || !planDay) {
-      resetDragState();
-      return;
-    }
-
-    const activeItem = contentOrder.find(
-      (item) => getContentSortableId(item) === String(active.id),
-    );
-
-    const overItem = contentOrder.find((item) => getContentSortableId(item) === String(over.id));
-
-    if (activeItem && overItem) {
-      moveContent(day, activeItem, overItem);
-    }
-
-    resetDragState();
-  };
+  const {
+    activeDragItem,
+    activeDragSize,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    resetDragState,
+  } = useDayBoardDnd({
+    day,
+    planDay,
+    contentOrder,
+  });
 
   if (!planDay) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;

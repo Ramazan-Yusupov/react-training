@@ -316,7 +316,7 @@ describe('модель пользовательского плана', () => {
 
     const state = usePlanStore.getState();
 
-    expect(state.dayOverrides['1']?.widgets).toHaveLength(0);
     expect(state.template.days.every((day) => day.widgets.length === 0)).toBe(true);
+    expect(Object.keys(state.dayOverrides)).toHaveLength(0);
   });
 });

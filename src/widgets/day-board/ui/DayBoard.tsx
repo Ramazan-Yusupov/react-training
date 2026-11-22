@@ -525,12 +525,15 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
                       <div className="flex min-w-0 items-center justify-between gap-2">
                         <Typography as="h6" align="start" tone="accent" text={group.title} />
 
-                        <GroupEditor day={day} group={group} />
+                        <div className="flex shrink-0 items-center gap-1">
+                          <GroupEditor day={day} group={group} />
+                        </div>
                       </div>
 
                       {tasks.map((task) => (
                         <TaskItem key={task.id} task={task} day={day} />
                       ))}
+                      <TaskEditor day={day} groupId={group.id} />
                     </section>
                   </SortableContentItem>
                 );

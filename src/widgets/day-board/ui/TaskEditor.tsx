@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+
 import { usePlanStore } from '@/entities/plan';
 import type { PlanTask } from '@/entities/plan';
+
 import { Button, Checkbox, IconButton, Input, Modal } from '@/shared/ui';
+
 import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
-type EditorMode = 'add' | 'edit' | 'delete' | 'all-scope' | null;
+type EditorMode = 'add' | 'edit' | 'delete' | null;
 
 interface TaskEditorProps {
   day: number;
@@ -33,9 +36,6 @@ export function TaskEditor({
       state.dayOverrides[String(day)] ?? state.template.days.find((item) => item.day === day),
   );
 
-  const templateDays = usePlanStore((state) => state.template.days);
-  const dayOverrides = usePlanStore((state) => state.dayOverrides);
-
   const [mode, setMode] = useState<EditorMode>(null);
   const [title, setTitle] = useState(task?.title ?? '');
   const [durationMin, setDurationMin] = useState(String(task?.durationMin ?? 5));
@@ -43,19 +43,7 @@ export function TaskEditor({
   const [required, setRequired] = useState(task?.required ?? true);
   const [error, setError] = useState('');
 
-  const isAddOpen = (open ?? mode === 'add') && mode !== 'all-scope';
-
-  const missingGroupDays = useMemo(() => {
-    if (!groupId) return [];
-
-    return templateDays
-      .filter((templateDay) => {
-        const current = dayOverrides[String(templateDay.day)] ?? templateDay;
-
-        return !current.groups.some((group) => group.id === groupId);
-      })
-      .map((item) => item.day);
-  }, [templateDays, dayOverrides, groupId]);
+  const isAddOpen = (open ?? mode === 'add') && mode === 'add';
 
   const taskGroupId = groupId ?? null;
 
@@ -106,53 +94,23 @@ export function TaskEditor({
 
     if (!values) return;
 
-    if (scope === 'all' && groupId && missingGroupDays.length > 0) {
-      setMode('all-scope');
-      return;
-    }
+    let result: string | null;
 
-    const result = addTask(day, taskGroupId, values, scope);
+    if (scope === 'all' && groupId) {
+      // Для задачи внутри карточки используем метод,
+      // который добавляет карточку в недостающие дни.
+      result = addTaskToAllDaysWithGroup(day, groupId, values);
+    } else {
+      // Самостоятельная задача или задача только на текущий день.
+      result = addTask(day, taskGroupId, values, scope);
+    }
 
     if (!result) {
       setError(
         scope === 'all'
-          ? 'В одной из карточек уже достигнут лимит в 10 задач.'
+          ? 'Не удалось добавить задачу во все дни. Проверь лимит в 10 задач в карточке.'
           : 'В этой карточке уже есть 10 задач.',
       );
-      return;
-    }
-
-    close();
-  };
-
-  const handleAddToAllDays = () => {
-    const values = validate();
-
-    if (!values || !groupId) return;
-
-    const result = addTaskToAllDaysWithGroup(day, groupId, values);
-
-    if (!result) {
-      setError(
-        'Не удалось добавить задачу. Возможно, в одной из карточек достигнут лимит в 10 задач.',
-      );
-      setMode('add');
-      return;
-    }
-
-    close();
-  };
-
-  const handleAddToExistingGroups = () => {
-    const values = validate();
-
-    if (!values || !groupId) return;
-
-    const result = addTask(day, groupId, values, 'all');
-
-    if (!result) {
-      setError('Не удалось добавить задачу. Проверь лимит задач.');
-      setMode('add');
       return;
     }
 
@@ -280,43 +238,6 @@ export function TaskEditor({
             </Button>
           </div>
         </Modal>
-
-        <Modal
-          open={mode === 'all-scope'}
-          onClose={close}
-          title="Карточка есть не во всех днях"
-          size="lg"
-        >
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-gray-300">Карточка отсутствует в следующих днях:</p>
-
-            <p className="text-sm text-amber-400">{missingGroupDays.join(', ')}</p>
-
-            <p className="text-sm text-gray-300">Как поступить с задачей?</p>
-
-            <Button
-              variant="primary"
-              fullWidth
-              disabled={!title.trim()}
-              onClick={handleAddToAllDays}
-            >
-              Создать карточку в недостающих днях и добавить задачу
-            </Button>
-
-            <Button
-              variant="outline"
-              fullWidth
-              disabled={!title.trim()}
-              onClick={handleAddToExistingGroups}
-            >
-              Добавить только в дни с этой карточкой
-            </Button>
-
-            <Button variant="ghost" fullWidth onClick={close}>
-              Отмена
-            </Button>
-          </div>
-        </Modal>
       </>
     );
   }
@@ -334,6 +255,7 @@ export function TaskEditor({
             setDurationMin(String(task.durationMin));
             setXp(String(task.xp));
             setRequired(task.required);
+            setError('');
             setMode('edit');
           }}
         />

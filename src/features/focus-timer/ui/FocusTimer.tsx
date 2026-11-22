@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSettingsStore } from '@/entities/settings';
 import { formatClock } from '@/shared/lib';
 import { Badge, Button, Input, Modal, Progress, Typography, toast } from '@/shared/ui';
-import { FaForwardStep, FaGear, FaPause, FaPlay, FaRotateLeft } from 'react-icons/fa6';
+import { FaBell, FaForwardStep, FaGear, FaPause, FaPlay, FaRotateLeft } from 'react-icons/fa6';
+import { useBrowserNotifications } from '../model/useBrowserNotifications';
 import { type TimerMode, useFocusTimer } from '../model/useFocusTimer';
 
 const MODE_LABELS: Record<TimerMode, string> = {
@@ -10,11 +11,21 @@ const MODE_LABELS: Record<TimerMode, string> = {
   break: 'Пауза',
 };
 
-function notifyPhaseEnd(finished: TimerMode, breakDurationMin: number) {
+function notifyPhaseEnd(
+  finished: TimerMode,
+  breakDurationMin: number,
+  notifyBrowser: (title: string, body: string) => void,
+) {
   if (finished === 'work') {
-    toast.info(`Работа завершена. Перерыв ${breakDurationMin} мин.`);
+    const message = `Работа завершена. Перерыв ${breakDurationMin} мин.`;
+
+    toast.info(message);
+    notifyBrowser('Planer — время отдохнуть', message);
   } else {
-    toast.info('Перерыв закончился, можно работать');
+    const message = 'Перерыв закончился, можно работать';
+
+    toast.info(message);
+    notifyBrowser('Planer — пора работать', message);
   }
 }
 
@@ -28,8 +39,10 @@ export function FocusTimer() {
   const [workDraft, setWorkDraft] = useState(String(workDurationMin));
   const [breakDraft, setBreakDraft] = useState(String(breakDurationMin));
 
+  const { permission, requestPermission, notify } = useBrowserNotifications();
+
   const { mode, remaining, running, total, start, pause, reset, skip } = useFocusTimer(
-    (finished) => notifyPhaseEnd(finished, breakDurationMin),
+    (finished) => notifyPhaseEnd(finished, breakDurationMin, notify),
     {
       workDuration: workDurationMin * 60,
       breakDuration: breakDurationMin * 60,
@@ -60,6 +73,31 @@ export function FocusTimer() {
     setSettingsOpen(false);
     toast.success('Настройки таймера сохранены');
   };
+
+  const enableNotifications = async () => {
+    const result = await requestPermission();
+
+    if (result === 'granted') {
+      toast.success('Браузерные уведомления включены');
+      return;
+    }
+
+    if (result === 'denied') {
+      toast.error('Разреши уведомления для Planer в настройках браузера');
+      return;
+    }
+
+    toast.info('Браузерные уведомления не поддерживаются');
+  };
+
+  const notificationLabel =
+    permission === 'granted'
+      ? 'Уведомления включены'
+      : permission === 'denied'
+        ? 'Разрешение заблокировано в браузере'
+        : permission === 'unsupported'
+          ? 'Уведомления не поддерживаются'
+          : 'Включить браузерные уведомления';
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -117,6 +155,23 @@ export function FocusTimer() {
           value={breakDraft}
           onChange={(event) => setBreakDraft(event.target.value)}
         />
+
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outline"
+            fullWidth
+            icon={<FaBell />}
+            disabled={permission !== 'default'}
+            onClick={enableNotifications}
+          >
+            {notificationLabel}
+          </Button>
+
+          <Typography align="start" tone="muted" className="text-xs">
+            Уведомления сообщат об окончании работы и перерыва, даже если вкладка Planer открыта в
+            фоне.
+          </Typography>
+        </div>
       </Modal>
     </div>
   );

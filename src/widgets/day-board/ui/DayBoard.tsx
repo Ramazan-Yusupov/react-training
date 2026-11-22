@@ -5,7 +5,6 @@ import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { usePlanStore } from '@/entities/plan';
-import type { PlanContentOrderItem } from '@/entities/plan';
 
 import { useProgressStore } from '@/entities/progress';
 
@@ -21,6 +20,7 @@ import { getContentSortableId, SortableContentItem } from './SortableContentItem
 import { PlanWidgetItem } from './PlanWidgetItem';
 import { StandaloneTaskItem } from './StandaloneTaskItem';
 
+import { getDayContentOrder } from '../model/getDayContentOrder';
 import { useDayBoardDnd } from '../model/useDayBoardDnd';
 
 interface DayBoardProps {
@@ -38,24 +38,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
   const planDay = dayOverride ?? template.days.find((item) => item.day === day);
 
-  const contentOrder: PlanContentOrderItem[] = planDay
-    ? (planDay.contentOrder ?? [
-        ...planDay.groups.map((group) => ({
-          type: 'group' as const,
-          id: group.id,
-        })),
-        ...planDay.tasks
-          .filter((task) => task.groupId === null)
-          .map((task) => ({
-            type: 'task' as const,
-            id: task.id,
-          })),
-        ...planDay.widgets.map((widget) => ({
-          type: 'widget' as const,
-          id: widget.id,
-        })),
-      ])
-    : [];
+  const contentOrder = getDayContentOrder(planDay);
 
   const {
     activeDragItem,

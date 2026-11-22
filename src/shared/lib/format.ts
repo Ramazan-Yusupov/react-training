@@ -1,3 +1,10 @@
+export function formatTaskDuration(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (!hours) return `${minutes}м`;
+  return minutes ? `${hours}ч ${minutes}м` : `${hours}ч`;
+}
+
 /** 125 -> "02:05" */
 export function formatClock(totalSeconds: number): string {
   const safe = Math.max(0, Math.floor(totalSeconds));

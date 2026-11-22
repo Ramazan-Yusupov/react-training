@@ -9,6 +9,8 @@ import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
 type EditorMode = 'add' | 'edit' | 'delete' | null;
 
+const MAX_TASK_XP = 999;
+
 interface TaskEditorProps {
   day: number;
   groupId?: string;
@@ -76,8 +78,8 @@ export function TaskEditor({
       return null;
     }
 
-    if (!Number.isInteger(points) || points < 0 || points > 10000) {
-      setError('XP должно быть целым числом от 0 до 10000.');
+    if (!Number.isInteger(points) || points < 0 || points > MAX_TASK_XP) {
+      setError(`XP должно быть целым числом от 0 до ${MAX_TASK_XP}.`);
       return null;
     }
 
@@ -175,7 +177,7 @@ export function TaskEditor({
         label="Награда (XP)"
         type="number"
         min={0}
-        max={10000}
+        max={MAX_TASK_XP}
         value={xp}
         onChange={(event) => {
           setXp(event.target.value);

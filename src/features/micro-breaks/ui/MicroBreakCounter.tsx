@@ -1,7 +1,7 @@
 import { xpConfig } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
-import { Badge, Button, IconButton, Progress, toast } from '@/shared/ui';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
+import { Badge, IconButton, Progress, toast } from '@/shared/ui';
+import { FaMinus, FaPen, FaPlus } from 'react-icons/fa6';
 
 interface MicroBreakCounterProps {
   day: number;
@@ -30,15 +30,19 @@ export function MicroBreakCounter({ day, onSettingsClick }: MicroBreakCounterPro
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col">
-          <span className="text-white">Микро-паузы</span>
+          <span className="truncate text-white">Микро-паузы</span>
           <span className="text-xs text-gray-400">Каждые 50 минут, по 2 минуты</span>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
           <Badge size="sm" color={earned > 0 ? 'green' : 'gray'} text={`+${earned} XP`} />
-          <Button size="sm" variant="ghost" onClick={onSettingsClick}>
-            Настроить
-          </Button>
+          <IconButton
+            size="sm"
+            variant="ghost"
+            ariaLabel="Редактировать виджет микро-пауз"
+            icon={<FaPen />}
+            onClick={onSettingsClick}
+          />
         </div>
       </div>
 

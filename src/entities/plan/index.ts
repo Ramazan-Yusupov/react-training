@@ -1,4 +1,5 @@
 export { usePlanStore, createInitialPlan } from './model/planStore';
+export { userPlanSchema } from './model/planSchema';
 
 export type { EditScope } from './model/planStore';
 export type {

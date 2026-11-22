@@ -78,9 +78,10 @@ export function AddContentMenu({ day, planDay, onAddWidget }: AddContentMenuProp
         variant="outline"
         icon={<FaPlus />}
         fullWidth
+        aria-label="Добавить карточку, виджет, задачу"
         onClick={() => setIsAddMenuOpen(true)}
       >
-        Добавить карточку, виджет, задачу
+        <span>Добавить<span className="hidden sm:inline"> карточку, виджет, задачу</span></span>
       </Button>
 
       <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">

@@ -28,8 +28,9 @@ export function Toaster() {
             toneStyles[item.tone],
           )}
         >
-          <span>{item.message}</span>
+          <span className="min-w-0 wrap-anywhere">{item.message}</span>
           <IconButton
+            className="shrink-0"
             size="sm"
             variant="ghost"
             ariaLabel="Закрыть уведомление"

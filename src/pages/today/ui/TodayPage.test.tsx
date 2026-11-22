@@ -98,7 +98,7 @@ describe('страница «Сегодня»', () => {
 
     expect(screen.getByText('50:00')).toBeTruthy();
 
-    fireEvent.click(screen.getByText('Старт'));
+    fireEvent.click(screen.getByRole('button', { name: 'Старт' }));
 
     act(() => {
       vi.advanceTimersByTime(3000);
@@ -106,6 +106,6 @@ describe('страница «Сегодня»', () => {
 
     expect(screen.getByText('49:57')).toBeTruthy();
 
-    fireEvent.click(screen.getByText('Пауза'));
+    fireEvent.click(screen.getByRole('button', { name: 'Пауза' }));
   });
 });

@@ -130,17 +130,16 @@ export function FocusTimer() {
       <div className="flex flex-col justify-center gap-2">
         <div className="flex gap-2">
           {running ? (
-            <Button variant="primary" icon={<FaPause />} title="Пауза" onClick={pause} />
+            <Button aria-label="Пауза" variant="primary" icon={<FaPause />} onClick={pause} />
           ) : (
-            <Button variant="primary" icon={<FaPlay />} title="Старт" onClick={start} />
+            <Button aria-label="Старт" variant="primary" icon={<FaPlay />} onClick={start} />
           )}
 
-          <Button icon={<FaRotateLeft />} title="Сброс" onClick={reset} />
+          <Button aria-label="Сброс" icon={<FaRotateLeft />} onClick={reset} />
 
-          <Button icon={<FaGear />} title="Настройки" onClick={() => setSettingsOpen(true)} />
+          <Button aria-label="Настройки" icon={<FaGear />} onClick={() => setSettingsOpen(true)} />
+          <Button aria-label="Пропустить" icon={<FaForwardStep />} onClick={skip} />
         </div>
-
-        <Button variant="ghost" icon={<FaForwardStep />} title="Пропустить" onClick={skip} />
       </div>
 
       <Modal

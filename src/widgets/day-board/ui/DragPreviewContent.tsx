@@ -24,7 +24,7 @@ export function DragPreviewContent({ item, day, planDay }: DragPreviewContentPro
 
     return (
       <section className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-10">
-        <Typography as="h6" align="start" tone="accent" text={group.title} />
+        <Typography className="min-w-0 truncate" as="h6" align="start" tone="accent" text={group.title} />
 
         {tasks.map((task) => (
           <TaskItem key={task.id} task={task} day={day} />
@@ -59,11 +59,11 @@ export function DragPreviewContent({ item, day, planDay }: DragPreviewContentPro
 
   return (
     <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
-      <Typography as="h6" align="start" tone="accent" text="Заметки дня" />
+      <Typography className="min-w-0 truncate" as="h6" align="start" tone="accent" text="Заметки дня" />
 
       <div className="mt-3">
         {widget.notes.trim() ? (
-          <p className="whitespace-pre-wrap wrap-break-words text-sm text-slate-300">
+          <p className="whitespace-pre-wrap wrap-anywhere text-sm text-slate-300">
             {widget.notes}
           </p>
         ) : (

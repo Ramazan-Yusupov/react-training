@@ -8,7 +8,8 @@ import { XpWeekChart } from '@/widgets/xp-week-chart';
 
 import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
 
-import { Button, Card, Modal, Typography } from '@/shared/ui';
+import { Button, Card, IconButton, Modal, Typography } from '@/shared/ui';
+import { FaPen, FaTrash } from 'react-icons/fa6';
 
 interface PlanWidgetItemProps {
   day: number;
@@ -74,22 +75,36 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
       {widget.type === 'day-notes' && (
         <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
           <div className="flex items-center justify-between gap-3">
-            <Typography as="h6" align="start" tone="accent" text={title} />
+            <Typography
+              as="h6"
+              align="start"
+              tone="accent"
+              text={title}
+              className="min-w-0 truncate"
+            />
 
             <div className="flex shrink-0 items-center gap-2">
-              <Button size="sm" variant="ghost" onClick={() => setIsNotesEditorOpen(true)}>
-                Редактировать
-              </Button>
+              <IconButton
+                size="sm"
+                variant="ghost"
+                ariaLabel="Редактировать заметки дня"
+                icon={<FaPen />}
+                onClick={() => setIsNotesEditorOpen(true)}
+              />
 
-              <Button size="sm" variant="outline" onClick={openSettings}>
-                Удалить
-              </Button>
+              <IconButton
+                size="sm"
+                variant="ghost"
+                ariaLabel="Удалить виджет заметок дня"
+                icon={<FaTrash />}
+                onClick={openSettings}
+              />
             </div>
           </div>
 
           <div className="mt-3">
             {widget.notes.trim() ? (
-              <p className="whitespace-pre-wrap wrap-break-words text-sm text-slate-300">
+              <p className="whitespace-pre-wrap wrap-anywhere text-sm text-slate-300">
                 {widget.notes}
               </p>
             ) : (

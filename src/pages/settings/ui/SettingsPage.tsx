@@ -1,17 +1,16 @@
-import { levels } from '@/entities/plan';
+import { levels, userPlanSchema, usePlanStore, type UserPlanData } from '@/entities/plan';
 import { useMicroBreakStore, type MicroBreakData } from '@/entities/micro-breaks';
 import { useProgressStore, type ProgressData } from '@/entities/progress';
 import { DEFAULT_SETTINGS, useSettingsStore, type SettingsData } from '@/entities/settings';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
 
-interface BackupData {
-  version: 1;
+type BackupData = ({ version: 1 } | { version: 2; plan: UserPlanData }) & {
   exportedAt: string;
   progress: ProgressData;
   settings: SettingsData;
   microBreaks?: MicroBreakData;
-}
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -58,7 +57,11 @@ function isMicroBreakData(value: unknown): value is MicroBreakData {
 }
 
 function validateBackup(value: unknown): value is BackupData {
-  if (!isRecord(value) || value.version !== 1) {
+  if (!isRecord(value) || (value.version !== 1 && value.version !== 2)) {
+    return false;
+  }
+
+  if (value.version === 2 && !userPlanSchema.safeParse(value.plan).success) {
     return false;
   }
 
@@ -99,12 +102,14 @@ export function SettingsPage() {
   const replaceMicroBreaks = useMicroBreakStore((state) => state.replaceAll);
 
   const handleExport = () => {
+    const { schemaVersion, template, dayOverrides } = usePlanStore.getState();
     const progressState = useProgressStore.getState();
     const settingsState = useSettingsStore.getState();
     const microBreakState = useMicroBreakStore.getState();
 
     const backup: BackupData = {
-      version: 1,
+      version: 2,
+      plan: { schemaVersion, template, dayOverrides },
       exportedAt: new Date().toISOString(),
       progress: {
         startDate: progressState.startDate,
@@ -146,6 +151,10 @@ export function SettingsPage() {
       if (!validateBackup(parsed)) {
         toast.error('Файл не является корректной резервной копией Planer');
         return;
+      }
+
+      if (parsed.version === 2) {
+        usePlanStore.getState().replaceAll(parsed.plan);
       }
 
       replaceProgress({
@@ -220,7 +229,7 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани прогресс, награды, настройки таймера и свой список микро-пауз в JSON-файл.
+              Сохрани план с задачами и заметками, прогресс, награды, настройки таймера и микро-паузы в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>
@@ -240,8 +249,8 @@ export function SettingsPage() {
             </Button>
 
             <Typography align="start" tone="muted" className="text-xs">
-              Импорт заменит текущий прогресс и настройки данными из файла. Перед импортом
-              рекомендуется сделать экспорт.
+              Импорт заменит план, прогресс и настройки данными из файла. При импорте старой
+              копии без плана текущие задачи и заметки сохранятся.
             </Typography>
           </Card>
 

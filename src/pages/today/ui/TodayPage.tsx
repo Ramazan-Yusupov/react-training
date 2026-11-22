@@ -1,4 +1,4 @@
-import { DaySwitcher, useSelectedDay } from '@/features/select-day';
+import { useSelectedDay } from '@/features/select-day';
 import { DayBoard } from '@/widgets/day-board';
 import { FocusTools } from '@/widgets/focus-tools';
 import { MonthStrip } from '@/widgets/month-strip';
@@ -7,17 +7,13 @@ export function TodayPage() {
   const { day, setDay } = useSelectedDay();
 
   return (
-    <div className="flex min-w-0 flex-col gap-4 sm:gap-6">
-      <div className="flex w-full justify-center">
-        <DaySwitcher day={day} onChange={setDay} className="w-full sm:w-auto" />
-      </div>
-
-      <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,1fr)]">
-        <section className="flex min-w-0 flex-col gap-4 sm:gap-6">
+    <div className="flex h-[calc(100dvh-9rem)] min-h-0 flex-col gap-4 overflow-hidden sm:gap-6">
+      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-4 overflow-hidden sm:gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,1fr)]">
+        <section className="flex min-h-0 min-w-0 flex-col overflow-hidden">
           <DayBoard day={day} onDayChange={setDay} />
         </section>
 
-        <aside className="flex min-w-0 flex-col gap-4 sm:gap-6">
+        <aside className="hidden min-h-0 min-w-0 flex-col gap-4 overflow-hidden sm:gap-6 lg:flex">
           <FocusTools />
           <MonthStrip selected={day} onSelect={setDay} />
         </aside>

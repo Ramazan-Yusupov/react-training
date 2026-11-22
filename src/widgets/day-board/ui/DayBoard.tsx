@@ -489,7 +489,11 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
   };
 
   return (
-    <Card>
+    <Card
+      classNameMain="h-full min-h-0"
+      className="h-full min-h-0 overflow-hidden"
+      classNameChild="min-h-0 flex-1 overflow-hidden"
+    >
       <DayHeader
         day={planDay}
         startDate={startDate}
@@ -506,7 +510,7 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
         onDragEnd={handleDragEnd}
         onDragCancel={resetDragState}
       >
-        <div className="flex flex-col gap-3">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 scrollbar-none space-y-4">
           <SortableContext
             items={contentOrder.map(getContentSortableId)}
             strategy={verticalListSortingStrategy}

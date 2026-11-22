@@ -273,7 +273,7 @@ export function TaskEditor({
 
         <IconButton
           size="sm"
-          variant="ghost"
+          variant="dangerGhost"
           ariaLabel={`Удалить задачу ${task.title}`}
           icon={<FaTrash />}
           onClick={() => setMode('delete')}
@@ -320,7 +320,7 @@ export function TaskEditor({
             Только день {day}
           </Button>
 
-          <Button variant="outline" fullWidth onClick={() => handleDelete('all')}>
+          <Button variant="dangerOutline" fullWidth onClick={() => handleDelete('all')}>
             Во всех днях
           </Button>
 

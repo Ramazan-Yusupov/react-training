@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useImperativeHandle, useState, type Ref } from 'react';
+import { usePlanStore, type PlanTask } from '@/entities/plan';
+import { useProgressStore } from '@/entities/progress';
 
 import { useSettingsStore } from '@/entities/settings';
 import { formatClock } from '@/shared/lib';
@@ -30,7 +32,13 @@ function notifyPhaseEnd(
 }
 
 /** Таймер с настраиваемой длительностью и названием рабочего режима. */
-export function FocusTimer() {
+export function FocusTimer({
+  startTaskRef,
+}: {
+  startTaskRef?: Ref<(day: number, task: PlanTask) => void>;
+}) {
+  const [session, setSession] = useState<{ day: number; task: PlanTask } | null>(null);
+  const [finishedTask, setFinishedTask] = useState<typeof session>(null);
   const workDurationMin = useSettingsStore((state) => state.workDurationMin);
   const breakDurationMin = useSettingsStore((state) => state.breakDurationMin);
   const workLabel = useSettingsStore((state) => state.workLabel);
@@ -45,13 +53,42 @@ export function FocusTimer() {
 
   const { permission, requestPermission, notify } = useBrowserNotifications();
 
-  const { mode, remaining, running, total, start, pause, reset, skip } = useFocusTimer(
-    (finished) => notifyPhaseEnd(finished, breakDurationMin, notify),
+  const { mode, remaining, running, total, start, pause, reset, skip, startTask } = useFocusTimer(
+    (finished) => {
+      notifyPhaseEnd(finished, breakDurationMin, notify);
+      if (finished === 'work' && session) {
+        setFinishedTask(session);
+        setSession(null);
+      }
+    },
     {
       workDuration: workDurationMin * 60,
       breakDuration: breakDurationMin * 60,
     },
   );
+
+  useImperativeHandle(startTaskRef, () => (day, task) => {
+    if (running || session) {
+      toast.info('Сначала сбрось текущий таймер');
+      return;
+    }
+    setSession({ day, task });
+    startTask(Math.max(1, task.durationMin) * 60);
+    toast.info(`Фокус запущен: ${task.title}`);
+  });
+
+  function confirmCompletion() {
+    if (!finishedTask) return;
+    const { day, task } = finishedTask;
+    const plan = usePlanStore.getState();
+    const currentDay =
+      plan.dayOverrides[String(day)] ?? plan.template.days.find((item) => item.day === day);
+    const progress = useProgressStore.getState();
+    if (currentDay?.tasks.some((item) => item.id === task.id) && !progress.completed[task.id]) {
+      progress.toggleTask(task.id);
+    }
+    setFinishedTask(null);
+  }
 
   useEffect(() => {
     if (!settingsOpen) return;
@@ -71,17 +108,18 @@ export function FocusTimer() {
       return;
     }
 
-    if (!label || label.length > 32) {
+    if (!session && (!label || label.length > 32)) {
       toast.error('Название должно содержать от 1 до 32 символов');
       return;
     }
 
+    if (work !== workDurationMin || pause !== breakDurationMin) setSession(null);
     setFocusTimerDurations({
       workDurationMin: work,
       breakDurationMin: pause,
     });
 
-    setFocusTimerLabel(label);
+    if (!session) setFocusTimerLabel(label);
 
     setSettingsOpen(false);
     toast.success('Настройки таймера сохранены');
@@ -116,7 +154,8 @@ export function FocusTimer() {
     <div className="flex flex-col items-center gap-4">
       <Badge
         color={mode === 'work' ? 'blue' : 'green'}
-        text={mode === 'work' ? workLabel : BREAK_LABEL}
+        className="block max-w-full truncate"
+        text={mode === 'work' ? (session?.task.title ?? workLabel) : BREAK_LABEL}
       />
 
       <Typography
@@ -135,13 +174,34 @@ export function FocusTimer() {
             <Button aria-label="Старт" variant="primary" icon={<FaPlay />} onClick={start} />
           )}
 
-          <Button aria-label="Сброс" icon={<FaRotateLeft />} onClick={reset} />
+          <Button
+            aria-label="Сброс"
+            icon={<FaRotateLeft />}
+            onClick={() => {
+              setSession(null);
+              reset();
+            }}
+          />
 
           <Button aria-label="Настройки" icon={<FaGear />} onClick={() => setSettingsOpen(true)} />
-          <Button aria-label="Пропустить" icon={<FaForwardStep />} onClick={skip} />
+          <Button
+            aria-label="Пропустить"
+            icon={<FaForwardStep />}
+            onClick={() => {
+              setSession(null);
+              skip();
+            }}
+          />
         </div>
       </div>
 
+      <Modal open={!!finishedTask} onClose={() => setFinishedTask(null)} title="Задача выполнена?">
+        <p className="wrap-anywhere">{finishedTask?.task.title}</p>
+        <Button variant="primary" onClick={confirmCompletion}>
+          Отметить выполненной
+        </Button>
+        <Button onClick={() => setFinishedTask(null)}>Пока нет</Button>
+      </Modal>
       <Modal
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -157,7 +217,8 @@ export function FocusTimer() {
           label="Название режима работы"
           placeholder="Например: Учёба"
           maxLength={32}
-          value={labelDraft}
+          disabled={!!session}
+          value={session?.task.title ?? labelDraft}
           onChange={(event) => setLabelDraft(event.target.value)}
         />
 

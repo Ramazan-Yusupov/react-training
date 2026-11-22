@@ -22,3 +22,4 @@ export type {
 } from './lib/xp';
 
 export { getCurrentDay } from './lib/currentDay';
+export { getProfileLevel, profileRanks, MAX_PROFILE_LEVEL } from './lib/profileLevel';

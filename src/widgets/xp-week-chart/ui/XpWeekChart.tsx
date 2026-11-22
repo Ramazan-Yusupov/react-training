@@ -2,15 +2,15 @@ import { usePlanStore, xpConfig } from '@/entities/plan';
 import { dayXp, useProgressStore } from '@/entities/progress';
 import { BarChart, Card, IconButton, Typography } from '@/shared/ui';
 import { useMemo } from 'react';
-import { FaPen } from 'react-icons/fa6';
+import { FaTrash } from 'react-icons/fa6';
 
 interface XpWeekChartProps {
   /** Последний день в окне из 7 дней */
   day: number;
-  onSettingsClick: () => void;
+  onDeleteClick: () => void;
 }
 
-export function XpWeekChart({ day, onSettingsClick }: XpWeekChartProps) {
+export function XpWeekChart({ day, onDeleteClick }: XpWeekChartProps) {
   const template = usePlanStore((state) => state.template);
   const dayOverrides = usePlanStore((state) => state.dayOverrides);
 
@@ -37,10 +37,10 @@ export function XpWeekChart({ day, onSettingsClick }: XpWeekChartProps) {
 
         <IconButton
           size="sm"
-          variant="ghost"
-          ariaLabel="Редактировать виджет XP по дням"
-          icon={<FaPen />}
-          onClick={onSettingsClick}
+          variant="dangerGhost"
+          ariaLabel="Удалить виджет XP по дням"
+          icon={<FaTrash />}
+          onClick={onDeleteClick}
         />
       </div>
 

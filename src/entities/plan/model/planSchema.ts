@@ -17,7 +17,7 @@ export const planTaskSchema = z.object({
 });
 
 /** Типы доступных пользовательских виджетов. */
-export const planWidgetTypeSchema = z.enum(['micro-breaks', 'day-notes', 'xp-by-days']);
+export const planWidgetTypeSchema = z.enum(['micro-breaks', 'day-notes', 'xp-by-days', 'next-task']);
 
 /** Экземпляр виджета в пользовательском плане. */
 export const planWidgetSchema = z.object({

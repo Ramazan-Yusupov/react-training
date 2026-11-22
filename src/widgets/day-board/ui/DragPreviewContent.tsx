@@ -7,6 +7,7 @@ import { Card, Typography } from '@/shared/ui';
 
 import { StandaloneTaskItem } from './StandaloneTaskItem';
 import { TaskItem } from './TaskItem';
+import { NextTaskWidget } from './NextTaskWidget';
 
 interface DragPreviewContentProps {
   item: PlanContentOrderItem;
@@ -48,13 +49,14 @@ export function DragPreviewContent({ item, day, planDay }: DragPreviewContentPro
   const widget = planDay.widgets.find((current) => current.id === item.id);
 
   if (!widget) return null;
+  if (widget.type === 'next-task') return <NextTaskWidget day={day} />;
 
   if (widget.type === 'micro-breaks') {
-    return <MicroBreaks day={day} onSettingsClick={() => {}} />;
+    return <MicroBreaks day={day} onEditClick={() => {}} onDeleteClick={() => {}} />;
   }
 
   if (widget.type === 'xp-by-days') {
-    return <XpWeekChart day={day} onSettingsClick={() => {}} />;
+    return <XpWeekChart day={day} onDeleteClick={() => {}} />;
   }
 
   return (

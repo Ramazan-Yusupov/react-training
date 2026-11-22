@@ -26,6 +26,7 @@ export function useFocusTimer(
   const [mode, setMode] = useState<TimerMode>('work');
   const [remaining, setRemaining] = useState<number>(workDuration);
   const [running, setRunning] = useState(false);
+  const [taskTotal, setTaskTotal] = useState<number | null>(null);
 
   const endsAt = useRef(0);
   const modeRef = useRef<TimerMode>('work');
@@ -38,6 +39,7 @@ export function useFocusTimer(
   // При изменении настроек останавливаем таймер и начинаем новый рабочий период.
   useEffect(() => {
     setRunning(false);
+    setTaskTotal(null);
     modeRef.current = 'work';
     setMode('work');
     setRemaining(workDuration);
@@ -56,6 +58,7 @@ export function useFocusTimer(
       }
 
       const finished = modeRef.current;
+      setTaskTotal(null);
       const next: TimerMode = finished === 'work' ? 'break' : 'work';
       const nextDuration = getDuration(next);
 
@@ -81,6 +84,7 @@ export function useFocusTimer(
   }, []);
 
   const reset = useCallback(() => {
+    setTaskTotal(null);
     setRunning(false);
     modeRef.current = 'work';
     setMode('work');
@@ -89,6 +93,7 @@ export function useFocusTimer(
   }, [workDuration]);
 
   const skip = useCallback(() => {
+    setTaskTotal(null);
     const next: TimerMode = modeRef.current === 'work' ? 'break' : 'work';
     const nextDuration = getDuration(next);
 
@@ -103,7 +108,15 @@ export function useFocusTimer(
     mode,
     remaining,
     running,
-    total: getDuration(mode),
+    total: taskTotal ?? getDuration(mode),
+    startTask(seconds: number) {
+      modeRef.current = 'work';
+      setMode('work');
+      setRemaining(seconds);
+      setTaskTotal(seconds);
+      endsAt.current = Date.now() + seconds * 1000;
+      setRunning(true);
+    },
     start,
     pause,
     reset,

@@ -1,7 +1,7 @@
-import { levels, usePlanStore, xpConfig } from '@/entities/plan';
+import { usePlanStore, xpConfig } from '@/entities/plan';
 import {
   getCurrentDay,
-  getLevelState,
+  getProfileLevel,
   getStreak,
   totalXp,
   useProgressStore,
@@ -24,20 +24,16 @@ export function useXpSummary() {
     const snapshot = { completed, microBreaks };
 
     const xp = totalXp(days, snapshot, xpConfig);
-    const level = getLevelState(xp, levels);
+    const level = getProfileLevel(xp);
 
     const currentDay = getCurrentDay(startDate, todayISO(), template.days.length).day;
 
     const streak = getStreak(days, snapshot, currentDay);
 
-    const reachedLevels = levels.filter((item) => item.xp !== null && xp >= item.xp).length;
-
     return {
       xp,
       level,
       streak,
-      reachedLevels,
-      levels: levels,
     };
   }, [template.days, dayOverrides, completed, microBreaks, startDate]);
 }

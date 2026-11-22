@@ -1,15 +1,16 @@
 import { xpConfig } from '@/entities/plan';
 import { useProgressStore } from '@/entities/progress';
 import { Badge, IconButton, Progress, toast } from '@/shared/ui';
-import { FaMinus, FaPen, FaPlus } from 'react-icons/fa6';
+import { FaMinus, FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 
 interface MicroBreakCounterProps {
   day: number;
-  onSettingsClick: () => void;
+  onDeleteClick: () => void;
+  onEditClick: () => void;
 }
 
 /** Самостоятельный счётчик микро-пауз за день. */
-export function MicroBreakCounter({ day, onSettingsClick }: MicroBreakCounterProps) {
+export function MicroBreakCounter({ day, onEditClick, onDeleteClick }: MicroBreakCounterProps) {
   const count = useProgressStore((state) => state.microBreaks[day] ?? 0);
   const setMicroBreaks = useProgressStore((state) => state.setMicroBreaks);
 
@@ -41,8 +42,9 @@ export function MicroBreakCounter({ day, onSettingsClick }: MicroBreakCounterPro
             variant="ghost"
             ariaLabel="Редактировать виджет микро-пауз"
             icon={<FaPen />}
-            onClick={onSettingsClick}
+            onClick={onEditClick}
           />
+          <IconButton size="sm" variant="dangerGhost" ariaLabel="Удалить виджет микро-пауз" icon={<FaTrash />} onClick={onDeleteClick} />
         </div>
       </div>
 

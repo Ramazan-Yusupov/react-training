@@ -4,17 +4,17 @@ import { FaFire } from 'react-icons/fa6';
 import { useXpSummary } from '../model/useXpSummary';
 
 export function XpSummary() {
-  const { xp, level, streak, reachedLevels } = useXpSummary();
-  const previousLevels = useRef(reachedLevels);
-  const levelTitle = level.current?.title;
+  const { xp, level, streak } = useXpSummary();
+  const previousLevels = useRef(level.number);
+  const levelTitle = level.rank.title;
 
   // Уведомление о новом уровне (только при росте, не при снятии отметок)
   useEffect(() => {
-    if (reachedLevels > previousLevels.current && levelTitle) {
+    if (level.number > previousLevels.current && levelTitle) {
       toast.success(`Новый уровень: ${levelTitle}!`);
     }
-    previousLevels.current = reachedLevels;
-  }, [reachedLevels, levelTitle]);
+    previousLevels.current = level.number;
+  }, [level.number, levelTitle]);
 
   return (
     <Card
@@ -31,12 +31,12 @@ export function XpSummary() {
     >
       <div className="flex items-end justify-between gap-3">
         <Typography as="h2" align="start" text={`${xp} XP`} />
-        <Badge color="blue" text={level.current?.title ?? 'Новичок'} />
+        <Badge color="blue" text={`${level.number} ур. · ${level.rank.title}`} />
       </div>
       <Progress
         value={level.progress * 100}
-        label={level.next ? `До уровня «${level.next.title}»` : 'Все уровни пройдены'}
-        showValue={Boolean(level.next)}
+        label={!level.atMax ? `До уровня ${level.number + 1}` : 'Все уровни пройдены'}
+        showValue={!level.atMax}
         valueText={`ещё ${level.xpToNext} XP`}
       />
     </Card>

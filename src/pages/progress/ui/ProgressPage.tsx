@@ -1,8 +1,8 @@
-import { levels, usePlanStore, xpConfig } from '@/entities/plan';
+import { usePlanStore, xpConfig } from '@/entities/plan';
 import {
   dayXp,
   getCurrentDay,
-  getLevelState,
+  getProfileLevel,
   getStreak,
   isDayComplete,
   requiredProgress,
@@ -81,7 +81,7 @@ export function ProgressPage() {
 
   const total = useMemo(() => totalXp(days, snapshot, xpConfig), [days, snapshot]);
 
-  const level = getLevelState(total, levels);
+  const level = getProfileLevel(total);
   const streak = getStreak(days, snapshot, currentDay);
 
   const allTasks = days.flatMap((item) => item.tasks);
@@ -183,7 +183,7 @@ export function ProgressPage() {
         <Card title="Текущий уровень">
           <div className="flex items-center gap-2">
             <Typography as="h3" align="start">
-              {level.current?.title ?? 'Новичок'}
+              {`${level.number} ур. · ${level.rank.title}`}
             </Typography>
 
             <Badge color="blue" text={`${Math.round(level.progress * 100)}%`} />
@@ -191,9 +191,9 @@ export function ProgressPage() {
 
           <Progress
             value={level.progress * 100}
-            label={level.next ? `До уровня «${level.next.title}»` : 'Все уровни пройдены'}
-            showValue={Boolean(level.next)}
-            valueText={level.next ? `${level.xpToNext} XP` : 'Максимум'}
+            label={!level.atMax ? `До уровня ${level.number + 1}` : 'Все уровни пройдены'}
+            showValue={!level.atMax}
+            valueText={!level.atMax ? `${level.xpToNext} XP` : 'Максимум'}
           />
         </Card>
 

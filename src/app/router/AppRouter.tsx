@@ -13,6 +13,8 @@ const SettingsPage = lazy(() =>
   import('@/pages/settings').then((m) => ({ default: m.SettingsPage })),
 );
 
+const ProfilePage = lazy(() => import('@/pages/profile'));
+
 export function AppRouter() {
   return (
     <Routes>
@@ -20,6 +22,7 @@ export function AppRouter() {
         <Route path={PAGES.TODAY} element={<TodayPage />} />
         <Route path={PAGES.PROGRESS} element={<ProgressPage />} />
         <Route path={PAGES.SETTINGS} element={<SettingsPage />} />
+        <Route path={PAGES.PROFILE} element={<ProfilePage />} />
 
         <Route path="*" element={<Navigate to={PAGES.TODAY} replace />} />
       </Route>

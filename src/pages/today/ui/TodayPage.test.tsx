@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { createInitialProgress, useProgressStore } from '@/entities/progress';
+import { usePlanStore } from '@/entities/plan';
 import { useMicroBreakStore } from '@/entities/micro-breaks';
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/entities/settings';
 import { todayISO } from '@/shared/lib';
@@ -19,6 +20,7 @@ const renderDay1 = () =>
   );
 
 beforeEach(() => {
+  usePlanStore.getState().reset();
   useProgressStore.setState({
     ...createInitialProgress(),
     startDate: todayISO(),
@@ -81,7 +83,9 @@ describe('страница «Сегодня»', () => {
 
     expect(enabledBreaks.length).toBeGreaterThan(0);
 
-    const visibleBreak = enabledBreaks.find((item) => screen.queryByText(item.text) !== null);
+    const visibleBreak = enabledBreaks.find((item) =>
+      screen.queryAllByText(item.text).some((element) => !element.closest('dialog:not([open])')),
+    );
 
     expect(visibleBreak).toBeTruthy();
 
@@ -89,6 +93,52 @@ describe('страница «Сегодня»', () => {
 
     expect(useProgressStore.getState().microBreaks[1]).toBe(1);
     expect(screen.getByText('+2 XP')).toBeTruthy();
+  });
+
+  it('запускает ближайшую задачу и отмечает её только после подтверждения', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 22, 8, 55));
+    useProgressStore.setState({ startDate: todayISO() });
+    const plan = usePlanStore.getState();
+    plan.addTask(1, null, { title: 'Поздняя', scheduledTime: '10:00' }, 'day');
+    plan.addTask(
+      1,
+      null,
+      { title: 'Ближайшая', scheduledTime: '09:00', durationMin: 1, xp: 87 },
+      'day',
+    );
+    plan.addWidget(1, 'next-task', 'day');
+    renderDay1();
+    fireEvent.click(screen.getByRole('button', { name: 'Начать фокус' }));
+    expect(screen.getByText('01:00')).toBeTruthy();
+    act(() => vi.advanceTimersByTime(60000));
+    expect(Object.keys(useProgressStore.getState().completed)).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Отметить выполненной' }));
+    expect(screen.getByText('За день: 87 XP')).toBeTruthy();
+    expect(Object.keys(useProgressStore.getState().completed)).toHaveLength(1);
+  });
+
+  it('берёт название из задачи, а после сброса позволяет переименовать ручной фокус', () => {
+    useSettingsStore.getState().setFocusTimerLabel('Проект');
+    usePlanStore.getState().addWidget(1, 'next-task', 'day');
+    renderDay1();
+    const click = (name: string) => fireEvent.click(screen.getByRole('button', { name }));
+    const nameInput = () => screen.getByRole<HTMLInputElement>('textbox', { name: 'Название режима работы' });
+
+    click('Начать фокус');
+    expect(screen.queryByText('Проект')).toBeNull();
+    click('Настройки');
+    expect(nameInput().value).toBe('Создать план');
+    expect(nameInput().disabled).toBe(true);
+    click('Сохранить');
+    click('Сброс');
+    expect(screen.getByText('Проект')).toBeTruthy();
+    click('Старт');
+    click('Настройки');
+    expect(nameInput().disabled).toBe(false);
+    fireEvent.change(nameInput(), { target: { value: 'Учёба' } });
+    click('Сохранить');
+    expect(screen.getByText('Учёба')).toBeTruthy();
   });
 
   it('таймер 50/10 работает по часам', () => {

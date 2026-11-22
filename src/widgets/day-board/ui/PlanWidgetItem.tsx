@@ -10,6 +10,7 @@ import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
 
 import { Button, Card, IconButton, Modal, Typography } from '@/shared/ui';
 import { FaPen, FaTrash } from 'react-icons/fa6';
+import { NextTaskWidget } from './NextTaskWidget';
 
 interface PlanWidgetItemProps {
   day: number;
@@ -17,7 +18,7 @@ interface PlanWidgetItemProps {
 }
 
 export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isMicroBreakEditorOpen, setIsMicroBreakEditorOpen] = useState(false);
   const [isNotesEditorOpen, setIsNotesEditorOpen] = useState(false);
   const [notesDraft, setNotesDraft] = useState(widget.notes);
@@ -30,7 +31,7 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
       ? 'Микро-паузы'
       : widget.type === 'xp-by-days'
         ? 'XP по дням'
-        : 'Заметки дня';
+        : widget.type === 'next-task' ? 'Следующая задача' : 'Заметки дня';
 
   useEffect(() => {
     setNotesDraft(widget.notes);
@@ -52,15 +53,10 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
 
   const handleDelete = (scope: 'day' | 'all') => {
     deleteWidget(day, widget.id, scope);
-    setIsEditorOpen(false);
+    setIsDeleteOpen(false);
   };
 
-  const openMicroBreakEditor = () => {
-    setIsEditorOpen(false);
-    setIsMicroBreakEditorOpen(true);
-  };
-
-  const openSettings = () => setIsEditorOpen(true);
+  const openDelete = () => setIsDeleteOpen(true);
 
   const handleClearNotes = () => {
     setNotesDraft('');
@@ -68,9 +64,10 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
-      {widget.type === 'micro-breaks' && <MicroBreaks day={day} onSettingsClick={openSettings} />}
+      {widget.type === 'next-task' && <NextTaskWidget day={day} onDeleteClick={openDelete} />}
+      {widget.type === 'micro-breaks' && <MicroBreaks onEditClick={() => setIsMicroBreakEditorOpen(true)} day={day} onDeleteClick={openDelete} />}
 
-      {widget.type === 'xp-by-days' && <XpWeekChart day={day} onSettingsClick={openSettings} />}
+      {widget.type === 'xp-by-days' && <XpWeekChart day={day} onDeleteClick={openDelete} />}
 
       {widget.type === 'day-notes' && (
         <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
@@ -94,10 +91,10 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
 
               <IconButton
                 size="sm"
-                variant="ghost"
+                variant="dangerGhost"
                 ariaLabel="Удалить виджет заметок дня"
                 icon={<FaTrash />}
-                onClick={openSettings}
+                onClick={openDelete}
               />
             </div>
           </div>
@@ -117,32 +114,20 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
       )}
 
       <Modal
-        open={isEditorOpen}
-        onClose={() => setIsEditorOpen(false)}
-        title={`Настройки: ${title}`}
+        open={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        title={`Удалить виджет «${title}»?`}
       >
         <div className="flex flex-col gap-3">
-          <Typography align="start" tone="muted">
-            Управление виджетом
-          </Typography>
-
-          {widget.type === 'micro-breaks' && (
-            <Button fullWidth variant="primary" onClick={openMicroBreakEditor}>
-              Редактировать список микро-пауз
-            </Button>
-          )}
-
-          <div className="my-1 border-t border-white/10" />
-
           <Button fullWidth variant="danger" onClick={() => handleDelete('day')}>
             Удалить из этого дня
           </Button>
 
-          <Button fullWidth variant="outline" onClick={() => handleDelete('all')}>
+          <Button fullWidth variant="dangerOutline" onClick={() => handleDelete('all')}>
             Удалить из всех дней
           </Button>
 
-          <Button variant="ghost" fullWidth onClick={() => setIsEditorOpen(false)}>
+          <Button variant="ghost" fullWidth onClick={() => setIsDeleteOpen(false)}>
             Отмена
           </Button>
         </div>
@@ -181,7 +166,7 @@ export function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
           </Typography>
 
           <div className="flex flex-col gap-2">
-            <Button fullWidth variant="outline" onClick={handleClearNotes} disabled={!notesDraft}>
+            <Button fullWidth variant="dangerOutline" onClick={handleClearNotes} disabled={!notesDraft}>
               Очистить заметки
             </Button>
 

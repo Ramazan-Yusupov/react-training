@@ -123,7 +123,7 @@ export function GroupEditor({
 
         <IconButton
           size="sm"
-          variant="ghost"
+          variant="dangerGhost"
           ariaLabel={`Удалить карточку ${group.title}`}
           icon={<FaTrash />}
           onClick={() => setMode('delete')}
@@ -176,7 +176,7 @@ export function GroupEditor({
             Только день {day}
           </Button>
 
-          <Button variant="outline" fullWidth onClick={() => handleDelete('all')}>
+          <Button variant="dangerOutline" fullWidth onClick={() => handleDelete('all')}>
             Во всех днях
           </Button>
 

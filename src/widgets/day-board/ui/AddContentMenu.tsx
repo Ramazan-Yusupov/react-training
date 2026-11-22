@@ -1,12 +1,10 @@
 import { useState } from 'react';
-
+import * as Dialog from '@radix-ui/react-dialog';
+import { FaPlus, FaXmark } from 'react-icons/fa6';
 import type { PlanDay, PlanWidgetType } from '@/entities/plan';
-
-import { Button, Modal, Select } from '@/shared/ui';
-
+import { Button, IconButton, Select } from '@/shared/ui';
 import { GroupEditor } from './GroupEditor';
 import { TaskEditor } from './TaskEditor';
-import { FaPlus } from 'react-icons/fa6';
 
 interface AddContentMenuProps {
   day: number;
@@ -14,199 +12,138 @@ interface AddContentMenuProps {
   onAddWidget: (type: PlanWidgetType, scope: 'day' | 'all') => void;
 }
 
+const widgets: Record<PlanWidgetType, string> = {
+  'next-task': 'Следующая задача',
+  'micro-breaks': 'Микро-паузы',
+  'xp-by-days': 'XP по дням',
+  'day-notes': 'Заметки дня',
+};
+
 export function AddContentMenu({ day, planDay, onAddWidget }: AddContentMenuProps) {
-  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-  const [isTaskTargetOpen, setIsTaskTargetOpen] = useState(false);
-  const [isWidgetTypeOpen, setIsWidgetTypeOpen] = useState(false);
-  const [isWidgetScopeOpen, setIsWidgetScopeOpen] = useState(false);
-  const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
-  const [isTaskEditorOpen, setIsTaskEditorOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [kind, setKind] = useState('Задача');
+  const [widget, setWidget] = useState<PlanWidgetType>('micro-breaks');
+  const [groupId, setGroupId] = useState('');
+  const [editor, setEditor] = useState<'task' | 'group' | null>(null);
 
-  const [selectedGroupId, setSelectedGroupId] = useState('');
-  const [selectedWidgetType, setSelectedWidgetType] = useState<PlanWidgetType | null>(null);
-  const [taskGroupId, setTaskGroupId] = useState<string | undefined>(undefined);
+  function changeOpen(value: boolean) {
+    if (value) {
+      setKind('Задача');
+      setWidget('micro-breaks');
+      setGroupId('');
+    }
+    setOpen(value);
+  }
 
-  const openTaskTarget = () => {
-    setSelectedGroupId(planDay.groups[0]?.id ?? '');
-    setIsAddMenuOpen(false);
-    setIsTaskTargetOpen(true);
-  };
-
-  const openStandaloneTask = () => {
-    setTaskGroupId(undefined);
-    setIsTaskTargetOpen(false);
-    setIsTaskEditorOpen(true);
-  };
-
-  const openGroupTask = () => {
-    if (!selectedGroupId) return;
-
-    setTaskGroupId(selectedGroupId);
-    setIsTaskTargetOpen(false);
-    setIsTaskEditorOpen(true);
-  };
-
-  const openWidgetType = () => {
-    setIsAddMenuOpen(false);
-    setIsWidgetTypeOpen(true);
-  };
-
-  const selectWidgetType = (type: PlanWidgetType) => {
-    setSelectedWidgetType(type);
-    setIsWidgetTypeOpen(false);
-    setIsWidgetScopeOpen(true);
-  };
-
-  const handleAddWidget = (scope: 'day' | 'all') => {
-    if (!selectedWidgetType) return;
-
-    onAddWidget(selectedWidgetType, scope);
-
-    setSelectedWidgetType(null);
-    setIsWidgetScopeOpen(false);
-  };
-
-  const closeWidgetScope = () => {
-    setIsWidgetScopeOpen(false);
-    setSelectedWidgetType(null);
-  };
+  function addWidget(scope: 'day' | 'all') {
+    onAddWidget(widget, scope);
+    setOpen(false);
+  }
 
   return (
     <>
-      <Button
-        size="md"
-        variant="outline"
-        icon={<FaPlus />}
-        fullWidth
-        aria-label="Добавить карточку, виджет, задачу"
-        onClick={() => setIsAddMenuOpen(true)}
-      >
-        <span>Добавить<span className="hidden sm:inline"> карточку, виджет, задачу</span></span>
-      </Button>
-
-      <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">
-        <div className="flex flex-col gap-2">
+      <Dialog.Root open={open} onOpenChange={changeOpen}>
+        <Dialog.Trigger asChild>
           <Button
-            fullWidth
+            size="md"
             variant="outline"
-            onClick={() => {
-              setIsAddMenuOpen(false);
-              setIsGroupEditorOpen(true);
-            }}
+            icon={<FaPlus />}
+            fullWidth
+            aria-label="Добавить карточку, виджет, задачу"
           >
-            Карточку
+            <span>
+              Добавить<span className="hidden sm:inline"> карточку, виджет, задачу</span>
+            </span>
           </Button>
-
-          <Button fullWidth variant="outline" onClick={openTaskTarget}>
-            Задачу
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={openWidgetType}>
-            Виджет
-          </Button>
-
-          <Button variant="ghost" fullWidth onClick={() => setIsAddMenuOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal
-        open={isWidgetTypeOpen}
-        onClose={() => setIsWidgetTypeOpen(false)}
-        title="Выбери виджет"
-      >
-        <div className="flex flex-col gap-2">
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('micro-breaks')}>
-            Микро-паузы
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('xp-by-days')}>
-            XP по дням
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => selectWidgetType('day-notes')}>
-            Заметки дня
-          </Button>
-
-          <Button variant="ghost" fullWidth onClick={() => setIsWidgetTypeOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal open={isWidgetScopeOpen} onClose={closeWidgetScope} title="Где отображать виджет?">
-        <div className="flex flex-col gap-2">
-          <Button fullWidth variant="primary" onClick={() => handleAddWidget('day')}>
-            Только день {day}
-          </Button>
-
-          <Button fullWidth variant="outline" onClick={() => handleAddWidget('all')}>
-            Во всех днях
-          </Button>
-
-          <Button variant="ghost" fullWidth onClick={closeWidgetScope}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal
-        open={isTaskTargetOpen}
-        onClose={() => setIsTaskTargetOpen(false)}
-        title="Где создать задачу?"
-      >
-        <div className="flex flex-col gap-3">
-          <Button fullWidth variant="outline" onClick={openStandaloneTask}>
-            Самостоятельная задача
-          </Button>
-
-          <div className="flex flex-col gap-2">
-            <Select
-              label="Выбери карточку"
-              value={selectedGroupId}
-              onChange={(event) => setSelectedGroupId(event.target.value)}
-              options={planDay.groups.map((group) => ({
-                value: group.id,
-                label: group.title,
-              }))}
-              placeholder="Выбрать карточку"
-            />
-
-            <Button
-              fullWidth
-              variant="primary"
-              disabled={!selectedGroupId || planDay.groups.length === 0}
-              onClick={openGroupTask}
-            >
-              Добавить в карточку
-            </Button>
-          </div>
-
-          {planDay.groups.length === 0 && (
-            <p className="text-sm text-gray-400">
-              Сначала создай карточку, если хочешь добавить задачу внутрь неё.
-            </p>
-          )}
-
-          <Button variant="ghost" fullWidth onClick={() => setIsTaskTargetOpen(false)}>
-            Отмена
-          </Button>
-        </div>
-      </Modal>
-
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+          <Dialog.Content
+            aria-describedby={undefined}
+            onCloseAutoFocus={(event) => {
+              if (editor) event.preventDefault();
+            }}
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[90dvh] w-full max-w-md flex-col gap-4 overflow-y-auto rounded-t-2xl border border-white/10 bg-neutral-900 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-white sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl"
+          >
+            <div className="flex items-center justify-between">
+              <Dialog.Title className="text-lg font-medium">Что добавить?</Dialog.Title>
+              <Dialog.Close asChild>
+                <IconButton size="sm" variant="ghost" ariaLabel="Закрыть" icon={<FaXmark />} />
+              </Dialog.Close>
+            </div>
+            <div role="group" aria-label="Тип содержимого" className="grid grid-cols-3 gap-1">
+              {['Задача', 'Карточка', 'Виджет'].map((item) => (
+                <Button
+                  key={item}
+                  size="sm"
+                  aria-pressed={kind === item}
+                  variant={kind === item ? 'primary' : 'outline'}
+                  onClick={() => setKind(item)}
+                >
+                  {item}
+                </Button>
+              ))}
+            </div>
+            {kind === 'Виджет' ? (
+              <>
+                <div role="group" aria-label="Выбери виджет" className="grid gap-2">
+                  {(Object.keys(widgets) as PlanWidgetType[]).map((type) => (
+                    <Button
+                      key={type}
+                      variant={widget === type ? 'primary' : 'outline'}
+                      aria-pressed={widget === type}
+                      onClick={() => setWidget(type)}
+                    >
+                      {widgets[type]}
+                    </Button>
+                  ))}
+                </div>
+                <fieldset className="grid gap-2">
+                  <legend className="mb-2 text-sm text-gray-300">Где добавить виджет?</legend>
+                  <Button onClick={() => addWidget('day')}>Только день {day}</Button>
+                  <Button variant="outline" onClick={() => addWidget('all')}>
+                    Во всех днях
+                  </Button>
+                </fieldset>
+              </>
+            ) : (
+              <>
+                {kind === 'Задача' && (
+                  <Select
+                    label="Куда добавить задачу"
+                    value={groupId}
+                    onChange={(e) => setGroupId(e.target.value)}
+                    options={[
+                      { value: '', label: 'Самостоятельная задача' },
+                      ...planDay.groups.map((group) => ({ value: group.id, label: group.title })),
+                    ]}
+                  />
+                )}
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setOpen(false);
+                    setEditor(kind === 'Задача' ? 'task' : 'group');
+                  }}
+                >
+                  {kind === 'Задача' ? 'Создать задачу' : 'Создать карточку'}
+                </Button>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
       <GroupEditor
         day={day}
-        open={isGroupEditorOpen}
-        onOpenChange={setIsGroupEditorOpen}
+        open={editor === 'group'}
+        onOpenChange={(value) => setEditor(value ? 'group' : null)}
         hideTrigger
       />
-
       <TaskEditor
         day={day}
-        groupId={taskGroupId}
-        open={isTaskEditorOpen}
-        onOpenChange={setIsTaskEditorOpen}
+        groupId={groupId || undefined}
+        open={editor === 'task'}
+        onOpenChange={(value) => setEditor(value ? 'task' : null)}
         hideTrigger
       />
     </>

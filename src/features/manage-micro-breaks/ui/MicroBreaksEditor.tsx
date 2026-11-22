@@ -207,7 +207,7 @@ export function MicroBreaksEditor() {
 
                   <IconButton
                     size="sm"
-                    variant="ghost"
+                    variant="dangerGhost"
                     ariaLabel="Удалить микро-паузу"
                     icon={<FaTrash />}
                     className="text-red-400 hover:text-red-300"

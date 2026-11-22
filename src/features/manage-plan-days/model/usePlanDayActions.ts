@@ -13,11 +13,8 @@ export function usePlanDayActions({ day, onChange }: UsePlanDayActionsProps) {
   const clearMicroBreaks = useProgressStore((state) => state.clearMicroBreaks);
 
   const handleAddDay = useCallback(() => {
-    const totalDays = usePlanStore.getState().template.days.length;
-
     addDay();
-    onChange(totalDays + 1);
-  }, [addDay, onChange]);
+  }, [addDay]);
 
   const handleRemoveLastDay = useCallback(() => {
     const currentDays = usePlanStore.getState().template.days;

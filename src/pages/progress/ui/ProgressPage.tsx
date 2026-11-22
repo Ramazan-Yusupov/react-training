@@ -9,7 +9,7 @@ import {
   totalXp,
   useProgressStore,
 } from '@/entities/progress';
-import { DaySwitcher, useSelectedDay } from '@/features/select-day';
+import { useSelectedDay } from '@/features/select-day';
 import { addDays, formatDayMonth, getIsoWeekday, todayISO, WEEKDAYS_SHORT } from '@/shared/lib';
 import {
   Badge,
@@ -177,10 +177,6 @@ export function ProgressPage() {
 
         <Progress value={completedDays} max={totalDays} color="green" size="lg" />
       </Card>
-
-      <div className="flex w-full justify-center">
-        <DaySwitcher day={day} onChange={setDay} className="w-full sm:w-auto" />
-      </div>
 
       <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
         <section className="flex min-w-0 flex-col gap-4 sm:gap-6">

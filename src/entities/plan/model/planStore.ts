@@ -55,6 +55,15 @@ interface PlanActions {
 
   deleteTask: (day: number, taskId: string, scope: EditScope) => void;
 
+  moveTask: (
+    day: number,
+    taskId: string,
+    targetGroupId: string | null,
+    targetIndex: number,
+  ) => void;
+
+  moveContent: (day: number, active: PlanContentOrderItem, over: PlanContentOrderItem) => void;
+
   addWidget: (day: number, type: PlanWidgetType, scope: EditScope) => string | null;
 
   updateWidget: (day: number, widgetId: string, updates: WidgetUpdate, scope: EditScope) => void;
@@ -757,6 +766,124 @@ export const usePlanStore = create<PlanState>()(
               widget.id === widgetId ? { ...widget, notes } : widget,
             ),
           })),
+        );
+      },
+
+      moveTask: (day, taskId, targetGroupId, targetIndex) => {
+        set((state) =>
+          updateOneDay(state, day, (currentDay) => {
+            const sourceTask = currentDay.tasks.find((task) => task.id === taskId);
+
+            if (!sourceTask || sourceTask.groupId === targetGroupId) {
+              // Перемещение внутри одной карточки тоже разрешено.
+              if (!sourceTask) return currentDay;
+            }
+
+            if (
+              targetGroupId !== null &&
+              !currentDay.groups.some((group) => group.id === targetGroupId)
+            ) {
+              return currentDay;
+            }
+
+            const remainingTasks = currentDay.tasks.filter((task) => task.id !== taskId);
+
+            if (
+              targetGroupId !== null &&
+              remainingTasks.filter((task) => task.groupId === targetGroupId).length >=
+                MAX_TASKS_PER_GROUP
+            ) {
+              return currentDay;
+            }
+
+            const movedTask = {
+              ...sourceTask,
+              groupId: targetGroupId,
+            };
+
+            const updatedTasks = [...remainingTasks];
+            const targetTasks = updatedTasks.filter((task) => task.groupId === targetGroupId);
+
+            const safeIndex = Math.max(0, Math.min(targetIndex, targetTasks.length));
+
+            let insertIndex = updatedTasks.length;
+
+            const targetTask = targetTasks[safeIndex];
+
+            if (targetTask) {
+              insertIndex = updatedTasks.findIndex((task) => task.id === targetTask.id);
+            } else {
+              const lastTask = targetTasks[targetTasks.length - 1];
+
+              if (lastTask) {
+                insertIndex = updatedTasks.findIndex((task) => task.id === lastTask.id) + 1;
+              }
+            }
+
+            updatedTasks.splice(insertIndex, 0, movedTask);
+
+            let contentOrder = [...(currentDay.contentOrder ?? [])];
+
+            contentOrder = contentOrder.filter(
+              (item) => !(item.type === 'task' && item.id === taskId),
+            );
+
+            if (targetGroupId === null) {
+              contentOrder.push({
+                type: 'task',
+                id: taskId,
+              });
+            }
+
+            return {
+              ...currentDay,
+              tasks: updatedTasks,
+              contentOrder,
+            };
+          }),
+        );
+      },
+
+      moveContent: (day, active, over) => {
+        set((state) =>
+          updateOneDay(state, day, (currentDay) => {
+            const contentOrder = [...(currentDay.contentOrder ?? [])];
+
+            const activeIndex = contentOrder.findIndex(
+              (item) => item.type === active.type && item.id === active.id,
+            );
+
+            const overIndex = contentOrder.findIndex(
+              (item) => item.type === over.type && item.id === over.id,
+            );
+
+            if (activeIndex === -1 || overIndex === -1 || activeIndex === overIndex) {
+              return currentDay;
+            }
+
+            const movedItem = contentOrder[activeIndex];
+
+            if (!movedItem) {
+              return currentDay;
+            }
+
+            contentOrder.splice(activeIndex, 1);
+
+            const nextOverIndex = contentOrder.findIndex(
+              (item) => item.type === over.type && item.id === over.id,
+            );
+
+            if (nextOverIndex === -1) {
+              return currentDay;
+            }
+
+            contentOrder.splice(nextOverIndex, 0, movedItem);
+
+            return {
+              ...currentDay,
+              contentOrder,
+            };
+          }),
         );
       },
 

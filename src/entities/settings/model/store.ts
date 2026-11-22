@@ -5,16 +5,19 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export interface FocusTimerSettings {
   workDurationMin: number;
   breakDurationMin: number;
+  workLabel: string;
 }
 
 export interface SettingsData extends FocusTimerSettings {
-  /** Награды за уровни, которые выбрал сам пользователь */
   rewards: Record<string, string>;
 }
 
 interface SettingsActions {
   setReward: (levelId: string, reward: string) => void;
-  setFocusTimerDurations: (durations: FocusTimerSettings) => void;
+  setFocusTimerDurations: (
+    durations: Pick<FocusTimerSettings, 'workDurationMin' | 'breakDurationMin'>,
+  ) => void;
+  setFocusTimerLabel: (label: string) => void;
   replaceAll: (data: SettingsData) => void;
 }
 
@@ -22,6 +25,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
   rewards: {},
   workDurationMin: FOCUS_TIMER.WORK / 60,
   breakDurationMin: FOCUS_TIMER.BREAK / 60,
+  workLabel: 'Работа',
 };
 
 export const useSettingsStore = create<SettingsData & SettingsActions>()(
@@ -36,6 +40,8 @@ export const useSettingsStore = create<SettingsData & SettingsActions>()(
 
       setFocusTimerDurations: (durations) => set(durations),
 
+      setFocusTimerLabel: (workLabel) => set({ workLabel }),
+
       replaceAll: (data) => set({ ...data }),
     }),
     {
@@ -46,6 +52,7 @@ export const useSettingsStore = create<SettingsData & SettingsActions>()(
         rewards: state.rewards,
         workDurationMin: state.workDurationMin,
         breakDurationMin: state.breakDurationMin,
+        workLabel: state.workLabel,
       }),
     },
   ),

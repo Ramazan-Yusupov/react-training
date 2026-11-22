@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
+
 import { useSettingsStore } from '@/entities/settings';
 import { formatClock } from '@/shared/lib';
 import { Badge, Button, Input, Modal, Progress, Typography, toast } from '@/shared/ui';
+
 import { FaBell, FaForwardStep, FaGear, FaPause, FaPlay, FaRotateLeft } from 'react-icons/fa6';
+
 import { useBrowserNotifications } from '../model/useBrowserNotifications';
 import { type TimerMode, useFocusTimer } from '../model/useFocusTimer';
 
-const MODE_LABELS: Record<TimerMode, string> = {
-  work: 'Работа',
-  break: 'Пауза',
-};
+const BREAK_LABEL = 'Пауза';
 
 function notifyPhaseEnd(
   finished: TimerMode,
@@ -29,15 +29,19 @@ function notifyPhaseEnd(
   }
 }
 
-/** Таймер с настраиваемой длительностью работы и перерыва. */
+/** Таймер с настраиваемой длительностью и названием рабочего режима. */
 export function FocusTimer() {
   const workDurationMin = useSettingsStore((state) => state.workDurationMin);
   const breakDurationMin = useSettingsStore((state) => state.breakDurationMin);
+  const workLabel = useSettingsStore((state) => state.workLabel);
+
   const setFocusTimerDurations = useSettingsStore((state) => state.setFocusTimerDurations);
+  const setFocusTimerLabel = useSettingsStore((state) => state.setFocusTimerLabel);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [workDraft, setWorkDraft] = useState(String(workDurationMin));
   const [breakDraft, setBreakDraft] = useState(String(breakDurationMin));
+  const [labelDraft, setLabelDraft] = useState(workLabel);
 
   const { permission, requestPermission, notify } = useBrowserNotifications();
 
@@ -54,14 +58,21 @@ export function FocusTimer() {
 
     setWorkDraft(String(workDurationMin));
     setBreakDraft(String(breakDurationMin));
-  }, [settingsOpen, workDurationMin, breakDurationMin]);
+    setLabelDraft(workLabel);
+  }, [settingsOpen, workDurationMin, breakDurationMin, workLabel]);
 
   const saveSettings = () => {
     const work = Number(workDraft);
     const pause = Number(breakDraft);
+    const label = labelDraft.trim();
 
     if (!Number.isSafeInteger(work) || !Number.isSafeInteger(pause) || work < 1 || pause < 1) {
       toast.error('Укажи целое количество минут — не меньше 1');
+      return;
+    }
+
+    if (!label || label.length > 32) {
+      toast.error('Название должно содержать от 1 до 32 символов');
       return;
     }
 
@@ -69,6 +80,8 @@ export function FocusTimer() {
       workDurationMin: work,
       breakDurationMin: pause,
     });
+
+    setFocusTimerLabel(label);
 
     setSettingsOpen(false);
     toast.success('Настройки таймера сохранены');
@@ -101,7 +114,10 @@ export function FocusTimer() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Badge color={mode === 'work' ? 'blue' : 'green'} text={MODE_LABELS[mode]} />
+      <Badge
+        color={mode === 'work' ? 'blue' : 'green'}
+        text={mode === 'work' ? workLabel : BREAK_LABEL}
+      />
 
       <Typography
         as="span"
@@ -138,6 +154,14 @@ export function FocusTimer() {
           </>
         }
       >
+        <Input
+          label="Название режима работы"
+          placeholder="Например: Учёба"
+          maxLength={32}
+          value={labelDraft}
+          onChange={(event) => setLabelDraft(event.target.value)}
+        />
+
         <Input
           label="Длительность работы (минуты)"
           type="number"

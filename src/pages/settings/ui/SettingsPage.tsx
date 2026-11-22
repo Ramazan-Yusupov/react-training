@@ -73,11 +73,12 @@ function validateBackup(value: unknown): value is BackupData {
     isRecord(progress.completed) &&
     isRecord(progress.microBreaks);
 
-  // Новые поля необязательны для совместимости со старыми копиями.
   const validSettings =
     isRecord(settings.rewards) &&
     (settings.workDurationMin === undefined || isValidDuration(settings.workDurationMin)) &&
-    (settings.breakDurationMin === undefined || isValidDuration(settings.breakDurationMin));
+    (settings.breakDurationMin === undefined || isValidDuration(settings.breakDurationMin)) &&
+    (settings.workLabel === undefined ||
+      (typeof settings.workLabel === 'string' && settings.workLabel.trim().length > 0));
 
   const validMicroBreaks = microBreaks === undefined || isMicroBreakData(microBreaks);
 
@@ -114,6 +115,7 @@ export function SettingsPage() {
         rewards: settingsState.rewards,
         workDurationMin: settingsState.workDurationMin,
         breakDurationMin: settingsState.breakDurationMin,
+        workLabel: settingsState.workLabel,
       },
       microBreaks: {
         items: microBreakState.items,
@@ -156,10 +158,9 @@ export function SettingsPage() {
         rewards: parsed.settings.rewards as Record<string, string>,
         workDurationMin: parsed.settings.workDurationMin ?? DEFAULT_SETTINGS.workDurationMin,
         breakDurationMin: parsed.settings.breakDurationMin ?? DEFAULT_SETTINGS.breakDurationMin,
+        workLabel: parsed.settings.workLabel ?? DEFAULT_SETTINGS.workLabel,
       });
 
-      // Старые резервные копии не содержат пользовательские микро-паузы.
-      // В таком случае оставляем текущий список без изменений.
       if (parsed.microBreaks) {
         replaceMicroBreaks(parsed.microBreaks);
       }

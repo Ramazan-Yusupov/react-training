@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { PAGES } from '@/shared/config';
-import { Avatar, Progress } from '@/shared/ui';
+import { Progress } from '@/shared/ui';
+import { AccountAvatar } from '@/features/account/AccountAvatar';
 import { useXpSummary } from '../model/useXpSummary';
 
 export function HeaderXpStatus() {
@@ -27,7 +28,7 @@ export function HeaderXpStatus() {
           <span className="shrink-0 text-[10px] leading-none text-gray-400">{xpLabel}</span>
         </div>
       </div>
-      <Avatar name="Планер" size="sm" alt="Аватар профиля" />
+      <AccountAvatar size="sm" />
     </NavLink>
   );
 }

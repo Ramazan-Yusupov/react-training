@@ -30,7 +30,7 @@ export function XpWeekChart({ day, onSettingsClick }: XpWeekChartProps) {
   }, [template.days, dayOverrides, completed, microBreaks, day]);
 
   return (
-    <Card classNameMain="rounded-2xl border-2 border-dotted border-amber-600 p-2">
+    <Card classNameMain="rounded-2xl border-2 border-dotted border-amber-600 p-2 pl-10">
       <div className="mb-2 flex items-center justify-between gap-3">
         <Typography as="h6" align="start" tone="accent" text="XP по дням" />
 

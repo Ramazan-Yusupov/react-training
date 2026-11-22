@@ -1,7 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  type DragEndEvent,
+  type DragStartEvent,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
+import { CSS } from '@dnd-kit/utilities';
 
 import { usePlanStore } from '@/entities/plan';
-
 import type { PlanContentOrderItem, PlanWidget, PlanWidgetType } from '@/entities/plan';
 
 import { useProgressStore } from '@/entities/progress';
@@ -13,7 +33,7 @@ import { MicroBreaksEditor } from '@/features/manage-micro-breaks';
 
 import { Button, Card, ErrorUI, Modal, Select, Typography } from '@/shared/ui';
 
-import { FaPlus } from 'react-icons/fa6';
+import { FaGripVertical, FaPlus } from 'react-icons/fa6';
 
 import { DayHeader } from './DayHeader';
 import { DayProgress } from './DayProgress';
@@ -29,6 +49,97 @@ interface DayBoardProps {
 interface PlanWidgetItemProps {
   day: number;
   widget: PlanWidget;
+}
+
+interface SortableContentItemProps {
+  item: PlanContentOrderItem;
+  children: ReactNode;
+}
+
+interface DragPreviewSize {
+  width: number;
+  height: number;
+}
+
+function getContentSortableId(item: PlanContentOrderItem) {
+  return `${item.type}:${item.id}`;
+}
+
+function SortableContentItem({ item, children }: SortableContentItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: getContentSortableId(item),
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: isDragging ? undefined : CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.2 : 1,
+      }}
+      className="relative min-w-0"
+    >
+      <button
+        ref={setActivatorNodeRef}
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label="Перетащить элемент"
+        title="Перетащить"
+        className="absolute left-2 top-3 z-20 flex h-7 w-7 cursor-grab touch-none items-center justify-center rounded-md text-slate-500 transition hover:bg-white/10 hover:text-blue-400 active:cursor-grabbing"
+      >
+        <FaGripVertical size={16} />
+      </button>
+
+      {children}
+    </div>
+  );
+}
+
+function DragPreview({
+  item,
+  size,
+  title,
+}: {
+  item: PlanContentOrderItem;
+  size: DragPreviewSize;
+  title: string;
+}) {
+  const isWidget = item.type === 'widget';
+
+  const borderClass =
+    item.type === 'group'
+      ? 'border-slate-700'
+      : item.type === 'task'
+        ? 'border-dashed border-slate-700'
+        : 'border-dotted border-amber-600';
+
+  return (
+    <div
+      style={{
+        width: size.width,
+        height: size.height,
+      }}
+      className={`flex min-w-0 items-start gap-3 overflow-hidden rounded-2xl border-2 bg-slate-950/95 p-4 pl-10 shadow-2xl shadow-black/50 ${borderClass}`}
+    >
+      <FaGripVertical className="mt-1 shrink-0 text-blue-400" size={16} />
+
+      <div className="min-w-0">
+        <div className="truncate font-semibold text-blue-400">{title}</div>
+
+        {isWidget && <div className="mt-2 text-xs text-slate-400">Виджет</div>}
+      </div>
+    </div>
+  );
 }
 
 function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
@@ -47,12 +158,10 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
         ? 'XP по дням'
         : 'Заметки дня';
 
-  // Синхронизируем черновик с данными виджета.
   useEffect(() => {
     setNotesDraft(widget.notes);
   }, [day, widget.id, widget.notes]);
 
-  // Автосохранение заметок после небольшой паузы во вводе.
   useEffect(() => {
     if (widget.type !== 'day-notes' || notesDraft === widget.notes) {
       return;
@@ -84,13 +193,13 @@ function PlanWidgetItem({ day, widget }: PlanWidgetItemProps) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       {widget.type === 'micro-breaks' && <MicroBreaks day={day} onSettingsClick={openSettings} />}
 
       {widget.type === 'xp-by-days' && <XpWeekChart day={day} onSettingsClick={openSettings} />}
 
       {widget.type === 'day-notes' && (
-        <Card classNameMain="border-2 border-dotted border-amber-600 p-4 rounded-2xl ">
+        <Card classNameMain="border-2 border-dotted border-amber-600 rounded-2xl p-4 pl-10">
           <div className="flex items-center justify-between gap-3">
             <Typography as="h6" align="start" tone="accent" text={title} />
 
@@ -199,39 +308,124 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
   const [isWidgetScopeOpen, setIsWidgetScopeOpen] = useState(false);
   const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
   const [isTaskEditorOpen, setIsTaskEditorOpen] = useState(false);
+
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [selectedWidgetType, setSelectedWidgetType] = useState<PlanWidgetType | null>(null);
-
   const [taskGroupId, setTaskGroupId] = useState<string | undefined>(undefined);
+
+  const [activeDragItem, setActiveDragItem] = useState<PlanContentOrderItem | null>(null);
+  const [activeDragSize, setActiveDragSize] = useState<DragPreviewSize | null>(null);
 
   const startDate = useProgressStore((state) => state.startDate);
 
   const template = usePlanStore((state) => state.template);
   const dayOverride = usePlanStore((state) => state.dayOverrides[String(day)]);
+
   const addWidget = usePlanStore((state) => state.addWidget);
+  const moveContent = usePlanStore((state) => state.moveContent);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const planDay = dayOverride ?? template.days.find((item) => item.day === day);
+
+  const contentOrder: PlanContentOrderItem[] = planDay
+    ? (planDay.contentOrder ?? [
+        ...planDay.groups.map((group) => ({
+          type: 'group' as const,
+          id: group.id,
+        })),
+        ...planDay.tasks
+          .filter((task) => task.groupId === null)
+          .map((task) => ({
+            type: 'task' as const,
+            id: task.id,
+          })),
+        ...planDay.widgets.map((widget) => ({
+          type: 'widget' as const,
+          id: widget.id,
+        })),
+      ])
+    : [];
+
+  const resetDragState = () => {
+    setActiveDragItem(null);
+    setActiveDragSize(null);
+  };
+
+  const handleDragStart = ({ active }: DragStartEvent) => {
+    if (!planDay) return;
+
+    const item = contentOrder.find(
+      (current) => getContentSortableId(current) === String(active.id),
+    );
+
+    if (!item) return;
+
+    setActiveDragItem(item);
+
+    const rect = active.rect.current.initial;
+
+    if (rect) {
+      setActiveDragSize({
+        width: rect.width,
+        height: rect.height,
+      });
+    }
+  };
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id || !planDay) {
+      resetDragState();
+      return;
+    }
+
+    const activeItem = contentOrder.find(
+      (item) => getContentSortableId(item) === String(active.id),
+    );
+
+    const overItem = contentOrder.find((item) => getContentSortableId(item) === String(over.id));
+
+    if (activeItem && overItem) {
+      moveContent(day, activeItem, overItem);
+    }
+
+    resetDragState();
+  };
 
   if (!planDay) {
     return <ErrorUI isError text={`Для дня ${day} нет данных`} />;
   }
 
-  const contentOrder: PlanContentOrderItem[] = planDay.contentOrder ?? [
-    ...planDay.groups.map((group) => ({
-      type: 'group' as const,
-      id: group.id,
-    })),
-    ...planDay.tasks
-      .filter((task) => task.groupId === null)
-      .map((task) => ({
-        type: 'task' as const,
-        id: task.id,
-      })),
-    ...planDay.widgets.map((widget) => ({
-      type: 'widget' as const,
-      id: widget.id,
-    })),
-  ];
+  const getDragTitle = () => {
+    if (!activeDragItem) return '';
+
+    if (activeDragItem.type === 'group') {
+      return planDay.groups.find((item) => item.id === activeDragItem.id)?.title ?? '';
+    }
+
+    if (activeDragItem.type === 'task') {
+      return planDay.tasks.find((item) => item.id === activeDragItem.id)?.title ?? '';
+    }
+
+    const widget = planDay.widgets.find((item) => item.id === activeDragItem.id);
+
+    if (!widget) return '';
+
+    return widget.type === 'micro-breaks'
+      ? 'Микро-паузы'
+      : widget.type === 'xp-by-days'
+        ? 'XP по дням'
+        : 'Заметки дня';
+  };
 
   const openTaskTarget = () => {
     setSelectedGroupId(planDay.groups[0]?.id ?? '');
@@ -284,60 +478,86 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
 
       <DayProgress day={planDay} />
 
-      <div className="flex flex-col gap-3">
-        {contentOrder.map((item) => {
-          if (item.type === 'group') {
-            const group = planDay.groups.find((current) => current.id === item.id);
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={resetDragState}
+      >
+        <div className="flex flex-col gap-3">
+          <SortableContext
+            items={contentOrder.map(getContentSortableId)}
+            strategy={verticalListSortingStrategy}
+          >
+            {contentOrder.map((item) => {
+              if (item.type === 'group') {
+                const group = planDay.groups.find((current) => current.id === item.id);
 
-            if (!group) return null;
+                if (!group) return null;
 
-            const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
+                const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
 
-            return (
-              <section
-                key={`group-${group.id}`}
-                className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3"
-              >
-                <div className="flex min-w-0 items-center justify-between gap-2">
-                  <Typography as="h6" align="start" tone="accent" text={group.title} />
+                return (
+                  <SortableContentItem key={`group-${group.id}`} item={item}>
+                    <section className="flex flex-col gap-3 rounded-2xl border-2 border-slate-800 p-3 pl-10">
+                      <div className="flex min-w-0 items-center justify-between gap-2">
+                        <Typography as="h6" align="start" tone="accent" text={group.title} />
 
-                  <GroupEditor day={day} group={group} />
-                </div>
+                        <GroupEditor day={day} group={group} />
+                      </div>
 
-                {tasks.map((task) => (
-                  <TaskItem key={task.id} task={task} day={day} />
-                ))}
-              </section>
-            );
-          }
+                      {tasks.map((task) => (
+                        <TaskItem key={task.id} task={task} day={day} />
+                      ))}
+                    </section>
+                  </SortableContentItem>
+                );
+              }
 
-          if (item.type === 'task') {
-            const task = planDay.tasks.find(
-              (current) => current.id === item.id && current.groupId === null,
-            );
+              if (item.type === 'task') {
+                const task = planDay.tasks.find(
+                  (current) => current.id === item.id && current.groupId === null,
+                );
 
-            if (!task) return null;
+                if (!task) return null;
 
-            return <TaskItem key={`task-${task.id}`} task={task} day={day} />;
-          }
+                return (
+                  <SortableContentItem key={`task-${task.id}`} item={item}>
+                    <TaskItem task={task} day={day} />
+                  </SortableContentItem>
+                );
+              }
 
-          const widget = planDay.widgets.find((current) => current.id === item.id);
+              const widget = planDay.widgets.find((current) => current.id === item.id);
 
-          if (!widget) return null;
+              if (!widget) return null;
 
-          return <PlanWidgetItem key={`${day}-${widget.id}`} day={day} widget={widget} />;
-        })}
+              return (
+                <SortableContentItem key={`widget-${widget.id}`} item={item}>
+                  <PlanWidgetItem day={day} widget={widget} />
+                </SortableContentItem>
+              );
+            })}
+          </SortableContext>
 
-        <Button
-          size="md"
-          variant="outline"
-          icon={<FaPlus />}
-          fullWidth
-          onClick={() => setIsAddMenuOpen(true)}
-        >
-          Добавить карточку, виджет, задачу
-        </Button>
-      </div>
+          <Button
+            size="md"
+            variant="outline"
+            icon={<FaPlus />}
+            fullWidth
+            onClick={() => setIsAddMenuOpen(true)}
+          >
+            Добавить карточку, виджет, задачу
+          </Button>
+        </div>
+
+        <DragOverlay adjustScale={false} dropAnimation={null}>
+          {activeDragItem && activeDragSize ? (
+            <DragPreview item={activeDragItem} size={activeDragSize} title={getDragTitle()} />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       <Modal open={isAddMenuOpen} onClose={() => setIsAddMenuOpen(false)} title="Что добавить?">
         <div className="flex flex-col gap-2">

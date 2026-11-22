@@ -868,16 +868,7 @@ export const usePlanStore = create<PlanState>()(
             }
 
             contentOrder.splice(activeIndex, 1);
-
-            const nextOverIndex = contentOrder.findIndex(
-              (item) => item.type === over.type && item.id === over.id,
-            );
-
-            if (nextOverIndex === -1) {
-              return currentDay;
-            }
-
-            contentOrder.splice(nextOverIndex, 0, movedItem);
+            contentOrder.splice(overIndex, 0, movedItem);
 
             return {
               ...currentDay,

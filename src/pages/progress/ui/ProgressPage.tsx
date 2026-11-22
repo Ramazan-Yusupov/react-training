@@ -20,7 +20,34 @@ import {
   Typography,
   type CalendarCell,
 } from '@/shared/ui';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
+const DAYS_PER_PERIOD = 30;
+
+function addDaysToISODate(dateString: string, days: number): string {
+  const [year, month, day] = dateString.split('-').map(Number);
+
+  if (
+    year === undefined ||
+    month === undefined ||
+    day === undefined ||
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day)
+  ) {
+    return dateString;
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-');
+}
 
 export function ProgressPage() {
   const { day, setDay, currentDay } = useSelectedDay();
@@ -32,6 +59,18 @@ export function ProgressPage() {
   const startDate = useProgressStore((state) => state.startDate);
   const completed = useProgressStore((state) => state.completed);
   const microBreaks = useProgressStore((state) => state.microBreaks);
+
+  const periodsCount = Math.ceil(totalDays / DAYS_PER_PERIOD);
+
+  const [periodIndex, setPeriodIndex] = useState(() => Math.floor((day - 1) / DAYS_PER_PERIOD));
+
+  useEffect(() => {
+    setPeriodIndex(Math.floor((day - 1) / DAYS_PER_PERIOD));
+  }, [day]);
+
+  useEffect(() => {
+    setPeriodIndex((current) => Math.min(current, Math.max(0, periodsCount - 1)));
+  }, [periodsCount]);
 
   const days = useMemo(
     () => template.days.map((item) => dayOverrides[String(item.day)] ?? item),
@@ -82,6 +121,27 @@ export function ProgressPage() {
       }),
     [days, snapshot, currentDay],
   );
+
+  const periodStart = periodIndex * DAYS_PER_PERIOD + 1;
+  const periodEnd = Math.min(periodStart + DAYS_PER_PERIOD - 1, totalDays);
+
+  const visibleCells = useMemo(
+    () => calendarCells.filter((cell) => cell.value >= periodStart && cell.value <= periodEnd),
+    [calendarCells, periodStart, periodEnd],
+  );
+
+  const periodStartDate = useMemo(
+    () => addDaysToISODate(startDate, periodStart - 1),
+    [startDate, periodStart],
+  );
+
+  const handlePreviousPeriod = () => {
+    setPeriodIndex((current) => Math.max(0, current - 1));
+  };
+
+  const handleNextPeriod = () => {
+    setPeriodIndex((current) => Math.min(periodsCount - 1, current + 1));
+  };
 
   const weeklyXp = useMemo(() => {
     const from = Math.max(1, day - 6);
@@ -222,9 +282,38 @@ export function ProgressPage() {
         </section>
 
         <aside className="flex min-w-0 flex-col gap-4 sm:gap-6">
-          <Card title="Календарь активности">
+          <Card
+            title="Календарь активности"
+            headerRight={
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePreviousPeriod}
+                  disabled={periodIndex === 0}
+                  aria-label="Предыдущие 30 дней"
+                  className="flex-center rounded-md p-1.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <FaChevronLeft size={12} />
+                </button>
+
+                <span className="whitespace-nowrap text-xs font-medium text-gray-300">
+                  Дни {periodStart}–{periodEnd}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleNextPeriod}
+                  disabled={periodIndex >= periodsCount - 1}
+                  aria-label="Следующие 30 дней"
+                  className="flex-center rounded-md p-1.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <FaChevronRight size={12} />
+                </button>
+              </div>
+            }
+          >
             <Calendar
-              cells={calendarCells}
+              cells={visibleCells}
               selected={day}
               today={
                 getCurrentDay(startDate, todayISO(), totalDays).isBeforeStart
@@ -232,7 +321,7 @@ export function ProgressPage() {
                   : currentDay
               }
               onSelect={setDay}
-              leading={getIsoWeekday(startDate) - 1}
+              leading={getIsoWeekday(periodStartDate) - 1}
               weekdays={WEEKDAYS_SHORT}
             />
 
@@ -256,33 +345,6 @@ export function ProgressPage() {
                 <span className="size-2 rounded-full bg-gray-500" />
                 Будущий
               </span>
-            </div>
-          </Card>
-
-          <Card title="Уровни">
-            <div className="flex flex-col gap-3">
-              {levels.map((item) => {
-                const unlocked = item.xp !== null && total >= item.xp;
-
-                return (
-                  <div key={item.id} className="flex min-w-0 items-center justify-between gap-3">
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <Typography align="start" className="font-semibold">
-                        {item.title}
-                      </Typography>
-
-                      <Typography align="start" tone="muted" className="text-xs">
-                        {item.xp === null ? 'Финальный уровень' : `${item.xp} XP`}
-                      </Typography>
-                    </div>
-
-                    <Badge
-                      color={unlocked ? 'green' : 'gray'}
-                      text={unlocked ? 'Открыт' : 'Закрыт'}
-                    />
-                  </div>
-                );
-              })}
             </div>
           </Card>
         </aside>

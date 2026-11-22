@@ -146,6 +146,28 @@ export function MonthStrip({ selected, onSelect }: MonthStripProps) {
         leading={getIsoWeekday(periodStartDate) - 1}
         weekdays={WEEKDAYS_SHORT}
       />
+
+      <div className="flex flex-wrap gap-x-3 gap-y-2 text-xs text-gray-400">
+        <span className="flex items-center gap-1">
+          <span className="size-2 rounded-full bg-green-500" />
+          Выполнен
+        </span>
+
+        <span className="flex items-center gap-1">
+          <span className="size-2 rounded-full bg-yellow-400" />
+          Частично
+        </span>
+
+        <span className="flex items-center gap-1">
+          <span className="size-2 rounded-full bg-red-400" />
+          Пропущен
+        </span>
+
+        <span className="flex items-center gap-1">
+          <span className="size-2 rounded-full bg-gray-500" />
+          Будущий
+        </span>
+      </div>
     </Card>
   );
 }

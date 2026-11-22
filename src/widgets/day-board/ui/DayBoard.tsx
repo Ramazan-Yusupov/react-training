@@ -109,13 +109,13 @@ function DragPreview({
   item,
   size,
   title,
+  subtitle,
 }: {
   item: PlanContentOrderItem;
   size: DragPreviewSize;
   title: string;
+  subtitle?: string;
 }) {
-  const isWidget = item.type === 'widget';
-
   const borderClass =
     item.type === 'group'
       ? 'border-slate-700'
@@ -128,15 +128,22 @@ function DragPreview({
       style={{
         width: size.width,
         height: size.height,
+        maxWidth: '100%',
       }}
-      className={`flex min-w-0 items-start gap-3 overflow-hidden rounded-2xl border-2 bg-slate-950/95 p-4 pl-10 shadow-2xl shadow-black/50 ${borderClass}`}
+      className={`flex min-w-0 flex-col justify-center gap-2 overflow-hidden rounded-2xl border-2 bg-slate-950 p-3 pl-10 shadow-2xl shadow-black/50 ${borderClass}`}
     >
-      <FaGripVertical className="mt-1 shrink-0 text-blue-400" size={16} />
+      <div className="flex min-w-0 items-center gap-3">
+        <FaGripVertical className="shrink-0 text-blue-400" size={16} />
 
-      <div className="min-w-0">
-        <div className="truncate font-semibold text-blue-400">{title}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-semibold text-blue-400">{title}</div>
 
-        {isWidget && <div className="mt-2 text-xs text-slate-400">Виджет</div>}
+          {subtitle && <div className="truncate text-xs text-slate-400">{subtitle}</div>}
+        </div>
+
+        <span className="shrink-0 rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-400">
+          Перемещение
+        </span>
       </div>
     </div>
   );
@@ -467,6 +474,24 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
     setIsWidgetScopeOpen(false);
   };
 
+  const getDragSubtitle = () => {
+    if (!activeDragItem) return '';
+
+    if (activeDragItem.type === 'group') {
+      const tasks = planDay.tasks.filter((task) => task.groupId === activeDragItem.id);
+
+      return `${tasks.length} задач`;
+    }
+
+    if (activeDragItem.type === 'task') {
+      const task = planDay.tasks.find((item) => item.id === activeDragItem.id);
+
+      return task ? `${task.durationMin} мин · +${task.xp} XP` : '';
+    }
+
+    return 'Виджет дня';
+  };
+
   return (
     <Card>
       <DayHeader
@@ -552,9 +577,14 @@ export function DayBoard({ day, onDayChange }: DayBoardProps) {
           </Button>
         </div>
 
-        <DragOverlay adjustScale={false} dropAnimation={null}>
+        <DragOverlay adjustScale={false}>
           {activeDragItem && activeDragSize ? (
-            <DragPreview item={activeDragItem} size={activeDragSize} title={getDragTitle()} />
+            <DragPreview
+              item={activeDragItem}
+              size={activeDragSize}
+              title={getDragTitle()}
+              subtitle={getDragSubtitle()}
+            />
           ) : null}
         </DragOverlay>
       </DndContext>

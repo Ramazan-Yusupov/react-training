@@ -14,7 +14,7 @@ export function TaskItem({ task, day }: TaskItemProps) {
   return (
     <div
       className={`flex min-w-0 items-start gap-2 ${
-        isStandalone ? 'rounded-2xl border-2 border-dashed border-slate-800 p-3' : ''
+        isStandalone ? 'rounded-2xl border-2 border-dashed border-slate-800 p-3 pl-10' : ''
       }`}
     >
       <div className="min-w-0 flex-1">

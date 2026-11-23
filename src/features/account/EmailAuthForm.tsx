@@ -3,9 +3,28 @@ import { PAGES } from '@/shared/config';
 import { useState, type FormEvent } from 'react';
 import { Button, Input, Modal } from '@/shared/ui';
 
-async function checked(request: Promise<{ error: { message: string } | null }>) {
-  const { error } = await request;
-  if (error) throw new Error(error.message);
+function authErrorMessage(error: unknown) {
+  const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+  const message = error instanceof Error ? error.message.toLowerCase() : '';
+  switch (code) {
+    case 'invalid_credentials':
+      return 'Неверная почта или пароль.';
+    case 'weak_password':
+      return 'Пароль слишком простой. Выбери более надёжный пароль.';
+    case 'email_address_invalid':
+      return 'Проверь адрес электронной почты.';
+    case 'user_already_exists':
+      return 'Аккаунт с такой почтой уже существует.';
+    case 'over_email_send_rate_limit':
+      return 'Достигнут лимит отправки писем. Попробуй позже.';
+    case 'over_request_rate_limit':
+      return 'Слишком много попыток. Попробуй позже.';
+  }
+  if (message.includes('error sending confirmation email'))
+    return 'Не удалось отправить письмо подтверждения. Попробуй позже.';
+  if (message.includes('email rate limit exceeded'))
+    return 'Достигнут лимит отправки писем. Попробуй позже.';
+  return 'Не удалось выполнить запрос. Попробуй ещё раз.';
 }
 
 export function EmailAuthForm({
@@ -33,7 +52,7 @@ export function EmailAuthForm({
     try {
       await action();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Запрос не выполнен. Попробуй ещё раз.');
+      setError(authErrorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -43,7 +62,10 @@ export function EmailAuthForm({
     event.preventDefault();
     if (verify) return;
     void run(async () => {
-      if (!auth) throw new Error('Вход пока не настроен.');
+      if (!auth) {
+        setError('Вход пока не настроен.');
+        return;
+      }
       const address = email.trim();
       if (register) {
         const { data, error } = await auth.signUp({ email: address, password, options });
@@ -71,10 +93,10 @@ export function EmailAuthForm({
       <form onSubmit={submit} className="flex min-w-0 flex-col gap-3">
         {verify ? (
           <>
-            <p className="wrap-anywhere text-sm text-gray-400">
+            <p className="wrap-anywhere text-center text-sm text-gray-400">
               Открой письмо на {email.trim()} и перейди по ссылке для подтверждения аккаунта.
             </p>
-            {resent && <p role="status">Письмо отправлено повторно.</p>}
+            {resent && <p role="status" className="text-center">Письмо отправлено повторно.</p>}
             <Button
               type="button"
               variant="ghost"
@@ -83,7 +105,8 @@ export function EmailAuthForm({
                 void run(async () => {
                   if (!auth) return;
                   setResent(false);
-                  await checked(auth.resend({ type: 'signup', email: email.trim(), options }));
+                  const { error } = await auth.resend({ type: 'signup', email: email.trim(), options });
+                  if (error) throw error;
                   setResent(true);
                 })
               }
@@ -112,7 +135,7 @@ export function EmailAuthForm({
           </>
         )}
         {error && (
-          <p role="alert" className="wrap-anywhere text-sm text-red-400">
+          <p role="alert" className="wrap-anywhere text-center text-sm text-red-400">
             {error}
           </p>
         )}

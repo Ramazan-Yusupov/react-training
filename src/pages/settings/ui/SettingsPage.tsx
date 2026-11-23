@@ -1,92 +1,9 @@
-import { levels, userPlanSchema, usePlanStore, type UserPlanData } from '@/entities/plan';
-import { useMicroBreakStore, type MicroBreakData } from '@/entities/micro-breaks';
-import { useProgressStore, type ProgressData } from '@/entities/progress';
-import { DEFAULT_SETTINGS, useSettingsStore, type SettingsData } from '@/entities/settings';
+import { levels } from '@/entities/plan';
+import { useProgressStore } from '@/entities/progress';
+import { useSettingsStore } from '@/entities/settings';
+import { snapshot, restore, validateBackup } from '@/features/backup';
 import { Button, Card, Input, Modal, Typography, toast } from '@/shared/ui';
 import { useRef, useState } from 'react';
-
-type BackupData = ({ version: 1 } | { version: 2; plan: UserPlanData }) & {
-  exportedAt: string;
-  progress: ProgressData;
-  settings: SettingsData;
-  microBreaks?: MicroBreakData;
-};
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isValidDuration(value: unknown): value is number {
-  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 1;
-}
-
-function isMicroBreakData(value: unknown): value is MicroBreakData {
-  if (!isRecord(value) || !Array.isArray(value.items)) {
-    return false;
-  }
-
-  const ids = new Set<string>();
-
-  for (const item of value.items) {
-    if (!isRecord(item)) {
-      return false;
-    }
-
-    const validItem =
-      typeof item.id === 'string' &&
-      item.id.trim().length > 0 &&
-      typeof item.text === 'string' &&
-      item.text.trim().length > 0 &&
-      typeof item.durationMinutes === 'number' &&
-      Number.isInteger(item.durationMinutes) &&
-      item.durationMinutes >= 1 &&
-      item.durationMinutes <= 60 &&
-      typeof item.enabled === 'boolean' &&
-      typeof item.order === 'number' &&
-      Number.isInteger(item.order) &&
-      item.order >= 0;
-
-    if (!validItem || ids.has(item.id as string)) {
-      return false;
-    }
-
-    ids.add(item.id as string);
-  }
-
-  return true;
-}
-
-function validateBackup(value: unknown): value is BackupData {
-  if (!isRecord(value) || (value.version !== 1 && value.version !== 2)) {
-    return false;
-  }
-
-  if (value.version === 2 && !userPlanSchema.safeParse(value.plan).success) {
-    return false;
-  }
-
-  const { progress, settings, microBreaks } = value;
-
-  if (!isRecord(progress) || !isRecord(settings)) {
-    return false;
-  }
-
-  const validProgress =
-    typeof progress.startDate === 'string' &&
-    isRecord(progress.completed) &&
-    isRecord(progress.microBreaks);
-
-  const validSettings =
-    isRecord(settings.rewards) &&
-    (settings.workDurationMin === undefined || isValidDuration(settings.workDurationMin)) &&
-    (settings.breakDurationMin === undefined || isValidDuration(settings.breakDurationMin)) &&
-    (settings.workLabel === undefined ||
-      (typeof settings.workLabel === 'string' && settings.workLabel.trim().length > 0));
-
-  const validMicroBreaks = microBreaks === undefined || isMicroBreakData(microBreaks);
-
-  return validProgress && validSettings && validMicroBreaks;
-}
 
 export function SettingsPage() {
   const [resetOpen, setResetOpen] = useState(false);
@@ -95,37 +12,10 @@ export function SettingsPage() {
   const rewards = useSettingsStore((state) => state.rewards);
   const setReward = useSettingsStore((state) => state.setReward);
 
-  const replaceProgress = useProgressStore((state) => state.replaceAll);
   const resetProgress = useProgressStore((state) => state.reset);
 
-  const replaceSettings = useSettingsStore((state) => state.replaceAll);
-  const replaceMicroBreaks = useMicroBreakStore((state) => state.replaceAll);
-
   const handleExport = () => {
-    const { schemaVersion, template, dayOverrides } = usePlanStore.getState();
-    const progressState = useProgressStore.getState();
-    const settingsState = useSettingsStore.getState();
-    const microBreakState = useMicroBreakStore.getState();
-
-    const backup: BackupData = {
-      version: 2,
-      plan: { schemaVersion, template, dayOverrides },
-      exportedAt: new Date().toISOString(),
-      progress: {
-        startDate: progressState.startDate,
-        completed: progressState.completed,
-        microBreaks: progressState.microBreaks,
-      },
-      settings: {
-        rewards: settingsState.rewards,
-        workDurationMin: settingsState.workDurationMin,
-        breakDurationMin: settingsState.breakDurationMin,
-        workLabel: settingsState.workLabel,
-      },
-      microBreaks: {
-        items: microBreakState.items,
-      },
-    };
+    const backup = snapshot();
 
     const blob = new Blob([JSON.stringify(backup, null, 2)], {
       type: 'application/json',
@@ -153,27 +43,7 @@ export function SettingsPage() {
         return;
       }
 
-      if (parsed.version === 2) {
-        usePlanStore.getState().replaceAll(parsed.plan);
-      }
-
-      replaceProgress({
-        startDate: parsed.progress.startDate,
-        completed: parsed.progress.completed,
-        microBreaks: parsed.progress.microBreaks,
-      });
-
-      replaceSettings({
-        rewards: parsed.settings.rewards as Record<string, string>,
-        workDurationMin: parsed.settings.workDurationMin ?? DEFAULT_SETTINGS.workDurationMin,
-        breakDurationMin: parsed.settings.breakDurationMin ?? DEFAULT_SETTINGS.breakDurationMin,
-        workLabel: parsed.settings.workLabel ?? DEFAULT_SETTINGS.workLabel,
-      });
-
-      if (parsed.microBreaks) {
-        replaceMicroBreaks(parsed.microBreaks);
-      }
-
+      restore(parsed);
       toast.success('Данные успешно восстановлены');
     } catch {
       toast.error('Не удалось прочитать файл');
@@ -229,7 +99,8 @@ export function SettingsPage() {
         <section className="flex min-w-0 flex-col gap-4">
           <Card title="Резервная копия">
             <Typography align="start" tone="muted" className="text-sm">
-              Сохрани план с задачами и заметками, прогресс, награды, настройки таймера и микро-паузы в JSON-файл.
+              Сохрани план с задачами и заметками, прогресс, награды, настройки таймера и
+              микро-паузы в JSON-файл.
             </Typography>
 
             <Button variant="primary" fullWidth onClick={handleExport}>
@@ -249,8 +120,8 @@ export function SettingsPage() {
             </Button>
 
             <Typography align="start" tone="muted" className="text-xs">
-              Импорт заменит план, прогресс и настройки данными из файла. При импорте старой
-              копии без плана текущие задачи и заметки сохранятся.
+              Импорт заменит план, прогресс и настройки данными из файла. При импорте старой копии
+              без плана текущие задачи и заметки сохранятся.
             </Typography>
           </Card>
 

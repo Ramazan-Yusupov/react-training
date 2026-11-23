@@ -1,7 +1,6 @@
 import { MAX_PROFILE_LEVEL, profileRanks } from '@/entities/progress';
 import { Card, Progress } from '@/shared/ui';
-import { AccountAvatar } from '@/features/account/AccountAvatar';
-import { ProfileAccount } from '@/features/account/ProfileAccount';
+import { AccountAvatar, ProfileAccount } from '@/features/account';
 import { useXpSummary } from '@/widgets/xp-summary';
 
 export default function ProfilePage() {

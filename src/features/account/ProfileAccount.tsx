@@ -1,5 +1,6 @@
 import { useAccount } from './useAccount';
-import { useState, type ReactNode } from 'react';
+import { useContext, useState, type ReactNode } from 'react';
+import { AccountSavingContext } from './AccountSavingContext';
 import { EmailAuthForm } from './EmailAuthForm';
 import { supabase } from '@/shared/config/supabase';
 import { Button, Card, toast } from '@/shared/ui';
@@ -21,20 +22,25 @@ function GuestActions() {
 
 function AccountControls({ children }: { children: ReactNode }) {
   const user = useAccount();
+  const saving = useContext(AccountSavingContext);
   if (user === undefined) return <p role="status">Загрузка аккаунта…</p>;
   if (!user) return <GuestActions />;
   return (
     <>
       {children}
       <Card title="Аккаунт">
-        <p className="text-sm text-gray-400">План и прогресс хранятся в этом браузере.</p>
-        <p className="wrap-anywhere">
-          {user.email}
-        </p>
-        <Button variant="ghost" onClick={async () => {
-          const result = await supabase?.auth.signOut({ scope: 'local' });
-          if (result?.error) toast.error(result.error.message);
-        }}>Выйти</Button>
+        <p className="text-sm text-gray-400">План и прогресс сохраняются в аккаунте Supabase.</p>
+        <p className="wrap-anywhere">{user.email}</p>
+        <Button
+          disabled={saving}
+          variant="ghost"
+          onClick={async () => {
+            const result = await supabase?.auth.signOut({ scope: 'local' });
+            if (result?.error) toast.error(result.error.message);
+          }}
+        >
+          {saving ? 'Сохранение…' : 'Выйти'}
+        </Button>
       </Card>
     </>
   );

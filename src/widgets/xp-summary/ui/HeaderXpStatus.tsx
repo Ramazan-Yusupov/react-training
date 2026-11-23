@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { PAGES } from '@/shared/config';
 import { Progress } from '@/shared/ui';
-import { AccountAvatar } from '@/features/account/AccountAvatar';
+import { AccountAvatar } from '@/features/account';
 import { useXpSummary } from '../model/useXpSummary';
 
 export function HeaderXpStatus() {

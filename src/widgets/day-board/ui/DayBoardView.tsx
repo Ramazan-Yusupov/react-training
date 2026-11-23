@@ -18,6 +18,7 @@ import { SortableContentItem, getContentSortableId } from './SortableContentItem
 import { StandaloneTaskItem } from './StandaloneTaskItem';
 
 import { getDayContentOrder } from '../model/getDayContentOrder';
+import { getGroupTasks } from '../model/getGroupTasks';
 import { useDayBoardDnd } from '../model/useDayBoardDnd';
 
 interface DayBoardViewProps {
@@ -82,7 +83,7 @@ export function DayBoardView({
 
                 if (!group) return null;
 
-                const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
+                const tasks = getGroupTasks(planDay.tasks, group.id);
 
                 return (
                   <SortableContentItem key={`group-${group.id}`} item={item}>

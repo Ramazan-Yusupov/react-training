@@ -8,6 +8,7 @@ import { Card, Typography } from '@/shared/ui';
 import { StandaloneTaskItem } from './StandaloneTaskItem';
 import { TaskItem } from './TaskItem';
 import { NextTaskWidget } from './NextTaskWidget';
+import { getGroupTasks } from '../model/getGroupTasks';
 
 interface DragPreviewContentProps {
   item: PlanContentOrderItem;
@@ -21,7 +22,7 @@ export function DragPreviewContent({ item, day, planDay }: DragPreviewContentPro
 
     if (!group) return null;
 
-    const tasks = planDay.tasks.filter((task) => task.groupId === group.id);
+    const tasks = getGroupTasks(planDay.tasks, group.id);
 
     return (
       <section className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-slate-800 bg-slate-950 p-3 pl-10">
